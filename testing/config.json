@@ -1,0 +1,21 @@
+{
+  "name": "2P Duel Template",
+  "description": "A balanced map for 2 players with a contested central area.",
+  "zones": [
+    {
+      "size": "small",
+      "id": 1,
+      "player": "TOWN_CASTLE"
+    },
+    {
+      "size": "small",
+      "id": 2,
+      "player": "TOWN_INFERNO"
+    },
+    {
+      "size": "small",
+      "id": 3,
+      "player": "TOWN_NECROPOLIS"
+    }
+  ]
+}
