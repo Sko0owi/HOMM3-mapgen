@@ -91,6 +91,7 @@ void generateLuaScript(const json& config) {
     AddObstacle(luaFile, "Rock", 7, 1, 0);
     AddSign(luaFile, "FUNNY CATS", 8, 2, 0);
     AddMine(luaFile, "GOLD_MINE", 10, 4, 0);
+    AddMine(luaFile, "GEM_POND", 15, 4, 0, 2);
     AddResource(luaFile, "CRYSTAL", 7, 3, 0, 10);
     AddCreature(luaFile, "ARCHANGEL", 12, 4, 0, 100, "AGGRESSIVE", true, true);
 

@@ -7,15 +7,15 @@ instance:difficulty(homm3lua.DIFFICULTY_EASY)
 
 instance:terrain(homm3lua.TERRAIN_GRASS)
 instance:player(homm3lua.PLAYER_1)
-instance:town(homm3lua.TOWN_STRONGHOLD, {x=5, y=5, z=0}, homm3lua.PLAYER_1, true)
+instance:town(homm3lua.TOWN_STRONGHOLD, {x=5, y=5, z=0}, homm3lua.PLAYER_1, 1)
 instance:hero(homm3lua.HERO_CHRISTIAN, {x=5, y=6, z=0}, homm3lua.PLAYER_1)
 
 instance:player(homm3lua.PLAYER_2)
-instance:town(homm3lua.TOWN_INFERNO, {x=10, y=10, z=0}, homm3lua.PLAYER_2, true)
+instance:town(homm3lua.TOWN_INFERNO, {x=10, y=10, z=0}, homm3lua.PLAYER_2, 1)
 instance:hero(homm3lua.HERO_JENOVA, {x=10, y=11, z=0}, homm3lua.PLAYER_2)
 
 instance:player(homm3lua.PLAYER_3)
-instance:town(homm3lua.TOWN_NECROPOLIS, {x=15, y=15, z=0}, homm3lua.PLAYER_3, true)
+instance:town(homm3lua.TOWN_NECROPOLIS, {x=15, y=15, z=0}, homm3lua.PLAYER_3, 1)
 instance:hero(homm3lua.HERO_FAFNER, {x=15, y=16, z=0}, homm3lua.PLAYER_3)
 
 -- Dynamic terrain adjustments for linear paths
@@ -70,6 +70,7 @@ instance:artifact(homm3lua.ARTIFACT_PENDANT_OF_COURAGE, {x=8, y=1, z=0})
 instance:obstacle('Rock', {x=7, y=1, z=0})
 instance:sign('FUNNY CATS', {x=8, y=2, z=0})
 instance:mine(homm3lua.MINE_GOLD_MINE, {x=10, y=4, z=0}, homm3lua.OWNER_NEUTRAL)
+instance:mine(homm3lua.MINE_GEM_POND, {x=15, y=4, z=0}, homm3lua.PLAYER_2)
 instance:resource(homm3lua.RESOURCE_CRYSTAL, {x=7, y=3, z=0}, 10)
-instance:creature(homm3lua.CREATURE_ARCHANGEL, {x=12, y=4, z=0}, 100,homm3lua.DISPOSITION_AGGRESSIVE,1 ,1)
+instance:creature(homm3lua.CREATURE_ARCHANGEL, {x=12, y=4, z=0}, 100, homm3lua.DISPOSITION_AGGRESSIVE, 1, 1)
 instance:write('/home/gk/.local/share/vcmi/Maps/test.h3m')

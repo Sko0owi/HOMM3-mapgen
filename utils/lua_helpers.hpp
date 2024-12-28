@@ -8,12 +8,12 @@
 #include </usr/include/lua5.4/lua.hpp>
 
 void AddPlayer(std::ofstream& luaFile, int playerId);
-void AddTown(std::ofstream& luaFile, const nlohmann::json& zone);
-void AddHero(std::ofstream& luaFile, const nlohmann::json& zone);
+void AddTown(std::ofstream &luaFile, const nlohmann::json &zone, bool is_main = true);
+void AddHero(std::ofstream &luaFile, const nlohmann::json &zone);
 void AddTerrain(std::ofstream& luaFile, std::string terrain = "GRASS");
 void AddHeader(std::ofstream& luaFile);
-void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int z, int quantity, std::string disposition, bool b1, bool b2);
-void AddMine(std::ofstream& luaFile, std::string mine, int x, int y, int z);
+void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int z, int quantity, std::string disposition, bool never_flees, bool does_not_grow);
+void AddMine(std::ofstream& luaFile, std::string mine, int x, int y, int z, int owner_id = -1);
 void AddResource(std::ofstream& luaFile, std::string resource, int x, int y, int z, int quantity);
 void AddArtifact(std::ofstream& luaFile, std::string artifact, int x, int y, int z);
 void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int z);
