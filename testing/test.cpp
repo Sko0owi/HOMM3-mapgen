@@ -6,46 +6,124 @@
 
 using json = nlohmann::json;
 
+void AddPlayer(std::ofstream& luaFile, int playerId) {
+    luaFile << "instance:player(homm3lua.PLAYER_" << playerId << ")\n";
+}
+
+void AddTown(std::ofstream& luaFile, const json& zone) {
+    luaFile << "instance:town(homm3lua." << zone["player"].get<std::string>()
+            << ", {x=" << (zone["id"].get<int>() * 5)
+            << ", y=" << (zone["id"].get<int>() * 5)
+            << ", z=0}, homm3lua.PLAYER_" << zone["id"]
+            << ", true)\n";
+}
+
+void AddHero(std::ofstream& luaFile, const json& zone) {
+    luaFile << "instance:hero(homm3lua." << zone["hero"].get<std::string>()
+            << ", {x=" << (zone["id"].get<int>() * 5)
+            << ", y=" << (zone["id"].get<int>() * 5 + 1)
+            << ", z=0}, homm3lua.PLAYER_" << zone["id"]
+            << ")\n\n";
+}
+
+void AddTerrain(std::ofstream& luaFile){
+    luaFile << "instance:terrain(homm3lua.TERRAIN_GRASS)\n";
+}
+
+void AddHeader(std::ofstream& luaFile){
+        luaFile << R"(
+package.cpath = package.cpath .. ';dist/?.so;../dist/?.so'
+local homm3lua = require('homm3lua'))";
+
+}
+
+
+std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int y2) {
+    std::vector<std::pair<int, int>> path;
+
+    while (x1 != x2) {
+        path.emplace_back(x1, y1);
+        x1 += (x2 > x1) ? 1 : -1;
+    }
+
+    while (y1 != y2) {
+        path.emplace_back(x1, y1);
+        y1 += (y2 > y1) ? 1 : -1;
+    }
+
+    return path;
+}
+
+
+void CreateLinearPathsToHub(std::ofstream& luaFile, const std::vector<std::pair<int, int>>& towns, int gridWidth, int gridHeight, int maxWidth = 1) {
+    auto hub = std::pair(20, 8);
+
+    luaFile << "-- Dynamic terrain adjustments for linear paths\n";
+    luaFile << "instance:terrain(function (x, y, z)\n";
+    luaFile << "    -- Hub point\n";
+    luaFile << "    -- Hub coordinates: (" << hub.first << ", " << hub.second << ")\n";
+
+    for (const auto& town : towns) {
+        auto path = GenerateSimplePath(town.first, town.second, hub.first, hub.second);
+
+        for (size_t i = 0; i < path.size(); ++i) {
+            const auto& point = path[i];
+
+            luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 1 end\n";
+        }
+    }
+
+    luaFile << "    if x == " << hub.first << " and y == " << hub.second << " then return nil, 1 end\n";
+
+
+    luaFile << "    return nil\n"; // Default terrain
+    luaFile << "end)\n";
+}
+
+
 void generateLuaScript(const json& config) {
     std::ofstream luaFile("generated_script.lua");
     if (!luaFile.is_open()) {
         std::cerr << "Failed to create Lua script file." << std::endl;
         return;
     }
+    
+    AddHeader(luaFile);
+    luaFile << "local instance = homm3lua.new(homm3lua.FORMAT_ROE, homm3lua.SIZE_";
 
-    luaFile << R"(
-package.cpath = package.cpath .. ';dist/?.so;../dist/?.so'
-local homm3lua = require('homm3lua')
-local instance = homm3lua.new(homm3lua.FORMAT_ROE, homm3lua.SIZE_SMALL)
-
-)";
+    luaFile << config["size"].get<std::string>() << ")" << "\n";
 
     luaFile << "instance:name('" << config["name"] << "')\n";
     luaFile << "instance:description('" << config["description"] << "')\n";
-    luaFile << "instance:difficulty(homm3lua.DIFFICULTY_HARD)\n\n";
+    luaFile << "instance:difficulty(homm3lua.DIFFICULTY_" << config["difficulity"].get<std::string>() << ")\n\n";
 
     std::set<int> addedPlayers;
+    std::vector<std::pair<int, int>> towns;
+    int gridWidth = 50; // Adjust to map size
+    int gridHeight = 50; // Adjust to map size
 
+    AddTerrain(luaFile);
     for (const auto& zone : config["zones"]) {
         int playerId = zone["id"];
-        std::string player = "PLAYER_" + std::to_string(playerId);
 
-        if (addedPlayers.find(playerId) == addedPlayers.end()) {
-            luaFile << "instance:player(homm3lua." << player << ")\n";
+        if (addedPlayers.find(playerId) == addedPlayers.end()){
             addedPlayers.insert(playerId);
+            AddPlayer(luaFile, playerId);
         }
-        
-        std::cerr << zone << " " << zone["id"]<< "\n";
-        luaFile << "-- Zone " << zone["id"] << "\n";
-        luaFile << "instance:town(homm3lua." << zone["player"].get<std::string>()  
-                << ", {x=" << (zone["id"].get<int>() * 5)
-                << ", y=" << (zone["id"].get<int>() * 5) 
-                << ", z=0}, homm3lua.PLAYER_" << zone["id"] 
-                << ", true)\n\n";
+
+        AddTown(luaFile, zone);
+        AddHero(luaFile, zone);
+        towns.emplace_back(zone["id"].get<int>() * 5, zone["id"].get<int>() * 5);
     }
 
-    // TODO MODIFY WHERE DO YOU WANT TO STORE MAP, THIS IS LOCATION FOR VCMIEDITOR
+    for(auto e : towns){
+        std::cerr << e.first << " " << e.second << "\n";
+    }
+
+    CreateLinearPathsToHub(luaFile, towns, gridWidth, gridHeight, 3);
+
     luaFile << R"(instance:write('/home/gk/.local/share/vcmi/Maps/test.h3m'))";
+    luaFile << "\n";
     
     luaFile.close();
     std::cout << "Lua script generated successfully." << std::endl;
