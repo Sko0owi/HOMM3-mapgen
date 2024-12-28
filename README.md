@@ -6,7 +6,7 @@ Template-Based Map Generator for Heroes of Might &amp; Magic III
 * https://github.com/radekmie/homm3lua/tree/master
 * https://github.com/vcmi/vcmi/tree/develop
 
-# Pre requiremnts 
+# Pre requirements 
 * Lua5.4
 * sudo apt-get install lua5.4 liblua5.4-dev
 
