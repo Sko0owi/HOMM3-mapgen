@@ -20,7 +20,6 @@ instance:hero(homm3lua.HERO_FAFNER, {x=15, y=16, z=0}, homm3lua.PLAYER_3)
 
 -- Dynamic terrain adjustments for linear paths
 instance:terrain(function (x, y, z)
-    -- Hub point
     -- Hub coordinates: (20, 8)
     if x == 5 and y == 5 then return nil, 1 end
     if x == 6 and y == 5 then return nil, 1 end
@@ -67,4 +66,10 @@ instance:terrain(function (x, y, z)
     if x == 20 and y == 8 then return nil, 1 end
     return nil
 end)
+instance:artifact(homm3lua.ARTIFACT_PENDANT_OF_COURAGE, {x=8, y=1, z=0})
+instance:obstacle('Rock', {x=7, y=1, z=0})
+instance:sign('FUNNY CATS', {x=8, y=2, z=0})
+instance:mine(homm3lua.MINE_GOLD_MINE, {x=10, y=4, z=0}, homm3lua.OWNER_NEUTRAL)
+instance:resource(homm3lua.RESOURCE_CRYSTAL, {x=7, y=3, z=0}, 10)
+instance:creature(homm3lua.CREATURE_ARCHANGEL, {x=12, y=4, z=0}, 100,homm3lua.DISPOSITION_AGGRESSIVE,1 ,1)
 instance:write('/home/gk/.local/share/vcmi/Maps/test.h3m')

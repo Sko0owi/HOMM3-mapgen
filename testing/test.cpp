@@ -1,42 +1,7 @@
-#include <iostream>
-#include <fstream>
-#include <nlohmann/json.hpp>
 #include <set>
-#include </usr/include/lua5.4/lua.hpp>
+#include "../utils/lua_helpers.hpp"
 
 using json = nlohmann::json;
-
-void AddPlayer(std::ofstream& luaFile, int playerId) {
-    luaFile << "instance:player(homm3lua.PLAYER_" << playerId << ")\n";
-}
-
-void AddTown(std::ofstream& luaFile, const json& zone) {
-    luaFile << "instance:town(homm3lua." << zone["player"].get<std::string>()
-            << ", {x=" << (zone["id"].get<int>() * 5)
-            << ", y=" << (zone["id"].get<int>() * 5)
-            << ", z=0}, homm3lua.PLAYER_" << zone["id"]
-            << ", true)\n";
-}
-
-void AddHero(std::ofstream& luaFile, const json& zone) {
-    luaFile << "instance:hero(homm3lua." << zone["hero"].get<std::string>()
-            << ", {x=" << (zone["id"].get<int>() * 5)
-            << ", y=" << (zone["id"].get<int>() * 5 + 1)
-            << ", z=0}, homm3lua.PLAYER_" << zone["id"]
-            << ")\n\n";
-}
-
-void AddTerrain(std::ofstream& luaFile){
-    luaFile << "instance:terrain(homm3lua.TERRAIN_GRASS)\n";
-}
-
-void AddHeader(std::ofstream& luaFile){
-        luaFile << R"(
-package.cpath = package.cpath .. ';dist/?.so;../dist/?.so'
-local homm3lua = require('homm3lua'))";
-
-}
-
 
 std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int y2) {
     std::vector<std::pair<int, int>> path;
@@ -60,7 +25,6 @@ void CreateLinearPathsToHub(std::ofstream& luaFile, const std::vector<std::pair<
 
     luaFile << "-- Dynamic terrain adjustments for linear paths\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
-    luaFile << "    -- Hub point\n";
     luaFile << "    -- Hub coordinates: (" << hub.first << ", " << hub.second << ")\n";
 
     for (const auto& town : towns) {
@@ -121,6 +85,14 @@ void generateLuaScript(const json& config) {
     }
 
     CreateLinearPathsToHub(luaFile, towns, gridWidth, gridHeight, 3);
+
+    //TEST STUFF
+    AddArtifact(luaFile, "PENDANT_OF_COURAGE", 8, 1, 0);
+    AddObstacle(luaFile, "Rock", 7, 1, 0);
+    AddSign(luaFile, "FUNNY CATS", 8, 2, 0);
+    AddMine(luaFile, "GOLD_MINE", 10, 4, 0);
+    AddResource(luaFile, "CRYSTAL", 7, 3, 0, 10);
+    AddCreature(luaFile, "ARCHANGEL", 12, 4, 0, 100, "AGGRESSIVE", true, true);
 
     luaFile << R"(instance:write('/home/gk/.local/share/vcmi/Maps/test.h3m'))";
     luaFile << "\n";
