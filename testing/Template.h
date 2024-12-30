@@ -22,36 +22,56 @@ private:
 class ZoneInfo {
 public:
     ZoneInfo();
-    void addConnection(json& connectionConfig);
+    void addConnection(const json& connectionConfig);
     std::vector<ZoneConnection> getConnections();
     void setId(i32 id);
-    void setSize(i32 size);
-    void setPlayer(i32 player);
-    void setHero(i32 hero);
+    void setSize(std::string size);
+    void setPlayer(std::string player);
+    void setHero(std::string hero);
     i32 getId();
-    i32 getSize();
-    i32 getPlayer();
-    i32 getHero();
+    std::string getSize();
+    std::string getPlayer();
+    std::string getHero();
     void deserializeZone(const json& config);
+    void printZone();
 private:
 
     i32 id;
-    i32 size;
-    i32 player;
-    i32 hero;
+    std::string size;
+    std::string player;
+    std::string hero;
     std::vector<ZoneConnection> connections;
 
 
 };
 
+using Zone = std::shared_ptr<ZoneInfo>;
+using Zones = std::map<i32, Zone>;
+
 class TemplateInfo {
 public:
-    using Zones = std::map<i32, std::shared_ptr<ZoneInfo>>;
+
+    TemplateInfo();
 
     Zones & getZones();
 
-    void deserialize(json& config);
+    void setName(std::string name);
+    void setDescription(std::string description);
+    void setMapSize(std::string mapSize);
+    void setDifficulty(std::string difficulty);
+
+    std::string getName();
+    std::string getDescription();
+    std::string getMapSize();
+    std::string getDifficulty();
+
+    void deserialize(const json& config);
+    void printTemplate();
 
 private:
+    std::string name;
+    std::string description;
+    std::string mapSize;
+    std::string difficulty; 
     Zones zones;
 };

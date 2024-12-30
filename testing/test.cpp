@@ -1,6 +1,5 @@
 #include <set>
 #include "../utils/lua_helpers.hpp"
-#include "./Template.h"
 
 using json = nlohmann::json;
 
@@ -54,13 +53,18 @@ void generateLuaScript(const json& config) {
     }
     
     AddHeader(luaFile);
+
+    TemplateInfo templateInfo;
+    templateInfo.deserialize(config);
+    templateInfo.printTemplate();
+
     luaFile << "local instance = homm3lua.new(homm3lua.FORMAT_ROE, homm3lua.SIZE_";
 
-    luaFile << config["size"].get<std::string>() << ")" << "\n";
+    luaFile << templateInfo.getMapSize() << ")" << "\n";
 
-    luaFile << "instance:name('" << config["name"] << "')\n";
-    luaFile << "instance:description('" << config["description"] << "')\n";
-    luaFile << "instance:difficulty(homm3lua.DIFFICULTY_" << config["difficulity"].get<std::string>() << ")\n\n";
+    luaFile << "instance:name('" << templateInfo.getName() << "')\n";
+    luaFile << "instance:description('" << templateInfo.getDescription() << "')\n";
+    luaFile << "instance:difficulty(homm3lua.DIFFICULTY_" << templateInfo.getDifficulty() << ")\n\n";
 
     std::set<int> addedPlayers;
     std::vector<std::pair<int, int>> towns;
@@ -68,17 +72,18 @@ void generateLuaScript(const json& config) {
     int gridHeight = 50; // Adjust to map size
 
     AddTerrain(luaFile);
-    for (const auto& zone : config["zones"]) {
-        int playerId = zone["id"];
+    Zones zones = templateInfo.getZones();
+    for (auto& zone : zones) {
+        int playerId = zone.second->getId();
 
         if (addedPlayers.find(playerId) == addedPlayers.end()){
             addedPlayers.insert(playerId);
             AddPlayer(luaFile, playerId);
         }
 
-        AddTown(luaFile, zone);
-        AddHero(luaFile, zone);
-        towns.emplace_back(zone["id"].get<int>() * 5, zone["id"].get<int>() * 5);
+        AddTown(luaFile, zone.second);
+        AddHero(luaFile, zone.second);
+        towns.emplace_back(playerId * 5, playerId * 5);
     }
 
     for(auto e : towns){

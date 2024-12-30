@@ -2,7 +2,7 @@
   "name": "2P Duel Template",
   "description": "A balanced map for 2 players with a contested central area.",
   "size": "SMALL",
-  "difficulity": "EASY",
+  "difficulty": "EASY",
   "zones": [
     {
       "size": "SMALL",
@@ -15,12 +15,13 @@
       "id": 2,
       "player": "TOWN_INFERNO",
       "hero": "HERO_JENOVA"
-    },
+    }
+  ],
+  "connections": [
     {
-      "size": "SMALL",
-      "id": 3,
-      "player": "TOWN_NECROPOLIS",
-      "hero": "HERO_FAFNER"
+      "zoneA": 1,
+      "zoneB": 2,
+      "type": "road"
     }
   ]
 }
