@@ -16,13 +16,11 @@ int3 ZonePlacer::getRealCoords(float3 f) {
 
 void ZonePlacer::generateZones() {
 
+    std::cerr << "Generating zones\n";
+
     mapWidth = map.getWidth();
     mapHeight = map.getHeight();
 
-    // auto &zones = map.getZones();
-    
-    std::cerr << "Generating zones\n";
-    temp.printTemplate();
 
 
 
@@ -92,22 +90,52 @@ void ZonePlacer::placeOnGrid() {
 
     std::vector<std::pair<int, std::shared_ptr<Zone>>> zoneVector(zones.begin(), zones.end());
 
-    std::cerr << "ZONE VECTOR DEBUG\n";
-    for(auto zone : zoneVector) {
-        std::cerr << "Zone id: " << zone.first << " " << "\n";
-    }
-
     size_t x = 0, y = 0;
 
     grid[x][y] = zoneVector[0].second;
 
     for(size_t i = 1; i < zoneVector.size(); i++) {
-        x++;
-        if(x == GridN) {
-            x = 0;
-            y++;
+        
+        auto zone = zoneVector[i].second;
+
+        float maxDist = -1000;
+        pair<int,int> maxDistPos = {-1,-1};
+
+        for(size_t freeX = 0; freeX < GridN; freeX++) {
+            for(size_t freeY = 0; freeY < GridN; freeY++) {
+                if(!grid[freeX][freeY]) {
+
+                    
+                    float dist = 0;
+
+                    pair<int,int> potentialPos = {freeX, freeY};
+                    
+                    for(size_t takenX = 0; takenX < GridN; takenX++) {
+                        for(size_t takenY = 0; takenY < GridN; takenY++) {
+                            auto takenZone = grid[takenX][takenY];
+                            if(takenZone) {
+
+                                float localDist = DistancesBetweenZones[takenZone->getId()][zone->getId()];
+                                if(localDist != 1) {
+                                    localDist = std::sqrt((freeX - takenX) * (freeX - takenX) + (freeY - takenY) * (freeY - takenY)) * (localDist + 1);
+                                } else {
+                                    localDist = -std::sqrt((freeX - takenX) * (freeX - takenX) + (freeY - takenY) * (freeY - takenY));
+                                }
+                                dist += localDist;
+                            }
+                            
+                        }
+                    }
+
+                    if(dist > maxDist) {
+                        maxDist = dist;
+                        maxDistPos = potentialPos;
+                    }
+                }
+            }
         }
-        grid[x][y] = zoneVector[i].second;
+
+        grid[maxDistPos.first][maxDistPos.second] = zoneVector[i].second;
     }
 
 
@@ -118,9 +146,6 @@ void ZonePlacer::placeOnGrid() {
 			auto zone = grid[x][y];
 			if (zone)
 			{
-                std::cerr << "X: " << x << " Y: " << y << "\n";
-                std::cerr << "x / GridN: " << x / GridN << " y / GridN: " << y / GridN << "\n"; 
-
                 float x_ = x;
                 float y_ = y;
 
@@ -162,23 +187,14 @@ void ZonePlacer::paintTiles() {
                 }
             }
 
-            std::cerr << "Tile x: " << x << " y: " << y << " zone: " << minDistZone << "\n";
+            
             
             auto TilePtr = map.getTile(x, y); 
             if(TilePtr) {
-                std::cerr << "setting zone id\n";
                 TilePtr->setZoneId(minDistZone);
-                std::cerr << "Test "  << TilePtr->getZoneId() << "\n"; 
             } else {
                 std::cerr << "TilePtr is null\n";
             }
-            
-            // map.getTile(x, y)->setZoneId(minDistZone);
         }
-    }
-
-    for(auto& zone : zones) {
-        std::cerr << "Zone id: " << zone.first << "\n";
-        zone.second->printZone();
     }
 }

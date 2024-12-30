@@ -2,8 +2,6 @@
 #include "../global/Global.h"
 #include "./Faction.h"
 
-class int3;
-class float3;
 
 Zone::Zone() {
     id = -1;
@@ -42,6 +40,10 @@ float3 Zone::getCenter(){
 }
 faction Zone::getOwner(){
     return owner;
+}
+
+int Zone::getId(){
+    return id;
 }
 
 void Zone::printZone(){

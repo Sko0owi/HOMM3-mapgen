@@ -21,12 +21,24 @@
       "id": 3,
       "player": "TOWN_INFERNO",
       "hero": "HERO_CHRISTIAN"
+    },
+    {
+      "size": "SMALL",
+      "id": 4,
+      "player": "TOWN_INFERNO",
+      "hero": "HERO_CHRISTIAN"
+    },
+    {
+      "size": "SMALL",
+      "id": 5,
+      "player": "TOWN_INFERNO",
+      "hero": "HERO_CHRISTIAN"
     }
   ],
   "connections": [
     {
       "zoneA": 1,
-      "zoneB": 2,
+      "zoneB": 5,
       "type": "road"
     }
   ]

@@ -5,6 +5,7 @@
 #include "../Template.h"
 #include "../Map.h"
 #include "../types/int3.h"
+#include "./Zone.h"
 
 using json = nlohmann::json;
 
@@ -80,14 +81,12 @@ void generateLuaScript(const json& config) {
     map.generateMap(templateInfo);
 
     std::cerr << "Map generated\n";
-    std::cerr << "Map width: " << map.getWidth() << "\n";
-    std::cerr << "Map height: " << map.getHeight() << "\n";
     map.print();
     
     AddTerrain(luaFile);
     AddTerrainTiles(luaFile, map);
     
-    ZonesI zones = templateInfo.getZonesI();
+    auto zones = map.getZones();
     for (auto& zone : zones) {
         int playerId = zone.second->getId();
 

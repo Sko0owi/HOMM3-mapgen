@@ -18,6 +18,7 @@ void setOwner(faction fac);
 int3 getPosition();
 float3 getCenter();
 faction getOwner();
+int getId();
 
 
 void printZone();

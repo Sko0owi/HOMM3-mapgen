@@ -8,6 +8,7 @@ UTILS_DIR = ../utils
 GAME_INFO_DIR = ./game_info
 GLOBAL_DIR = ./global
 
+
 # Include paths
 INCLUDES = -I$(SRC_DIR) -I$(UTILS_DIR) -I$(GAME_INFO_DIR) -I$(GLOBAL_DIR)
 
@@ -22,6 +23,7 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(GAME_INFO_DIR)/Zone.cpp  \
           $(GAME_INFO_DIR)/Tile.cpp  \
           $(SRC_DIR)/ZonePlacer.cpp \
+		  $(GLOBAL_DIR)/Random.cpp \
           $(UTILS_DIR)/lua_helpers.cpp 
 
 # Object files

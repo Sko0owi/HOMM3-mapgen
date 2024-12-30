@@ -8,13 +8,11 @@
 #include </usr/include/lua.hpp>
 
 class Map;
-class ZoneInfo;
-using ZoneI = std::shared_ptr<ZoneInfo>;
-class int3;
+class Zone;
 
 void AddPlayer(std::ofstream& luaFile, int playerId);
-void AddTown(std::ofstream &luaFile, ZoneI &zone, bool is_main = true);
-void AddHero(std::ofstream &luaFile, ZoneI &zone);
+void AddTown(std::ofstream &luaFile, std::shared_ptr<Zone> &zone, bool is_main = true);
+void AddHero(std::ofstream &luaFile, std::shared_ptr<Zone> &zone);
 void AddTerrainTiles(std::ofstream& luaFile, Map& map);
 void AddTerrain(std::ofstream& luaFile, std::string terrain = "GRASS");
 void AddHeader(std::ofstream& luaFile);

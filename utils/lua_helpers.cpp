@@ -3,8 +3,8 @@
 
 #include "../game_info/Tile.h"
 #include "../Template.h"
-#include "../types/int3.h"
 #include "./Map.h"
+#include "./Zone.h"
 
 using json = nlohmann::json;
 
@@ -19,12 +19,15 @@ void AddPlayer(std::ofstream& luaFile, int playerId) {
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      json        zone        zone description from json, like player id, town xyz position.
 // @tparam      boolean     is_main     tells if is main town.
-void AddTown(std::ofstream &luaFile, ZoneI &zone, bool is_main){
-    std::string player = zone->getPlayer();
+void AddTown(std::ofstream &luaFile, std::shared_ptr<Zone>& zone, bool is_main){
+    std::string player = "TOWN_INFERNO";
     i32 Id = zone->getId();
+    i32 X = zone->getPosition().x;
+    i32 Y = zone->getPosition().y;
+
     luaFile << "instance:town(homm3lua." << player
-            << ", {x=" << (Id * 5)
-            << ", y=" << (Id * 5)
+            << ", {x=" << X
+            << ", y=" << Y
             << ", z=0}, homm3lua.PLAYER_" << Id
             << ", " << is_main << ")\n";
 }
@@ -32,12 +35,14 @@ void AddTown(std::ofstream &luaFile, ZoneI &zone, bool is_main){
 // @function    AddHero
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      json        zone        zone description from json, like player id, hero xyz position.
-void AddHero(std::ofstream& luaFile, ZoneI& zone) {
-    std::string hero = zone->getHero();
+void AddHero(std::ofstream& luaFile, std::shared_ptr<Zone>& zone) {
+    std::string hero = "HERO_CHRISTIAN";
     i32 Id = zone->getId();
+    i32 X = zone->getPosition().x;
+    i32 Y = zone->getPosition().y;
     luaFile << "instance:hero(homm3lua." << hero
-            << ", {x=" << (Id * 5)
-            << ", y=" << (Id * 5 + 1)
+            << ", {x=" << X
+            << ", y=" << Y + 1
             << ", z=0}, homm3lua.PLAYER_" << Id
             << ")\n\n";
 }
@@ -57,6 +62,7 @@ void AddTerrainTiles(std::ofstream& luaFile, Map& map){
                 case 2 : terrain = "SNOW"; break;
                 case 3 : terrain = "LAVA"; break;
                 case 4 : terrain = "WASTELAND"; break;
+                case 5 : terrain = "DIRT"; break;
             }
 
             luaFile << "if x == " << x << " and y == " << y << " then return homm3lua.TERRAIN_" << terrain << " end\n";
