@@ -1,5 +1,5 @@
 
-#include "../global/global.h"
+#include "../global/Global.h"
 
 class float3
 {

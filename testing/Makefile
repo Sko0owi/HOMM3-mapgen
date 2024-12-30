@@ -1,4 +1,58 @@
-make:
-	g++ test.cpp ../utils/lua_helpers.cpp -o test -L/usr/lib/x86_64-linux-gnu -llua5.4
-build:
-	make && ./test
+# Compiler settings
+CXX = g++
+CXXFLAGS = -Wall -std=c++17
+
+# Directories
+SRC_DIR = .
+UTILS_DIR = ../utils
+GAME_INFO_DIR = ./game_info
+GLOBAL_DIR = ./global
+
+# Include paths
+INCLUDES = -I$(SRC_DIR) -I$(UTILS_DIR) -I$(GAME_INFO_DIR) -I$(GLOBAL_DIR)
+
+# Library flags
+LDFLAGS = -L/usr/lib -llua
+
+# Source files
+SOURCES = $(SRC_DIR)/test.cpp \
+          $(SRC_DIR)/Map.cpp \
+          $(SRC_DIR)/Template.cpp \
+          $(SRC_DIR)/ZonePlacer.cpp \
+          $(UTILS_DIR)/lua_helpers.cpp \
+          $(GAME_INFO_DIR)/Zone.cpp 
+
+# Object files
+OBJECTS = $(SOURCES:.cpp=.o)
+
+# Create necessary directories for object files
+OBJECT_DIRS = $(sort $(dir $(OBJECTS)))
+
+# Main target
+TARGET = test
+
+# Default target
+all: $(TARGET)
+
+# Create directories
+$(OBJECT_DIRS):
+	mkdir -p $@
+
+# Linking
+$(TARGET): $(OBJECTS)
+	$(CXX) $(OBJECTS) -o $(TARGET) $(LDFLAGS)
+
+# Compilation (depend on directories)
+%.o: %.cpp | $(OBJECT_DIRS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+# Clean
+clean:
+	rm -f $(OBJECTS) $(TARGET)
+
+# Build and run
+run: all
+	./$(TARGET)
+
+# Phony targets
+.PHONY: all clean run

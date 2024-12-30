@@ -23,3 +23,9 @@ And checking result
 ```
 vcmieditor
 ```
+
+Abstrakcja:
+- Template.h
+Tutaj ogarniamy wczytywanie JSON'a i przetrzymywanie takich highlevel rzeczy (kto z kim ma być połaczony itp)
+- Map.h
+Tutaj mają być już dane dokładne gdzie co ma się znajdować. (piksel po pikselu)
