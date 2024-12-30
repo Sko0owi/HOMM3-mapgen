@@ -1,4 +1,4 @@
 *.o
 *.so
-generated_script.lua
+./testing/generated_script.lua
 test
