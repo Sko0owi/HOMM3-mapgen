@@ -10,8 +10,8 @@
 #include "../types/int3.h"
 
 void AddPlayer(std::ofstream& luaFile, int playerId);
-void AddTown(std::ofstream &luaFile, Zone &zone, bool is_main = true);
-void AddHero(std::ofstream &luaFile, Zone &zone);
+void AddTown(std::ofstream &luaFile, ZoneI &zone, bool is_main = true);
+void AddHero(std::ofstream &luaFile, ZoneI &zone);
 void AddTerrain(std::ofstream& luaFile, std::string terrain = "GRASS");
 void AddHeader(std::ofstream& luaFile);
 void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int z, int quantity, std::string disposition, bool never_flees, bool does_not_grow);

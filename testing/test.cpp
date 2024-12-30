@@ -68,11 +68,11 @@ void generateLuaScript(const json& config) {
 
     std::set<int> addedPlayers;
     std::vector<std::pair<int, int>> towns;
-    int gridWidth = 50; // Adjust to map size
-    int gridHeight = 50; // Adjust to map size
+    int gridWidth = 32; // Adjust to map size
+    int gridHeight = 32; // Adjust to map size
 
     AddTerrain(luaFile);
-    Zones zones = templateInfo.getZones();
+    ZonesI zones = templateInfo.getZonesI();
     for (auto& zone : zones) {
         int playerId = zone.second->getId();
 

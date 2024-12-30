@@ -1,17 +1,26 @@
 #include<bits/stdc++.h>
-#include "./types/int3.h"
+#include "../global/Global.h"
 
 class Zone;
+class TemplateInfo;
 
+using MapZones = std::map<i32, std::shared_ptr<Zone>>;
 class Map {
 public:
-    Map(int width, int height);
+    Map();
+    Map(i32 width, i32 height);
     ~Map();
+    void initialize(TemplateInfo &temp);
     void generate();
     void print();
+    MapZones & getZones();
+    i32 getWidth();
+    i32 getHeight();
+
+
 private:
-    int width;
-    int height;
-    std::map<i32, std::shared_ptr<Zone>> zones;
+    i32 width;
+    i32 height;
+    MapZones zones;
 
 };

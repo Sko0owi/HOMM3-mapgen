@@ -14,7 +14,7 @@ void AddPlayer(std::ofstream& luaFile, int playerId) {
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      json        zone        zone description from json, like player id, town xyz position.
 // @tparam      boolean     is_main     tells if is main town.
-void AddTown(std::ofstream &luaFile, Zone &zone, bool is_main){
+void AddTown(std::ofstream &luaFile, ZoneI &zone, bool is_main){
     std::string player = zone->getPlayer();
     i32 Id = zone->getId();
     luaFile << "instance:town(homm3lua." << player
@@ -27,7 +27,7 @@ void AddTown(std::ofstream &luaFile, Zone &zone, bool is_main){
 // @function    AddHero
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      json        zone        zone description from json, like player id, hero xyz position.
-void AddHero(std::ofstream& luaFile, Zone& zone) {
+void AddHero(std::ofstream& luaFile, ZoneI& zone) {
     std::string hero = zone->getHero();
     i32 Id = zone->getId();
     luaFile << "instance:hero(homm3lua." << hero

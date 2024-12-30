@@ -45,15 +45,17 @@ private:
 
 };
 
-using Zone = std::shared_ptr<ZoneInfo>;
-using Zones = std::map<i32, Zone>;
+
+using ZoneI = std::shared_ptr<ZoneInfo>;
+using ZonesI = std::map<i32, ZoneI>;
+
 
 class TemplateInfo {
 public:
 
     TemplateInfo();
 
-    Zones & getZones();
+    ZonesI & getZonesI();
 
     void setName(std::string name);
     void setDescription(std::string description);
@@ -73,5 +75,5 @@ private:
     std::string description;
     std::string mapSize;
     std::string difficulty; 
-    Zones zones;
+    ZonesI zonesI;
 };

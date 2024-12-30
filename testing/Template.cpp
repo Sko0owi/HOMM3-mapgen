@@ -107,8 +107,8 @@ TemplateInfo::TemplateInfo() {
     difficulty = "";
 }
 
-Zones & TemplateInfo::getZones() {
-    return zones;
+ZonesI & TemplateInfo::getZonesI() {
+    return zonesI;
 }
 
 void TemplateInfo::setName(std::string name) {
@@ -159,15 +159,15 @@ void TemplateInfo::deserialize(const json& config) {
     for (const auto& zoneConfig : config["zones"]) {
         auto zone = std::make_shared<ZoneInfo>();
         zone->deserializeZone(zoneConfig);
-        zones[zone->getId()] = zone;
+        zonesI[zone->getId()] = zone;
         
     }
 
     for (const auto& connectionConfig : config["connections"]) {
         i32 zoneA = connectionConfig["zoneA"].get<int>();
         i32 zoneB = connectionConfig["zoneB"].get<int>();
-        zones[zoneA]->addConnection(connectionConfig);
-        zones[zoneB]->addConnection(connectionConfig);
+        zonesI[zoneA]->addConnection(connectionConfig);
+        zonesI[zoneB]->addConnection(connectionConfig);
     }
 }
 void TemplateInfo::printTemplate() {
@@ -176,7 +176,7 @@ void TemplateInfo::printTemplate() {
     std::cerr << "Template map size: " << getMapSize() << "\n";
     std::cerr << "Template difficulty: " << getDifficulty() << "\n";
 
-    for(auto zone : zones) {
+    for(auto zone : zonesI) {
         zone.second->printZone();
     }
 

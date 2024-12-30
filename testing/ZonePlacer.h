@@ -1,6 +1,5 @@
 
 #include <bits/stdc++.h>
-#include "./types/int3.h"
 
 
 class Zone;
@@ -11,8 +10,9 @@ public:
     void placeOnGrid();
     void placeZones();
 
+    void generateZones();
+
 private:
-    std::map<i32, std::shared_ptr<Zone>> zones;
-    int gridWidth;
-    int gridHeight;
+    int mapWidth;
+    int mapHeight;
 };
