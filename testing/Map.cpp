@@ -2,13 +2,15 @@
 #include "./Zone.h"
 #include "./Template.h"
 #include "./ZonePlacer.h"
+#include "./Faction.h"
+#include "./Tile.h"
 
 Map::Map() {
     width = 0;
     height = 0;
 }
 
-Map::Map(int width, int height) {
+Map::Map(i32 width, i32 height) {
     this->width = width;
     this->height = height;
 }
@@ -22,7 +24,7 @@ pair<int,int> decodeMapSize(std::string MapSize) {
     return {-1,-1};
 }
 
-void Map::initialize(TemplateInfo &temp) {
+void Map::generateMap(TemplateInfo &temp) {
 
     std::string MapSize = temp.getMapSize();
 
@@ -31,7 +33,14 @@ void Map::initialize(TemplateInfo &temp) {
     width = width_height.first;
     height = width_height.second;
 
-    generate();
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            Tiles[i][j] = std::make_shared<Tile>();
+        }
+    }
+
+    class ZonePlacer zonePlacer(*this, temp);
+    zonePlacer.generateZones();
 }
 
 MapZones & Map::getZones() {
@@ -46,15 +55,27 @@ i32 Map::getHeight() {
     return height;
 }
 
-void Map::generate() {
-    class ZonePlacer zonePlacer;
-    zonePlacer.generateZones();
+std::shared_ptr<Tile> & Map::getTile(i32 x, i32 y) {
+    return Tiles[x][y];
 }
 
+
 void Map::print() {
+    std::cerr << "===================== MAP DEBUG =====================\n";
+    std::cerr << "Map width: " << width << "\n";
+    std::cerr << "Map height: " << height << "\n";
     for (auto& zone : zones) {
-        std::cerr << zone.first << "\n";
+        std::cerr << "Zone Key " << zone.first << "\n";
+        zone.second->printZone();
     }
+
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            std::cerr << "Tile " << i << " " << j << " ZoneId: " << Tiles[i][j]->getZoneId() << "\n";
+        }
+    }
+
+    std::cerr << "===================== END MAP DEBUG =====================\n";
 }
 
 

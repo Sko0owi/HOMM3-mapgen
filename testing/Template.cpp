@@ -13,6 +13,13 @@ i32 ZoneConnection::getZoneB() {
     return zoneB;
 }
 
+i32 ZoneConnection::getOtherZone(i32 zone) {
+    if (zone == zoneA) {
+        return zoneB;
+    }
+    return zoneA;
+}
+
 void ZoneConnection::setZoneA(i32 zone) {
     zoneA = zone;
 }

@@ -1,5 +1,10 @@
-#include <set>
+#include <bits/stdc++.h>
 #include "../utils/lua_helpers.hpp"
+
+#include "../game_info/Tile.h"
+#include "../Template.h"
+#include "../Map.h"
+#include "../types/int3.h"
 
 using json = nlohmann::json;
 
@@ -71,7 +76,17 @@ void generateLuaScript(const json& config) {
     int gridWidth = 32; // Adjust to map size
     int gridHeight = 32; // Adjust to map size
 
+    Map map;
+    map.generateMap(templateInfo);
+
+    std::cerr << "Map generated\n";
+    std::cerr << "Map width: " << map.getWidth() << "\n";
+    std::cerr << "Map height: " << map.getHeight() << "\n";
+    map.print();
+    
     AddTerrain(luaFile);
+    AddTerrainTiles(luaFile, map);
+    
     ZonesI zones = templateInfo.getZonesI();
     for (auto& zone : zones) {
         int playerId = zone.second->getId();
@@ -139,8 +154,10 @@ int main() {
     }
 
     generateLuaScript(config);
-    execute_lua_script("generated_script.lua");
 
+    std::cout << "Executing Lua script...\n";
+    execute_lua_script("generated_script.lua");
+    std::cout << "Lua script executed successfully.\n";
 
     return 0;
 }

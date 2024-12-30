@@ -16,11 +16,13 @@ LDFLAGS = -L/usr/lib -llua
 
 # Source files
 SOURCES = $(SRC_DIR)/test.cpp \
-          $(SRC_DIR)/Map.cpp \
           $(SRC_DIR)/Template.cpp \
+          $(SRC_DIR)/Map.cpp \
+		  $(GAME_INFO_DIR)/Faction.cpp \
+          $(GAME_INFO_DIR)/Zone.cpp  \
+          $(GAME_INFO_DIR)/Tile.cpp  \
           $(SRC_DIR)/ZonePlacer.cpp \
-          $(UTILS_DIR)/lua_helpers.cpp \
-          $(GAME_INFO_DIR)/Zone.cpp 
+          $(UTILS_DIR)/lua_helpers.cpp 
 
 # Object files
 OBJECTS = $(SOURCES:.cpp=.o)

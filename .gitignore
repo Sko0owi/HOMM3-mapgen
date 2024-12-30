@@ -2,3 +2,4 @@
 *.so
 **/generated_script.lua
 test
+**/debug.txt

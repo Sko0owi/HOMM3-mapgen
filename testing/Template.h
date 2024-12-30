@@ -10,8 +10,10 @@ public:
     ZoneConnection();
     i32 getZoneA();
     i32 getZoneB();
+    i32 getOtherZone(i32 zone);
     void setZoneA(i32 zone);
     void setZoneB(i32 zone);
+    
 
 private:
     i32 zoneA;

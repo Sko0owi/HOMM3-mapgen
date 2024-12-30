@@ -1,6 +1,11 @@
 #include "lua_helpers.hpp"
 #include <sstream>
 
+#include "../game_info/Tile.h"
+#include "../Template.h"
+#include "../types/int3.h"
+#include "./Map.h"
+
 using json = nlohmann::json;
 
 // @function    AddPlayer
@@ -37,11 +42,34 @@ void AddHero(std::ofstream& luaFile, ZoneI& zone) {
             << ")\n\n";
 }
 
+void AddTerrainTiles(std::ofstream& luaFile, Map& map){
+    luaFile << "instance:terrain(function (x, y, z)\n";
+
+    for(int x = 0; x < map.getWidth(); x++){
+        for(int y = 0; y < map.getHeight(); y++){
+            auto tile = map.getTile(x, y);
+            int tileZoneId = tile->getZoneId();
+
+            std::string terrain = "GRASS";
+
+            switch(tileZoneId) {
+                case 1 : terrain = "SAND"; break;
+                case 2 : terrain = "SNOW"; break;
+                case 3 : terrain = "LAVA"; break;
+                case 4 : terrain = "WASTELAND"; break;
+            }
+
+            luaFile << "if x == " << x << " and y == " << y << " then return homm3lua.TERRAIN_" << terrain << " end\n";
+        }
+    }
+
+    luaFile << "end)\n";
+}
 // @function    AddTerrain
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      string      terrain     type of terrain, GRASS by default, See TERRAIN_*.
 void AddTerrain(std::ofstream& luaFile, std::string terrain){
-    luaFile << "instance:terrain(homm3lua.TERRAIN_" << terrain << ")\n";
+    luaFile << "instance:terrain(homm3lua.TERRAIN_" << terrain <<  ")\n";
 }
 
 // @function    AddHeader
