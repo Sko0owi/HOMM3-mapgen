@@ -4,10 +4,13 @@
 #include "./ZonePlacer.h"
 #include "./Faction.h"
 #include "./Tile.h"
+#include "./global/Random.h"
 
-Map::Map() {
-    width = 0;
-    height = 0;
+
+Map::Map(RNG *rng) {
+    this->rng = rng;
+    this->width = 0;
+    this->height = 0;
 }
 
 Map::Map(i32 width, i32 height) {
@@ -39,7 +42,7 @@ void Map::generateMap(TemplateInfo &temp) {
         }
     }
 
-    class ZonePlacer zonePlacer(*this, temp);
+    class ZonePlacer zonePlacer(*this, temp, rng);
     zonePlacer.generateZones();
 }
 

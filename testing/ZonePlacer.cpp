@@ -3,9 +3,9 @@
 #include "./Template.h"
 #include "./Zone.h"
 #include "./Tile.h"
+#include "./global/Random.h"
 
-
-ZonePlacer::ZonePlacer(Map & map, TemplateInfo & temp) : map(map), temp(temp) {
+ZonePlacer::ZonePlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), temp(temp), rng(rng) {
     mapWidth = 0;
     mapHeight = 0;
 }
@@ -149,11 +149,18 @@ void ZonePlacer::placeOnGrid() {
                 float x_ = x;
                 float y_ = y;
 
-                x_ += 0.5;
-                y_ += 0.5;
+                x_ = rng->nextFloat(x_ + 0.25f, x_ + 0.75f);
+                y_ = rng->nextFloat(y_ + 0.25f, y_ + 0.75f);
+
+                x_ = min(x_, (float)(GridN) - 0.5f);
+                x_ = max(x_, 0.5f);
+
+                y_ = min(y_, (float)(GridN) - 0.5f);
+                y_ = max(y_, 0.5f);
 
 
-				zone->setCenter(float3(1.0 * x_ / GridN, 1.0 * y_ / GridN, 0));
+
+				zone->setCenter(float3(x_ / GridN, y_ / GridN, 0));
 			}
 		}
 	}

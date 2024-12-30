@@ -4,11 +4,12 @@
 class Tile;
 class Zone;
 class TemplateInfo;
+class RNG;
 
 using MapZones = std::map<i32, std::shared_ptr<Zone>>;
 class Map {
 public:
-    Map();
+    Map(RNG *rng);
     Map(i32 width, i32 height);
     ~Map();
     void generateMap(TemplateInfo &temp);
@@ -26,4 +27,5 @@ private:
 
     std::map<i32, map<i32, std::shared_ptr<Tile>>> Tiles;
 
+    RNG *rng;
 };

@@ -4,8 +4,8 @@
 #include "../game_info/Tile.h"
 #include "../Template.h"
 #include "../Map.h"
-#include "../types/int3.h"
 #include "./Zone.h"
+#include "./global/Random.h"
 
 using json = nlohmann::json;
 
@@ -77,7 +77,11 @@ void generateLuaScript(const json& config) {
     int gridWidth = 32; // Adjust to map size
     int gridHeight = 32; // Adjust to map size
 
-    Map map;
+    RNG rng;
+
+    rng.setSeed(12345);
+
+    Map map(&rng);
     map.generateMap(templateInfo);
 
     std::cerr << "Map generated\n";
