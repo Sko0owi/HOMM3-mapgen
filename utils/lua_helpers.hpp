@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 #include <nlohmann/json.hpp> 
-#include </usr/include/lua5.4/lua.hpp>
+#include </usr/include/lua.hpp>
 
 void AddPlayer(std::ofstream& luaFile, int playerId);
 void AddTown(std::ofstream &luaFile, const nlohmann::json &zone, bool is_main = true);

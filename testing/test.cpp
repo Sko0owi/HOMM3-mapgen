@@ -1,5 +1,6 @@
 #include <set>
 #include "../utils/lua_helpers.hpp"
+#include "./Template.h"
 
 using json = nlohmann::json;
 
@@ -95,7 +96,9 @@ void generateLuaScript(const json& config) {
     AddResource(luaFile, "CRYSTAL", 7, 3, 0, 10);
     AddCreature(luaFile, "ARCHANGEL", 12, 4, 0, 100, "AGGRESSIVE", true, true);
 
-    luaFile << R"(instance:write('/home/gk/.local/share/vcmi/Maps/test.h3m'))";
+    string homeDir = getenv("HOME");
+    cerr << "Home dir: " << homeDir << endl;
+    luaFile << "instance:write('" + homeDir + "/.local/share/vcmi/Maps/test.h3m')";
     luaFile << "\n";
     
     luaFile.close();
