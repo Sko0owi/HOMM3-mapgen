@@ -24,8 +24,19 @@ And checking result
 vcmieditor
 ```
 
-Abstrakcja:
-- Template.h
-Tutaj ogarniamy wczytywanie JSON'a i przetrzymywanie takich highlevel rzeczy (kto z kim ma być połaczony itp)
-- Map.h
-Tutaj mają być już dane dokładne gdzie co ma się znajdować. (piksel po pikselu)
+Struktura plików:
+- game_info/ 
+    - Faction.h - enum możliwych frakcji w Ho3 + funkcjonalność
+    - Tile.h - Klasa Tile (abstrakcja na pixel)
+    - Town.h - Klasa Town (wszelkie informacje o mieście) na razie tylko do jakiej frakcji należy
+    - Zone.h - Klasa Zone (abstrakcja na Zony), Środek zony, jaki ma mieć teren, kto jest jej ownerem (może być nikt)
+- global/
+    - Global.h - jakieś basic using'i (możliwie do wywalenia)
+    - Random.h - klasa RNG napisana ala python, by móc np prosto losować z danego przedziału
+- types/
+    - float3.h - klasa float3 (no 3 floaty), można bardziej rozbudować
+    - int3.h - klasa int3 (no 3 inty), można bardziej rozbudować
+- .
+    - Map.h - Klasa Map (abstrakcja na Mapę, wszelkie informacje tutaj przechowywane mają być odzwierciedleniem prawdziwej mapy), obecnie jest width, height, zony, tiles'y
+    - Template.h - Klasa TemplateInfo (abstrakcja na dane wczytane z configa), klasa powstała jako osobny byt, by deserializować json'a i mieć swego rodzaju pomost pomiędzy configiem a klasą Map
+    - ZonePlacer.h - Klasa Placer (abstrakcja na tworzenie Zony w mapie), ma klasę generateZones, która za wszystko już odpowiada
