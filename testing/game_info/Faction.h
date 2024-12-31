@@ -1,6 +1,6 @@
 #include <string>
 
-enum class faction {
+enum class Faction {
     CASTLE,
     RAMPART,
     TOWER,
@@ -15,4 +15,6 @@ enum class faction {
     DEFAULT
 };
 
-std::string factionToString(faction fac);
+std::string factionToString(Faction fac);
+
+Faction stringToFaction(std::string fac);

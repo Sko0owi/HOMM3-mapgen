@@ -4,6 +4,7 @@
 #include "./Zone.h"
 #include "./Tile.h"
 #include "./global/Random.h"
+#include "./game_info/Town.h"
 
 ZonePlacer::ZonePlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), temp(temp), rng(rng) {
     mapWidth = 0;
@@ -27,6 +28,14 @@ void ZonePlacer::generateZones() {
     auto zonesI = temp.getZonesI();
     for(auto& zoneI : zonesI) {
         map.getZones().emplace(zoneI.first, std::make_shared<Zone>(zoneI.first));
+        
+        map.getZones()[zoneI.first]->setTerrain(zoneI.second->getTerrain());
+
+        for (auto& town : zoneI.second->getTowns()) {
+            map.getZones()[zoneI.first]->addTown(town);
+        }
+
+        map.getZones()[zoneI.first]->setOwnerId(zoneI.second->getOwner());
     }
 
 

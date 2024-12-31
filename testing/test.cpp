@@ -2,6 +2,7 @@
 #include "../utils/lua_helpers.hpp"
 
 #include "../game_info/Tile.h"
+#include "../game_info/Town.h"
 #include "../Template.h"
 #include "../Map.h"
 #include "./Zone.h"
@@ -92,14 +93,18 @@ void generateLuaScript(const json& config) {
     
     auto zones = map.getZones();
     for (auto& zone : zones) {
-        int playerId = zone.second->getId();
-
+        int playerId = zone.second->getOwnerId();
+        if(playerId == 0)
+            continue;
+            
         if (addedPlayers.find(playerId) == addedPlayers.end()){
             addedPlayers.insert(playerId);
             AddPlayer(luaFile, playerId);
         }
 
-        AddTown(luaFile, zone.second);
+        for (auto& town : zone.second->getTowns()) {
+            AddTown(luaFile, zone.second, town);
+        }
         AddHero(luaFile, zone.second);
         towns.emplace_back(playerId * 5, playerId * 5);
     }

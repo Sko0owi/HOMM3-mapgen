@@ -20,8 +20,10 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(SRC_DIR)/Template.cpp \
           $(SRC_DIR)/Map.cpp \
 		  $(GAME_INFO_DIR)/Faction.cpp \
+		  $(GAME_INFO_DIR)/Terrain.cpp \
           $(GAME_INFO_DIR)/Zone.cpp  \
           $(GAME_INFO_DIR)/Tile.cpp  \
+          $(GAME_INFO_DIR)/Town.cpp  \
           $(SRC_DIR)/ZonePlacer.cpp \
 		  $(GLOBAL_DIR)/Random.cpp \
           $(UTILS_DIR)/lua_helpers.cpp 

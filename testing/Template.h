@@ -2,6 +2,10 @@
 #include "./global/Global.h"
 #include <nlohmann/json.hpp> 
 
+enum class Terrain;
+
+class Town;
+
 using json = nlohmann::json;
 
 class ZoneConnection {
@@ -26,22 +30,30 @@ public:
     ZoneInfo();
     void addConnection(const json& connectionConfig);
     std::vector<ZoneConnection> getConnections();
+
+    void addTown(Town town);
+    std::vector<Town> getTowns();
+
     void setId(i32 id);
     void setSize(std::string size);
-    void setPlayer(std::string player);
+    void setOwner(i32 ownerId);
     void setHero(std::string hero);
+    void setTerrain(Terrain terrain);
     i32 getId();
     std::string getSize();
-    std::string getPlayer();
+    i32 getOwner();
     std::string getHero();
+    Terrain getTerrain();
     void deserializeZone(const json& config);
     void printZone();
 private:
 
     i32 id;
+    i32 ownerId;
     std::string size;
-    std::string player;
     std::string hero;
+    Terrain terrain;
+    std::vector<Town> towns;
     std::vector<ZoneConnection> connections;
 
 
