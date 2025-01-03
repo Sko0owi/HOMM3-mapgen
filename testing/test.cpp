@@ -10,7 +10,7 @@
 
 using json = nlohmann::json;
 
-std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int y2, Map& map) {
+std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int y2, Map& map, int ZoneA, int ZoneB) {
     std::vector<std::pair<int, int>> path;
 
     if (x1 == x2 && y1 == y2) {
@@ -46,7 +46,11 @@ std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int 
             int ny = cy + dy[i];
 
             auto TilePtr = map.getTile(nx, ny);
-            if (TilePtr && !TilePtr->getIsEdge() && cameFrom.find({nx, ny}) == cameFrom.end()) {
+            int ZoneC = -1;
+            if(TilePtr)
+                ZoneC = TilePtr->getZoneId();
+
+            if (TilePtr && !TilePtr->getIsEdge() && cameFrom.find({nx, ny}) == cameFrom.end() && (ZoneC == ZoneA || ZoneC == ZoneB)) {
                 q.emplace(nx, ny);
                 cameFrom[{nx, ny}] = {cx, cy};
             }
@@ -94,7 +98,7 @@ void CreateShotestPathsToConnected(std::ofstream& luaFile, const std::vector<std
 
             if (!isConnected) continue;
 
-            auto path = GenerateSimplePath(townA.first, townA.second, townB.first, townB.second, map);
+            auto path = GenerateSimplePath(townA.first, townA.second, townB.first, townB.second, map, zoneA, zoneB);
             for (const auto& point : path) {
                 luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
             }

@@ -67,8 +67,7 @@
       "hero": "HERO_CHRISTIAN",
       "terrain": "DIRT",
       "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_DUNGEON"
+        "count" : 0
       }
     }
   ],
@@ -96,6 +95,11 @@
     {
       "zoneA": 5,
       "zoneB": 6,
+      "type": "road"
+    },
+    {
+      "zoneA": 3,
+      "zoneB": 5,
       "type": "road"
     }
   ]
