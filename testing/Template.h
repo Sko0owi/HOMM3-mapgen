@@ -27,7 +27,7 @@ private:
 
 class ZoneInfo {
 public:
-    ZoneInfo();
+    ZoneInfo(bool debug);
     void addConnection(const json& connectionConfig);
     std::vector<ZoneConnection> getConnections();
 
@@ -47,7 +47,7 @@ public:
     void deserializeZone(const json& config);
     void printZone();
 private:
-
+    bool debug;
     i32 id;
     i32 ownerId;
     std::string size;

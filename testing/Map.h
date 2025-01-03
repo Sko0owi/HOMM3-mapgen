@@ -18,7 +18,7 @@ public:
     i32 getWidth();
     i32 getHeight();
 
-    std::shared_ptr<Tile>& getTile(i32 x, i32 y);
+    std::shared_ptr<Tile> getTile(i32 x, i32 y);
 
 private:
     i32 width;

@@ -58,10 +58,11 @@ i32 Map::getHeight() {
     return height;
 }
 
-std::shared_ptr<Tile> & Map::getTile(i32 x, i32 y) {
-    return Tiles[x][y];
+std::shared_ptr<Tile> Map::getTile(i32 x, i32 y) {
+    if(0 <= x && x < width && 0 <= y && y < height)
+        return Tiles[x][y];
+    return nullptr;
 }
-
 
 void Map::print() {
     std::cerr << "===================== MAP DEBUG =====================\n";

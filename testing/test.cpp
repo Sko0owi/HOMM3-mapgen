@@ -63,7 +63,9 @@ void generateLuaScript(const json& config) {
 
     TemplateInfo templateInfo;
     templateInfo.deserialize(config);
-    templateInfo.printTemplate();
+
+    if (config["debug"])
+        templateInfo.printTemplate();
 
     luaFile << "local instance = homm3lua.new(homm3lua.FORMAT_ROE, homm3lua.SIZE_";
 
@@ -86,10 +88,12 @@ void generateLuaScript(const json& config) {
     map.generateMap(templateInfo);
 
     std::cerr << "Map generated\n";
-    map.print();
+    if (config["debug"])
+        map.print();
     
     AddTerrain(luaFile);
     AddTerrainTiles(luaFile, map);
+    AddEdgeObstacles(luaFile, map);
     
     auto zones = map.getZones();
     for (auto& zone : zones) {

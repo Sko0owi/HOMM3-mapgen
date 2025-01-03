@@ -22,13 +22,10 @@ void ZonePlacer::generateZones() {
     mapWidth = map.getWidth();
     mapHeight = map.getHeight();
 
-
-
-
     auto zonesI = temp.getZonesI();
     for(auto& zoneI : zonesI) {
         map.getZones().emplace(zoneI.first, std::make_shared<Zone>(zoneI.first));
-        
+
         map.getZones()[zoneI.first]->setTerrain(zoneI.second->getTerrain());
 
         for (auto& town : zoneI.second->getTowns()) {
@@ -43,6 +40,7 @@ void ZonePlacer::generateZones() {
     placeZones();
 
     paintTiles();
+    determineZoneEdges();
 }
 
 void ZonePlacer::calculatePaths() {
@@ -75,11 +73,14 @@ void ZonePlacer::calculatePaths() {
             }
 
         }
-        std::cerr << "Distances from zone: " << start << "\n";
-        for(auto& distancesFromStart : DistancesBetweenZones[start]) {
-            std::cerr << "Distance to id: " << distancesFromStart.first << " is: " << distancesFromStart.second << "\n";
-        }
 
+        if (debug)
+        {
+            std::cerr << "Distances from zone: " << start << "\n";
+            for(auto& distancesFromStart : DistancesBetweenZones[start]) {
+                std::cerr << "Distance to id: " << distancesFromStart.first << " is: " << distancesFromStart.second << "\n";
+            }
+        }
     }
 
 }
@@ -210,6 +211,41 @@ void ZonePlacer::paintTiles() {
                 TilePtr->setZoneId(minDistZone);
             } else {
                 std::cerr << "TilePtr is null\n";
+            }
+        }
+    }
+}
+
+void ZonePlacer::determineZoneEdges() {
+    std::cerr << "Determining zone edges\n";
+    auto zones = map.getZones();
+
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            auto TilePtr = map.getTile(x, y);
+
+            int currentZoneId = TilePtr->getZoneId();
+            bool isEdge = false;
+
+            int dx[] = {-1, 1, 0, 0};
+            int dy[] = {0, 0, -1, 1};
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                auto NeighborTilePtr = map.getTile(nx, ny);
+
+                if (NeighborTilePtr && NeighborTilePtr->getZoneId() != currentZoneId) {
+                    isEdge = true;
+                    break;
+                }
+            }
+
+            TilePtr->setIsEdge(isEdge);
+
+            if (debug) {
+                std::cerr << "Edge Tile: (" << x << ", " << y << ")\n";
             }
         }
     }

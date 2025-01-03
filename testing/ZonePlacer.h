@@ -21,14 +21,16 @@ public:
     void generateZones();
 
     void paintTiles();
+    void determineZoneEdges();
 
 private:
     int mapWidth;
     int mapHeight;
+    bool debug = false;
 
     Map & map;
     TemplateInfo & temp;
-
+    
     std::map<int, std::map<int, size_t>> DistancesBetweenZones;
 
     RNG *rng;

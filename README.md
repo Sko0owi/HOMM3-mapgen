@@ -40,3 +40,6 @@ Struktura plików:
     - Map.h - Klasa Map (abstrakcja na Mapę, wszelkie informacje tutaj przechowywane mają być odzwierciedleniem prawdziwej mapy), obecnie jest width, height, zony, tiles'y
     - Template.h - Klasa TemplateInfo (abstrakcja na dane wczytane z configa), klasa powstała jako osobny byt, by deserializować json'a i mieć swego rodzaju pomost pomiędzy configiem a klasą Map
     - ZonePlacer.h - Klasa Placer (abstrakcja na tworzenie Zony w mapie), ma funkcję generateZones, która za wszystko już odpowiada
+
+BUG? 
+Cant place town without owner?
