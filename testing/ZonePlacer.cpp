@@ -200,13 +200,10 @@ void ZonePlacer::paintTiles() {
     std::vector<Point2D> verticesVector(vertices.begin(), vertices.end());
 
     for(auto& vertice : verticesVector) {
-        
-        // std::cerr << "Vertice Before: " << vertice.toString() << "\n";
 
         vertice.setX(vertice.getX() * mapWidth);
         vertice.setY(vertice.getY() * mapHeight);
-
-        // std::cerr << "Vertice After: " << vertice.toString() << "\n";
+        
     }
 
     std::vector<std::pair<Point2D, std::shared_ptr<Zone>>> zoneVertices;
@@ -288,11 +285,9 @@ std::pair<int, int> ZonePlacer::getRandomConnectionPoint(int zoneA, int zoneB) {
     auto& points = connections[key];
     if (points.empty()) return {-1, -1};
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, points.size() - 1);
+    int random_ind = rng->nextInt(0, points.size() - 1);
 
-    return points[dist(gen)];
+    return points[random_ind];
 }
 
 void ZonePlacer::addConnectionPoint(int zoneA, int zoneB, int x, int y) {
