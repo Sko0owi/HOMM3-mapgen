@@ -30,11 +30,12 @@ void ZoneConnection::setZoneB(i32 zone) {
     zoneB = zone;
 }
 
-ZoneInfo::ZoneInfo() {
+ZoneInfo::ZoneInfo(bool debug) {
     id = 0;
     size = "";
     ownerId = 0;
     hero = "";
+    debug = debug;
 }
 
 void ZoneInfo::addConnection(const json& connectionConfig) {
@@ -118,9 +119,11 @@ void ZoneInfo::deserializeZone(const json& config) {
     for (int i = 0; i < town_count; i++) {
         Town town;
         std::string town_faction = config["towns"]["faction"].get<std::string>();
-        std::cerr << "Sanity check1: " << town_faction << "\n";
+        if(debug)
+            std::cerr << "Sanity check1: " << town_faction << "\n";
         town.setFaction(stringToFaction(config["towns"]["faction"].get<std::string>()));
-        std::cerr << "Sanity check: " << factionToString(town.getFaction()) << "\n";
+        if(debug)
+            std::cerr << "Sanity check: " << factionToString(town.getFaction()) << "\n";
         addTown(town);
     }
 
@@ -201,7 +204,7 @@ void TemplateInfo::deserialize(const json& config) {
     setDifficulty(difficulty);
 
     for (const auto& zoneConfig : config["zones"]) {
-        auto zone = std::make_shared<ZoneInfo>();
+        auto zone = std::make_shared<ZoneInfo>(config["debug"]);
         zone->deserializeZone(zoneConfig);
         zonesI[zone->getId()] = zone;
         

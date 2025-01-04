@@ -12,3 +12,11 @@ void Tile::setZoneId(int zoneId) {
 int Tile::getZoneId() {
     return zoneId;
 }
+
+void Tile::setIsEdge(bool isEdge) {
+    this->isEdge = isEdge;
+}
+
+bool Tile::getIsEdge() {
+    return isEdge;
+}

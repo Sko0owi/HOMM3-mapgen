@@ -10,47 +10,104 @@
 
 using json = nlohmann::json;
 
-std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int y2) {
+std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int y2, Map& map, int ZoneA, int ZoneB) {
     std::vector<std::pair<int, int>> path;
 
-    while (x1 != x2) {
+    if (x1 == x2 && y1 == y2) {
         path.emplace_back(x1, y1);
-        x1 += (x2 > x1) ? 1 : -1;
+        return path;
     }
 
-    while (y1 != y2) {
-        path.emplace_back(x1, y1);
-        y1 += (y2 > y1) ? 1 : -1;
+    const int dx[] = {0, 0, -1, 1};
+    const int dy[] = {-1, 1, 0, 0};
+
+    std::queue<std::pair<int, int>> q;
+    std::map<std::pair<int, int>, std::pair<int, int>> cameFrom;
+
+    q.emplace(x1, y1);
+    cameFrom[{x1, y1}] = {-1, -1}; 
+
+    while (!q.empty()) {
+        auto [cx, cy] = q.front();
+        q.pop();
+
+        if (cx == x2 && cy == y2) {
+            while (cameFrom[{cx, cy}] != std::make_pair(-1, -1)) {
+                path.emplace_back(cx, cy);
+                std::tie(cx, cy) = cameFrom[{cx, cy}];
+            }
+            path.emplace_back(x1, y1);
+            std::reverse(path.begin(), path.end());
+            return path;
+        }
+
+        for (int i = 0; i < 4; ++i) {
+            int nx = cx + dx[i];
+            int ny = cy + dy[i];
+
+            auto TilePtr = map.getTile(nx, ny);
+            int ZoneC = -1;
+            if(TilePtr)
+                ZoneC = TilePtr->getZoneId();
+
+            if (TilePtr && !TilePtr->getIsEdge() && cameFrom.find({nx, ny}) == cameFrom.end() && (ZoneC == ZoneA || ZoneC == ZoneB)) {
+                q.emplace(nx, ny);
+                cameFrom[{nx, ny}] = {cx, cy};
+            }
+        }
     }
 
     return path;
 }
 
+void CreateShotestPathsToConnected(std::ofstream& luaFile, const std::vector<std::pair<int, int>>& towns, Map& map, TemplateInfo& temp) {
+    auto zonesI = temp.getZonesI();
+    std::set<std::pair<int, int>> processedConnections;
 
-void CreateLinearPathsToHub(std::ofstream& luaFile, const std::vector<std::pair<int, int>>& towns, int gridWidth, int gridHeight, int maxWidth = 1) {
-    auto hub = std::pair(20, 8);
 
-    luaFile << "-- Dynamic terrain adjustments for linear paths\n";
+    luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
-    luaFile << "    -- Hub coordinates: (" << hub.first << ", " << hub.second << ")\n";
 
-    for (const auto& town : towns) {
-        auto path = GenerateSimplePath(town.first, town.second, hub.first, hub.second);
+    for (size_t i = 0; i < towns.size(); ++i) {
+        for (size_t j = i + 1; j < towns.size(); ++j) {
+            const auto& townA = towns[i];
+            const auto& townB = towns[j];
 
-        for (size_t i = 0; i < path.size(); ++i) {
-            const auto& point = path[i];
+            auto tileA = map.getTile(townA.first, townA.second);
+            auto tileB = map.getTile(townB.first, townB.second);
 
-            luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 1 end\n";
+            int zoneA = tileA->getZoneId();
+            int zoneB = tileB->getZoneId();
+
+            auto connectionPair = std::make_pair(std::min(zoneA, zoneB), std::max(zoneA, zoneB));
+
+            if (processedConnections.find(connectionPair) != processedConnections.end()) {
+                continue;
+            }
+
+            processedConnections.insert(connectionPair);
+
+            auto connections = zonesI[zoneA]->getConnections();
+            bool isConnected = false;
+            for(auto c : connections){
+                if ((c.getZoneA() == zoneA && c.getZoneB() == zoneB) ||
+                    (c.getZoneA() == zoneB && c.getZoneB() == zoneA)) {
+                    isConnected = true;
+                }
+            }
+
+            if (!isConnected) continue;
+
+            auto path = GenerateSimplePath(townA.first, townA.second, townB.first, townB.second, map, zoneA, zoneB);
+            for (const auto& point : path) {
+                luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
+            }
         }
     }
-
-    luaFile << "    if x == " << hub.first << " and y == " << hub.second << " then return nil, 1 end\n";
-
 
     luaFile << "    return nil\n"; // Default terrain
     luaFile << "end)\n";
 }
-
 
 void generateLuaScript(const json& config) {
     std::ofstream luaFile("generated_script.lua");
@@ -63,7 +120,9 @@ void generateLuaScript(const json& config) {
 
     TemplateInfo templateInfo;
     templateInfo.deserialize(config);
-    templateInfo.printTemplate();
+
+    if (config["debug"])
+        templateInfo.printTemplate();
 
     luaFile << "local instance = homm3lua.new(homm3lua.FORMAT_ROE, homm3lua.SIZE_";
 
@@ -75,8 +134,6 @@ void generateLuaScript(const json& config) {
 
     std::set<int> addedPlayers;
     std::vector<std::pair<int, int>> towns;
-    int gridWidth = 32; // Adjust to map size
-    int gridHeight = 32; // Adjust to map size
 
     RNG rng;
 
@@ -86,34 +143,49 @@ void generateLuaScript(const json& config) {
     map.generateMap(templateInfo);
 
     std::cerr << "Map generated\n";
-    map.print();
+    if (config["debug"])
+        map.print();
     
     AddTerrain(luaFile, "LAVA");
     AddTerrainTiles(luaFile, map);
+    AddEdgeObstacles(luaFile, map);
     
     auto zones = map.getZones();
     for (auto& zone : zones) {
         int playerId = zone.second->getOwnerId();
-        if(playerId == 0)
+        if(playerId == 0){
+            i32 X = zone.second->getPosition().x;
+            i32 Y = zone.second->getPosition().y;
+            towns.emplace_back(X, Y);
             continue;
+        }
             
         if (addedPlayers.find(playerId) == addedPlayers.end()){
             addedPlayers.insert(playerId);
             AddPlayer(luaFile, playerId);
         }
 
-        for (auto& town : zone.second->getTowns()) {
-            AddTown(luaFile, zone.second, town);
+        if(zone.second->getTowns().size() > 0){
+            for (auto& town : zone.second->getTowns()) {
+                AddTown(luaFile, zone.second, town);
+                i32 X = zone.second->getPosition().x;
+                i32 Y = zone.second->getPosition().y;
+                towns.emplace_back(X, Y);
+            }
+        } else{
+            i32 X = zone.second->getPosition().x;
+            i32 Y = zone.second->getPosition().y;
+            towns.emplace_back(X, Y);
         }
         AddHero(luaFile, zone.second);
-        towns.emplace_back(playerId * 5, playerId * 5);
     }
 
-    for(auto e : towns){
-        std::cerr << e.first << " " << e.second << "\n";
+    CreateShotestPathsToConnected(luaFile, towns, map, templateInfo);
+    if (config["debug"]){
+        for(auto e : towns){
+            std::cerr << e.first << " " << e.second << "\n";
+        }
     }
-
-    CreateLinearPathsToHub(luaFile, towns, gridWidth, gridHeight, 3);
 
     //TEST STUFF
     AddArtifact(luaFile, "PENDANT_OF_COURAGE", 8, 1, 0);

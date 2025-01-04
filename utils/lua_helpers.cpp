@@ -49,6 +49,9 @@ void AddHero(std::ofstream& luaFile, std::shared_ptr<Zone>& zone) {
             << ")\n\n";
 }
 
+// @function    AddTerrainTiles
+// @tparam      ofstream    luaFile     file where we save lua script parts. 
+// @tparam      Map         map         object of map class with finised setup.
 void AddTerrainTiles(std::ofstream& luaFile, Map& map){
     luaFile << "instance:terrain(function (x, y, z)\n";
 
@@ -56,15 +59,44 @@ void AddTerrainTiles(std::ofstream& luaFile, Map& map){
         for(int y = 0; y < map.getHeight(); y++){
             auto tile = map.getTile(x, y);
             int tileZoneId = tile->getZoneId();
+            bool isTileEdge = tile->getIsEdge();
 
-            std::string terrain = terrainToString(map.getZones()[tileZoneId]->getTerrain());
+            std::string terrain;
 
-            luaFile << "if x == " << x << " and y == " << y << " then return homm3lua.TERRAIN_" << terrain << " end\n";
+            if(!isTileEdge)
+            {
+                terrain = terrainToString(map.getZones()[tileZoneId]->getTerrain());
+                luaFile << "if x == " << x << " and y == " << y << " then return homm3lua.TERRAIN_" << terrain << " end\n";
+            }
         }
     }
 
     luaFile << "end)\n";
 }
+
+// @function    AddEdgeObstacles
+// @tparam      ofstream    luaFile     file where we save lua script parts. 
+// @tparam      Map         map         object of map class with finised setup.
+void AddEdgeObstacles(std::ofstream& luaFile, Map& map){
+    for(int x = 0; x < map.getWidth(); x++){
+        for(int y = 0; y < map.getHeight(); y++){
+            auto tile = map.getTile(x, y);
+            bool isTileEdge = tile->getIsEdge();
+
+            std::string terrain;
+            
+            if (isTileEdge) {
+                AddObstacle(luaFile, "Pine Trees", x, y, 0);
+            }
+            //Example Obstacles
+            // Pine Trees
+            // Rock
+            // Mushrooms
+            // Mountain
+        }
+    }
+}
+
 // @function    AddTerrain
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      string      terrain     type of terrain, GRASS by default, See TERRAIN_*.

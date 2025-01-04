@@ -24,13 +24,10 @@ void ZonePlacer::generateZones() {
     mapWidth = map.getWidth();
     mapHeight = map.getHeight();
 
-
-
-
     auto zonesI = temp.getZonesI();
     for(auto& zoneI : zonesI) {
         map.getZones().emplace(zoneI.first, std::make_shared<Zone>(zoneI.first));
-        
+
         map.getZones()[zoneI.first]->setTerrain(zoneI.second->getTerrain());
 
         for (auto& town : zoneI.second->getTowns()) {
@@ -45,6 +42,8 @@ void ZonePlacer::generateZones() {
     placeZones();
 
     paintTiles();
+    determineZoneEdges();
+    modifyRandomConnectionTile();
 }
 
 void ZonePlacer::calculatePaths() {
@@ -77,11 +76,14 @@ void ZonePlacer::calculatePaths() {
             }
 
         }
-        std::cerr << "Distances from zone: " << start << "\n";
-        for(auto& distancesFromStart : DistancesBetweenZones[start]) {
-            std::cerr << "Distance to id: " << distancesFromStart.first << " is: " << distancesFromStart.second << "\n";
-        }
 
+        if (debug)
+        {
+            std::cerr << "Distances from zone: " << start << "\n";
+            for(auto& distancesFromStart : DistancesBetweenZones[start]) {
+                std::cerr << "Distance to id: " << distancesFromStart.first << " is: " << distancesFromStart.second << "\n";
+            }
+        }
     }
 
 }
@@ -188,7 +190,6 @@ void ZonePlacer::placeZones() {
     }
 }
 
-
 void ZonePlacer::paintTiles() {
     std::cerr << "Painting tiles\n";
     auto zones = map.getZones();
@@ -266,30 +267,114 @@ void ZonePlacer::paintTiles() {
             }
         }
     }
+}
 
+bool ZonePlacer::areConnected(int ZoneA, int ZoneB){
+    auto zonesI = temp.getZonesI();
 
+    for(auto e : zonesI){
+        for(auto c : e.second->getConnections()){
+            if ((c.getZoneA() == ZoneA && c.getZoneB() == ZoneB) ||
+                (c.getZoneA() == ZoneB && c.getZoneB() == ZoneA)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
+std::pair<int, int> ZonePlacer::getRandomConnectionPoint(int zoneA, int zoneB) {
+    auto key = std::make_pair(std::min(zoneA, zoneB), std::max(zoneA, zoneB));
+    auto& points = connections[key];
+    if (points.empty()) return {-1, -1};
 
-    // for(int x = 0; x < mapWidth; x++) {
-    //     for(int y = 0; y < mapHeight; y++) {
-    //         int minDist = 1000000;
-    //         int minDistZone = -1;
-    //         for(auto& zone : zones) {
-    //             int dist = std::abs(zone.second->getPosition().x - x) + std::abs(zone.second->getPosition().y - y);
-    //             if(dist < minDist) {
-    //                 minDist = dist;
-    //                 minDistZone = zone.first;
-    //             }
-    //         }
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, points.size() - 1);
 
+    return points[dist(gen)];
+}
+
+void ZonePlacer::addConnectionPoint(int zoneA, int zoneB, int x, int y) {
+    auto key = std::make_pair(std::min(zoneA, zoneB), std::max(zoneA, zoneB));
+    connections[key].emplace_back(x, y);
+}
+
+void ZonePlacer::determineZoneEdges() {
+    std::cerr << "Determining zone edges\n";
+
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            auto TilePtr = map.getTile(x, y);
+
+            int currentZoneId = TilePtr->getZoneId();
+            bool isEdge = false;
+
+            int dx[] = {-1, 1, 0, 0};
+            int dy[] = {0, 0, -1, 1};
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                auto NeighborTilePtr = map.getTile(nx, ny);
+
+                if (NeighborTilePtr && NeighborTilePtr->getZoneId() != currentZoneId) {
+                    isEdge = true;
+                    addConnectionPoint(currentZoneId, NeighborTilePtr->getZoneId(), x, y);
+                }
+            }
+
+            TilePtr->setIsEdge(isEdge);
+
+            if (debug) {
+                std::cerr << "Edge Tile: (" << x << ", " << y << ")\n";
+            }
+        }
+    }
+}
+
+void ZonePlacer::modifyRandomConnectionTile(int range) {
+    std::cerr << "Finding connection points\n";
+    auto zonesI = temp.getZonesI();
+    std::set<std::pair<int, int>> processedConnections;
+    int zone1, zone2;
+
+    for(auto e : zonesI){
+        for(auto c : e.second->getConnections()){
+            zone1 = c.getZoneA();
+            zone2 = c.getZoneB();
             
+            auto connectionPair = std::make_pair(std::min(zone1, zone2), std::max(zone1, zone2));
+
+            if (processedConnections.find(connectionPair) != processedConnections.end()) {
+                continue;
+            }
+
+            processedConnections.insert(connectionPair);
+
+            auto randomPoint = getRandomConnectionPoint(zone1, zone2);
+            if (randomPoint.first == -1 && randomPoint.second == -1) continue; // No connection point found
+
+            int x = randomPoint.first;
+            int y = randomPoint.second;
+
+            for (int dy = -range; dy <= range; ++dy) {
+                for (int dx = -range; dx <= range; ++dx) {
+                    int nx = x + dx;
+                    int ny = y + dy;
+
+                    auto TilePtr = map.getTile(nx, ny);
+                    if (TilePtr) {
+                        TilePtr->setIsEdge(false);
+                    }
+                }
+            }
             
-    //         auto TilePtr = map.getTile(x, y); 
-    //         if(TilePtr) {
-    //             TilePtr->setZoneId(minDistZone);
-    //         } else {
-    //             std::cerr << "TilePtr is null\n";
-    //         }
-    //     }
-    // }
+            if(debug){
+                std::cerr << "Modified tiles around connection point (" << x << ", " << y << ") for zones " 
+                        << zone1 << " -> " << zone2 << "\n";
+            }
+        }
+    }
 }
