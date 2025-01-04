@@ -146,7 +146,7 @@ void generateLuaScript(const json& config) {
     if (config["debug"])
         map.print();
     
-    AddTerrain(luaFile, "LAVA");
+    AddTerrain(luaFile);
     AddTerrainTiles(luaFile, map);
     AddEdgeObstacles(luaFile, map);
     
