@@ -26,6 +26,7 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(GAME_INFO_DIR)/Town.cpp  \
           $(SRC_DIR)/ZonePlacer.cpp \
 		  $(GLOBAL_DIR)/Random.cpp \
+		  $(GLOBAL_DIR)/PenroseTiling.cpp \
           $(UTILS_DIR)/lua_helpers.cpp 
 
 # Object files

@@ -4,7 +4,9 @@
 #include "./Zone.h"
 #include "./Tile.h"
 #include "./global/Random.h"
+#include "./global/PenroseTiling.h"
 #include "./game_info/Town.h"
+
 
 ZonePlacer::ZonePlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), temp(temp), rng(rng) {
     mapWidth = 0;
@@ -191,20 +193,71 @@ void ZonePlacer::paintTiles() {
     std::cerr << "Painting tiles\n";
     auto zones = map.getZones();
 
+    PenroseTiling penrose;
+    auto vertices = penrose.generatePenroseTiling(zones.size(), rng);
+
+    std::vector<Point2D> verticesVector(vertices.begin(), vertices.end());
+
+    for(auto& vertice : verticesVector) {
+        
+        // std::cerr << "Vertice Before: " << vertice.toString() << "\n";
+
+        vertice.setX(vertice.getX() * mapWidth);
+        vertice.setY(vertice.getY() * mapHeight);
+
+        // std::cerr << "Vertice After: " << vertice.toString() << "\n";
+    }
+
+    std::vector<std::pair<Point2D, std::shared_ptr<Zone>>> zoneVertices;
+    
+
+    for(auto& vertice : verticesVector) {
+
+        float minDist = 1000000;
+        int minDistZone = -1;
+        for(auto& zone : zones) {
+            int3 zonePosI = zone.second->getPosition();
+
+            float3 zonePos = float3(zonePosI.x, zonePosI.y, 0);
+            float3 verticePos = float3(vertice.getX(), vertice.getY(), 0);
+
+            float dist = zonePos.distance2DSQ(verticePos);
+            
+            if(dist < minDist) {
+                minDist = dist;
+                minDistZone = zone.first;
+            }
+        }
+
+        zoneVertices.push_back({vertice, zones[minDistZone]});
+
+    }
+
+    for(auto verticeZone : zoneVertices) {
+        std::cerr << "Vertice: " << verticeZone.first.toString() << " Zone: " << verticeZone.second->getId() << "\n";
+    }
+
+
     for(int x = 0; x < mapWidth; x++) {
         for(int y = 0; y < mapHeight; y++) {
-            int minDist = 1000000;
+
+            float minDist = 1000000;
             int minDistZone = -1;
-            for(auto& zone : zones) {
-                int dist = std::abs(zone.second->getPosition().x - x) + std::abs(zone.second->getPosition().y - y);
+            for(auto& verticeZone : zoneVertices) {
+                auto vertice = verticeZone.first;
+                auto zone = verticeZone.second;
+
+                float3 verticePos = float3(vertice.getX(), vertice.getY(), 0);
+                float3 tilePos = float3(x, y, 0);
+
+                float dist = verticePos.distance2DSQ(tilePos);
+                
                 if(dist < minDist) {
                     minDist = dist;
-                    minDistZone = zone.first;
+                    minDistZone = zone->getId();
                 }
             }
 
-            
-            
             auto TilePtr = map.getTile(x, y); 
             if(TilePtr) {
                 TilePtr->setZoneId(minDistZone);
@@ -213,4 +266,30 @@ void ZonePlacer::paintTiles() {
             }
         }
     }
+
+
+
+
+    // for(int x = 0; x < mapWidth; x++) {
+    //     for(int y = 0; y < mapHeight; y++) {
+    //         int minDist = 1000000;
+    //         int minDistZone = -1;
+    //         for(auto& zone : zones) {
+    //             int dist = std::abs(zone.second->getPosition().x - x) + std::abs(zone.second->getPosition().y - y);
+    //             if(dist < minDist) {
+    //                 minDist = dist;
+    //                 minDistZone = zone.first;
+    //             }
+    //         }
+
+            
+            
+    //         auto TilePtr = map.getTile(x, y); 
+    //         if(TilePtr) {
+    //             TilePtr->setZoneId(minDistZone);
+    //         } else {
+    //             std::cerr << "TilePtr is null\n";
+    //         }
+    //     }
+    // }
 }

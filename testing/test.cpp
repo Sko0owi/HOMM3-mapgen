@@ -88,7 +88,7 @@ void generateLuaScript(const json& config) {
     std::cerr << "Map generated\n";
     map.print();
     
-    AddTerrain(luaFile);
+    AddTerrain(luaFile, "LAVA");
     AddTerrainTiles(luaFile, map);
     
     auto zones = map.getZones();

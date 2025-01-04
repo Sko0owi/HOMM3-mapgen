@@ -28,43 +28,10 @@
     },
     {
       "size": "SMALL",
-      "id": 3,
-      "owner": "PLAYER_3",
-      "hero": "HERO_CHRISTIAN",
-      "terrain": "LAVA",
-      "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_RAMPART"
-      }
-    },
-    {
-      "size": "SMALL",
-      "id": 4,
-      "owner": "PLAYER_4",
-      "hero": "HERO_CHRISTIAN",
-      "terrain": "SAND",
-      "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_NECROPOLIS"
-      }
-    },
-    {
-      "size": "SMALL",
-      "id": 5,
-      "owner": "PLAYER_5",
-      "hero": "HERO_CHRISTIAN",
-      "terrain": "SWAMP",
-      "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_DUNGEON"
-      }
-    },
-    {
-      "size": "SMALL",
       "id": 6,
       "owner": "NONE",
       "hero": "HERO_CHRISTIAN",
-      "terrain": "DIRT",
+      "terrain": "LAVA",
       "towns" : {
         "count" : 0
       }
@@ -78,21 +45,6 @@
     },
     {
       "zoneA": 2,
-      "zoneB": 6,
-      "type": "road"
-    },
-    {
-      "zoneA": 3,
-      "zoneB": 6,
-      "type": "road"
-    },
-    {
-      "zoneA": 4,
-      "zoneB": 6,
-      "type": "road"
-    },
-    {
-      "zoneA": 5,
       "zoneB": 6,
       "type": "road"
     }
