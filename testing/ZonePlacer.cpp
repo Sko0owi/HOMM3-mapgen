@@ -43,7 +43,7 @@ void ZonePlacer::generateZones() {
 
     paintTiles();
     determineZoneEdges();
-    modifyRandomConnectionTile();
+    connectZones();
 }
 
 void ZonePlacer::calculatePaths() {
@@ -227,7 +227,8 @@ void ZonePlacer::placeZones() {
 			stifness *= stiffnessIncreaseFactor;
 		}
 
-        std::cerr << "Total distance: " << bestTotalDistance << " Total overlap: " << bestTotalOverlap << " Improvement: " << improved << "\n";
+        if(debug)
+            std::cerr << "Total distance: " << bestTotalDistance << " Total overlap: " << bestTotalOverlap << " Improvement: " << improved << "\n";
 
     }
 
@@ -270,13 +271,15 @@ void ZonePlacer::attractConnectedZones(TForceVector &forces, TDistanceVector &di
 			
 			minDistance = (zone.second->getSize() + otherZone->getSize()) / mapSize; //scale down to (0,1) coordinates
 
-            std::cerr << "Zone id: " << zone.first << " otherZoneID " << c.getOtherZone(zone.second->getId()) << " Distance: " << distance << " Min distance: " << minDistance << "\n";
+            if(debug)
+                std::cerr << "Zone id: " << zone.first << " otherZoneID " << c.getOtherZone(zone.second->getId()) << " Distance: " << distance << " Min distance: " << minDistance << "\n";
 
 			if (distance > minDistance)
 				totalDistance += (distance - minDistance);
         }
-
-        std::cerr << "Zone id: " << zone.first << " Total distance: " << totalDistance << "\n";
+        
+        if(debug)
+            std::cerr << "Zone id: " << zone.first << " Total distance: " << totalDistance << "\n";
         distances[zone.second] = totalDistance;
         forceVector.z = 0; //operator - doesn't preserve z coordinate :/
         forces[zone.second] = forceVector;
@@ -479,19 +482,24 @@ void ZonePlacer::paintTiles() {
         }
     }
 
-    std::cerr << "BEFORE MOVING TO CENTER OF MASS\n";
-    for(auto& zone : zones) {
-        auto zonePos = zone.second->getPosition();
-        std::cerr << "Zone id: " << zone.first << " Position: " << zonePos.x << " " << zonePos.y << " " << zonePos.z << "\n";
+    if(debug){
+        std::cerr << "BEFORE MOVING TO CENTER OF MASS\n";
+        for(auto& zone : zones) {
+            auto zonePos = zone.second->getPosition();
+            std::cerr << "Zone id: " << zone.first << " Position: " << zonePos.x << " " << zonePos.y << " " << zonePos.z << "\n";
+        }
     }
 
     moveToCenterOfTheMass();    
 
-    std::cerr << "AFTER MOVING TO CENTER OF MASS\n";
+    if(debug){
 
-    for(auto& zone : zones) {
-        auto zonePos = zone.second->getPosition();
-        std::cerr << "Zone id: " << zone.first << " Position: " << zonePos.x << " " << zonePos.y << " " << zonePos.z << "\n";
+        std::cerr << "AFTER MOVING TO CENTER OF MASS\n";
+
+        for(auto& zone : zones) {
+            auto zonePos = zone.second->getPosition();
+            std::cerr << "Zone id: " << zone.first << " Position: " << zonePos.x << " " << zonePos.y << " " << zonePos.z << "\n";
+        }
     }
 
     PenroseTiling penrose;
@@ -568,6 +576,10 @@ void ZonePlacer::paintTiles() {
     }
 }
 
+/////////////////////////////////
+////////////// DEBUG ///////////
+///////////////////////////////
+
 bool ZonePlacer::areConnected(int ZoneA, int ZoneB){
     auto zonesI = temp.getZonesI();
 
@@ -580,53 +592,6 @@ bool ZonePlacer::areConnected(int ZoneA, int ZoneB){
         }
     }
     return false;
-}
-
-std::pair<int, int> ZonePlacer::getRandomConnectionPoint(int zoneA, int zoneB) {
-    const int MAX_TRIES = 1000;
-    auto key = std::make_pair(std::min(zoneA, zoneB), std::max(zoneA, zoneB));
-    auto& points = connections[key];
-    
-    if (points.empty()) return {-1, -1};
-    int random_ind = 0;
-
-    for (int noTry = 0; noTry <= MAX_TRIES; noTry++){
-        random_ind = rng->nextInt(0, points.size() - 1);
-        int x = points[random_ind].first;
-        int y = points[random_ind].second;
-
-        auto TilePtr = map.getTile(x, y);
-        if (TilePtr && TilePtr->getNeighbourZones() == 1 && countEdges(x, y) >= 3) {
-            break;
-        }
-    }
-
-    return points[random_ind];
-}
-
-int ZonePlacer::countEdges(int x, int y){
-    int no = 0;
-
-    const int dx[] = {-1, 1, 0, 0};
-    const int dy[] = {0, 0, -1, 1};
-
-    for (int i = 0; i < 4; i++){
-        int nx = x + dx[i];
-        int ny = y + dy[i];
-
-        auto NeighborTilePtr = map.getTile(nx, ny);
-
-        if(NeighborTilePtr && NeighborTilePtr->getIsEdge()){
-            no++;
-        }
-    }
-
-    return no;
-}
-
-void ZonePlacer::addConnectionPoint(int zoneA, int zoneB, int x, int y) {
-    auto key = std::make_pair(std::min(zoneA, zoneB), std::max(zoneA, zoneB));
-    connections[key].emplace_back(x, y);
 }
 
 bool ZonePlacer::isMapEdge(int x, int y){
@@ -645,6 +610,133 @@ bool ZonePlacer::isMapEdge(int x, int y){
     }
 
     return false;
+}
+
+void ZonePlacer::findOuter(int X, int Y, int *outerX1, int *outerY1, int *outerX2, int *outerY2, int zone1Id, int zone2Id){
+    std::queue<std::tuple<int, int, int, int>> q;
+    std::set<std::pair<int, int>> visited;
+
+    const int dx[] = {-1, 1, 0, 0};
+    const int dy[] = {0, 0, -1, 1};
+
+    q.emplace(X, Y, -1, -1);
+    visited.insert({X, Y});
+
+    while (!q.empty()) {
+        auto [cx, cy, fromx, fromy] = q.front();
+        q.pop();
+
+        for (int i = 0; i < 4; ++i) {
+            int nx = cx + dx[i];
+            int ny = cy + dy[i];
+
+            if (visited.count({nx, ny})) continue;
+        
+            auto TilePtr = map.getTile(nx, ny);
+            int ZoneC = -1;
+            if(TilePtr)
+                ZoneC = TilePtr->getZoneId();
+
+            if(zone1Id == ZoneC && !TilePtr->getIsEdge()){ // We didn't get out of zone
+                q.emplace(nx, ny, -1, -1);
+            } else if (zone2Id == ZoneC && !TilePtr->getIsEdge()) { // We found good zone 
+                (*outerX1) = fromx;
+                (*outerY1) = fromy;
+                (*outerX2) = nx;
+                (*outerY2) = ny;
+                return;
+            }
+            else if (((zone1Id == ZoneC && TilePtr->getIsEdge()) || (zone2Id == ZoneC && TilePtr->getIsEdge())) && fromx != -1)
+            { // Travelling through edge
+                q.emplace(nx, ny, fromx, fromy);
+            }
+            else
+            { // We get out of zone
+                if(ZoneC == zone1Id || ZoneC == zone2Id)
+                    q.emplace(nx, ny, cx, cy);
+            }
+
+            visited.insert({nx, ny});
+        }
+    }
+}
+
+std::vector<std::tuple<int, int, int, int>> ZonePlacer::getConnectedPairs(){
+    return connectedPairs;
+}
+
+void ZonePlacer::connectZones() {
+    std::cerr << "Finding zones conenction points\n";
+    auto zones = map.getZones();
+    std::set<std::pair<int, int>> processedConnections;
+
+    for (auto& zone1 : zones) {
+        for (auto& zone2 : zones){
+            int zone1Id = zone1.second->getId();
+            int zone2Id = zone2.second->getId();
+            
+            if (zone1Id == zone2Id) continue;
+
+            auto connectionPair = std::make_pair(std::min(zone1Id, zone2Id), std::max(zone1Id, zone2Id));
+
+            if(areConnected(zone1Id, zone2Id) && processedConnections.find(connectionPair) == processedConnections.end()){
+                if(debug)
+                    std::cerr << "CONNECTING " << zone1Id << " " << zone2Id << "\n";
+
+                processedConnections.insert(connectionPair);
+                int X = zone1.second->getPosition().x;
+                int Y = zone1.second->getPosition().y;
+
+                int outerX1 = -1, outerY1 = -1, outerX2 = -1, outerY2 = -1;
+
+                findOuter(X, Y, &outerX1, &outerY1, &outerX2, &outerY2, zone1Id, zone2Id);
+                connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2); // Add points of connection
+                
+                int XX1 = zone1.second->getPosition().x;
+                int YY1 = zone1.second->getPosition().y;
+
+                connectedPairs.emplace_back(outerX1, outerY1, XX1, YY1); // Castle1 -> Connect1
+                
+                int XX2 = zone2.second->getPosition().x;
+                int YY2 = zone2.second->getPosition().y;
+                connectedPairs.emplace_back(XX2, YY2, outerX2, outerY2); // Castle2 -> Connect2
+
+                
+                if(debug){
+                    std::cerr << "X= " << X << " Y= " << Y << " OX1= " << outerX1 << " OY1= " << outerY1 << " OX2= " << outerX2 << " OY2= " << outerY2 << "\n";
+                    for (int y = 0; y < mapHeight; y++)
+                    {
+                        for (int x = 0; x < mapWidth; x++) {
+                            auto TilePtr = map.getTile(x, y);
+
+                    
+                            if((x == outerX1 && y == outerY1) || (x == outerX2 && y == outerY2)) {
+                                std::cerr << "X ";
+                            } else if((x == XX1 && y == YY1) || (x == XX2 && y == YY2)) {
+                                std::cerr << "Y ";
+                            }else if(!TilePtr->getIsGate() && TilePtr->getIsEdge()){
+                                std::cerr << "E ";
+                            }
+                            else
+                            {
+                                std::cerr << ". ";
+                            }
+                        }
+                        std::cerr << "\n";
+                    }
+                    
+                    for(auto myTuple : getConnectedPairs()){
+                        std::cerr << "(" 
+                            << std::get<0>(myTuple) << ", "
+                            << std::get<1>(myTuple) << ", "
+                            << std::get<2>(myTuple) << ", "
+                            << std::get<3>(myTuple) << ")\n";
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 void ZonePlacer::determineZoneEdges() {
@@ -670,7 +762,6 @@ void ZonePlacer::determineZoneEdges() {
                     isEdge = true;
 
                     if(!isMapEdge(x, y)){
-                        addConnectionPoint(currentZoneId, NeighborTilePtr->getZoneId(), x, y);
                         NeighborTilePtr->setNeighbourZones(currentZoneId);
                         TilePtr->setNeighbourZones(NeighborTilePtr->getZoneId());
                     }
@@ -684,91 +775,77 @@ void ZonePlacer::determineZoneEdges() {
             }
         }
     }
-}
 
-void ZonePlacer::modifyRandomConnectionTile(int range) {
-    std::cerr << "Finding connection points\n";
-    auto zonesI = temp.getZonesI();
-    std::set<std::pair<int, int>> processedConnections;
-    int zone1, zone2;
+    // std::cerr << "\n\nGATES\n";
 
-    for(auto e : zonesI){
-        for(auto c : e.second->getConnections()){
+    // for (int y = 0; y < mapHeight; y++) {
+    //     for (int x = 0; x < mapWidth; x++) {
+    //         auto TilePtr = map.getTile(x, y);
 
-            std::cerr << e.first << " " << c.getZoneA() << " " << c.getZoneB() << "\n";
-            zone1 = c.getZoneA();
-            zone2 = c.getZoneB();
-            
-            auto connectionPair = std::make_pair(std::min(zone1, zone2), std::max(zone1, zone2));
-
-            if (processedConnections.find(connectionPair) != processedConnections.end()) {
-                continue;
-            }
-
-            processedConnections.insert(connectionPair);
-
-            auto randomPoint = getRandomConnectionPoint(zone1, zone2);
-            if (randomPoint.first == -1 && randomPoint.second == -1) continue; // No connection point found
-
-            int x = randomPoint.first;
-            int y = randomPoint.second;
-
-            for (int dy = -range; dy <= range; ++dy) {
-                for (int dx = -range; dx <= range; ++dx) {
-                    int nx = x + dx;
-                    int ny = y + dy;
-
-                    auto TilePtr = map.getTile(nx, ny);
-                    if (TilePtr) {
-                        TilePtr->setIsEdge(false);
-                        TilePtr->setIsGate(true);
-                        TilePtr->setIsMiddleGate(false);
-                    } 
-                    if(nx == x && ny == y){
-                        TilePtr->setIsMiddleGate(true);
-                    }
-                }
-            }
-            
-            if(debug){
-                std::cerr << "Modified tiles around connection point (" << x << ", " << y << ") for zones " 
-                        << zone1 << " -> " << zone2 << "\n";
-            }
-        }
-    }
-
-    // if(debug){
-        // std::cerr << "SIZE:\n";
-        // for (int y = 0; y < mapHeight; y++)
-        // {
-        //     for (int x = 0; x < mapWidth; x++) {
-        //         auto TilePtr = map.getTile(x, y);
-
-        //         int currentZoneId = TilePtr->getNeighbourZones();
-
-        //         std::cerr << currentZoneId << " ";
-        //     }
-        //     std::cerr << "\n";
-        // }
-
-        std::cerr << "\n\nGATES\n";
-
-        for (int y = 0; y < mapHeight; y++) {
-            for (int x = 0; x < mapWidth; x++) {
-                auto TilePtr = map.getTile(x, y);
-
-                if(TilePtr->getIsGate() && !TilePtr->getIsMiddleGate() && !TilePtr->getIsEdge()){
-                    std::cerr << "G ";
-                } else if(!TilePtr->getIsGate() && TilePtr->getIsEdge()){
-                    std::cerr << "E ";
-                } else if(TilePtr->getIsGate() && TilePtr->getIsMiddleGate()){
-                    std::cerr << "M ";
-                } else {
-                    std::cerr << ". ";
-                }
-            }
-            std::cerr << "\n";
-        }
+    //         if(TilePtr->getIsGate() && !TilePtr->getIsMiddleGate() && !TilePtr->getIsEdge()){
+    //             std::cerr << "G ";
+    //         } else if(!TilePtr->getIsGate() && TilePtr->getIsEdge()){
+    //             std::cerr << "E ";
+    //         } else if(TilePtr->getIsGate() && TilePtr->getIsMiddleGate()){
+    //             std::cerr << "M ";
+    //         } else {
+    //             std::cerr << ". ";
+    //         }
+    //     }
+    //     std::cerr << "\n";
     // }
-    std::cerr << "Finished modifying connection tiles\n";
 }
+
+// void ZonePlacer::modifyRandomConnectionTile(int range) {
+//     std::cerr << "Finding connection points\n";
+//     auto zonesI = temp.getZonesI();
+//     std::set<std::pair<int, int>> processedConnections;
+//     int zone1, zone2;
+
+//     for(auto e : zonesI){
+//         for(auto c : e.second->getConnections()){
+//             if(debug)
+//                 std::cerr << e.first << " " << c.getZoneA() << " " << c.getZoneB() << "\n";
+//             zone1 = c.getZoneA();
+//             zone2 = c.getZoneB();
+            
+//             auto connectionPair = std::make_pair(std::min(zone1, zone2), std::max(zone1, zone2));
+
+//             if (processedConnections.find(connectionPair) != processedConnections.end()) {
+//                 continue;
+//             }
+
+//             processedConnections.insert(connectionPair);
+
+//             auto randomPoint = getRandomConnectionPoint(zone1, zone2);
+//             if (randomPoint.first == -1 && randomPoint.second == -1) continue; // No connection point found
+
+//             int x = randomPoint.first;
+//             int y = randomPoint.second;
+
+//             for (int dy = -range; dy <= range; ++dy) {
+//                 for (int dx = -range; dx <= range; ++dx) {
+//                     int nx = x + dx;
+//                     int ny = y + dy;
+
+//                     auto TilePtr = map.getTile(nx, ny);
+//                     if (TilePtr) {
+//                         TilePtr->setIsEdge(false);
+//                         TilePtr->setIsGate(true);
+//                         TilePtr->setIsMiddleGate(false);
+//                     } 
+//                     if(nx == x && ny == y){
+//                         TilePtr->setIsMiddleGate(true);
+//                     }
+//                 }
+//             }
+            
+//             if(debug){
+//                 std::cerr << "Modified tiles around connection point (" << x << ", " << y << ") for zones " 
+//                         << zone1 << " -> " << zone2 << "\n";
+//             }
+//         }
+//     }
+
+//     std::cerr << "Finished modifying connection tiles\n";
+// }

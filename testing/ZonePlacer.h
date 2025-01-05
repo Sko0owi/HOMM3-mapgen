@@ -32,9 +32,12 @@ public:
     
     bool areConnected(int ZoneA, int ZoneB);
     bool isMapEdge(int x, int y);
-    int countEdges(int x, int y);
+    void findOuter(int X, int Y, int *outerX1, int *outerY1, int *outerX2, int *outerY2, int zone1Id, int zone2Id);
     void determineZoneEdges();
-    void modifyRandomConnectionTile(int range=1);
+    void connectZones();
+    void modifyRandomConnectionTile(int range = 1);
+    std::vector<std::tuple<int, int, int, int>> getConnectedPairs();
+    
 
     void prepareZones();
     bool evaluateZones(TDistanceVector &distances, TDistanceVector &overlaps, TBestSolution &bestSolution);
@@ -62,6 +65,5 @@ private:
     RNG *rng;
 
     std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> connections;
-    std::pair<int, int> getRandomConnectionPoint(int zoneA, int zoneB);
-    void addConnectionPoint(int zoneA, int zoneB, int x, int y);
+    std::vector<std::tuple<int, int, int, int>> connectedPairs;
 };

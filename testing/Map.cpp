@@ -45,6 +45,15 @@ void Map::generateMap(TemplateInfo &temp) {
     class ZonePlacer zonePlacer(*this, temp, rng);
 
     zonePlacer.generateZones();
+    setConnectedPairs(zonePlacer.getConnectedPairs());
+}
+
+void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int>> connectedPairs){
+    this->connectedPairs = connectedPairs;
+}
+
+vector<std::tuple<int, int, int, int>> Map::getConnectedPairs(){
+    return connectedPairs;
 }
 
 MapZones & Map::getZones() {

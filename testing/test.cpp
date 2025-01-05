@@ -10,7 +10,7 @@
 
 using json = nlohmann::json;
 
-std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int y2, Map& map, int ZoneA, int ZoneB) {
+std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int y2, Map& map) {
     std::vector<std::pair<int, int>> path;
 
     if (x1 == x2 && y1 == y2) {
@@ -46,11 +46,9 @@ std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int 
             int ny = cy + dy[i];
 
             auto TilePtr = map.getTile(nx, ny);
-            int ZoneC = -1;
-            if(TilePtr)
-                ZoneC = TilePtr->getZoneId();
 
-            if (TilePtr && !TilePtr->getIsEdge() && cameFrom.find({nx, ny}) == cameFrom.end() && (ZoneC == ZoneA || ZoneC == ZoneB) && 
+            //!TilePtr->getIsEdge() &&
+            if (TilePtr && cameFrom.find({nx, ny}) == cameFrom.end() && 
                     (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
                 q.emplace(nx, ny);
                 cameFrom[{nx, ny}] = {cx, cy};
@@ -61,51 +59,41 @@ std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int 
     return path;
 }
 
-void createShotestPathsToConnected(std::ofstream& luaFile, const std::vector<std::pair<int, int>>& towns, Map& map, TemplateInfo& temp) {
+void createShotestPathsToConnected(std::ofstream& luaFile, vector<std::tuple<int, int, int, int>> &connectedPairs, Map& map, TemplateInfo& temp) {
     auto zonesI = temp.getZonesI();
     std::set<std::pair<int, int>> processedConnections;
+
+    const int dx[] = {0, 0, -1, 1};
+    const int dy[] = {-1, 1, 0, 0};
+
 
 
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
 
-    for (size_t i = 0; i < towns.size(); ++i) {
-        for (size_t j = i + 1; j < towns.size(); ++j) {
-            const auto& townA = towns[i];
-            const auto& townB = towns[j];
+    for(auto e : connectedPairs){
+        auto [x1, y1, x2, y2] = e;
+        auto path = generateSimplePath(x1, y1, x2, y2, map);
 
-            auto tileA = map.getTile(townA.first, townA.second);
-            auto tileB = map.getTile(townB.first, townB.second);
+        for (const auto& point : path) {
+            auto TilePtr = map.getTile(point.first, point.second);
+            TilePtr->setIsEdge(false);
 
-            int zoneA = tileA->getZoneId();
-            int zoneB = tileB->getZoneId();
+            for (int i = 0; i < 4; ++i) {
+                int nx = point.first + dx[i];
+                int ny = point.second + dy[i];
 
-            auto connectionPair = std::make_pair(std::min(zoneA, zoneB), std::max(zoneA, zoneB));
+                auto TilePtr = map.getTile(nx, ny);
 
-            if (processedConnections.find(connectionPair) != processedConnections.end()) {
-                continue;
-            }
-
-            processedConnections.insert(connectionPair);
-
-            auto connections = zonesI[zoneA]->getConnections();
-            bool isConnected = false;
-            for(auto c : connections){
-                if ((c.getZoneA() == zoneA && c.getZoneB() == zoneB) ||
-                    (c.getZoneA() == zoneB && c.getZoneB() == zoneA)) {
-                    isConnected = true;
+                if (TilePtr && TilePtr->getIsEdge()) {
+                    TilePtr->setIsEdge(false);
                 }
             }
 
-            if (!isConnected) continue;
-
-            auto path = generateSimplePath(townA.first, townA.second, townB.first, townB.second, map, zoneA, zoneB);
-            for (const auto& point : path) {
-                luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
-            }
+            luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
         }
-    }
 
+    }
     luaFile << "    return nil\n"; // Default terrain
     luaFile << "end)\n";
 }
@@ -164,39 +152,30 @@ void generateLuaScript(const json& config) {
     
     AddTerrain(luaFile);
     AddTerrainTiles(luaFile, map);
-    AddEdgeObstacles(luaFile, map);
     
     auto zones = map.getZones();
     for (auto& zone : zones) {
         int playerId = zone.second->getOwnerId();
-        if(playerId == 0){
-            i32 X = zone.second->getPosition().x;
-            i32 Y = zone.second->getPosition().y;
-            towns.emplace_back(X, Y);
-            continue;
-        }
-            
+        
+        if(playerId == 0) continue;
+
         if (addedPlayers.find(playerId) == addedPlayers.end()){
             addedPlayers.insert(playerId);
             AddPlayer(luaFile, playerId);
         }
 
-        if(zone.second->getTowns().size() > 0){
-            for (auto& town : zone.second->getTowns()) {
-                AddTown(luaFile, zone.second, town);
-                i32 X = zone.second->getPosition().x;
-                i32 Y = zone.second->getPosition().y;
-                towns.emplace_back(X, Y);
-            }
-        } else{
-            i32 X = zone.second->getPosition().x;
-            i32 Y = zone.second->getPosition().y;
-            towns.emplace_back(X, Y);
+        for (auto& town : zone.second->getTowns()) {
+            AddTown(luaFile, zone.second, town);
         }
+
         AddHero(luaFile, zone.second);
     }
 
-    createShotestPathsToConnected(luaFile, towns, map, templateInfo);
+    auto connectedPairs = map.getConnectedPairs();
+    createShotestPathsToConnected(luaFile, connectedPairs, map, templateInfo);
+
+    AddEdgeObstacles(luaFile, map);
+    
     if (config["debug"]){
         for(auto e : towns){
             std::cerr << e.first << " " << e.second << "\n";
@@ -204,15 +183,6 @@ void generateLuaScript(const json& config) {
     }
 
     placeGateCreatures(luaFile, map);
-
-    //TEST STUFF
-    AddArtifact(luaFile, "PENDANT_OF_COURAGE", 8, 1, 0);
-    AddObstacle(luaFile, "Rock", 7, 1, 0);
-    AddSign(luaFile, "FUNNY CATS", 8, 2, 0);
-    AddMine(luaFile, "GOLD_MINE", 10, 4, 0);
-    AddMine(luaFile, "GEM_POND", 15, 4, 0, 2);
-    AddResource(luaFile, "CRYSTAL", 7, 3, 0, 10);
-    AddCreature(luaFile, "ARCHANGEL", 12, 4, 0, 100, "AGGRESSIVE", true, true);
 
     string homeDir = getenv("HOME");
     cerr << "Home dir: " << homeDir << endl;

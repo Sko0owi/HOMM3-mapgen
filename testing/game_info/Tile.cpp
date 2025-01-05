@@ -43,6 +43,6 @@ void Tile::setNeighbourZones(int zoneId){
     this->neighbourZones.insert(zoneId);
 }
 
-int Tile::getNeighbourZones(){
-    return neighbourZones.size();
+std::set<int> Tile::getNeighbourZones(){
+    return neighbourZones;
 }
