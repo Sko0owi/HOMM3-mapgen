@@ -100,8 +100,8 @@ void generateLuaScript(const json& config) {
 
     auto connectedPairs = map.getConnectedPairs();
     
-    RoadPlacer roadPlacer;
-    roadPlacer.createShotestPathsToConnected(luaFile, connectedPairs, map, templateInfo);
+    RoadPlacer roadPlacer(map, templateInfo);
+    roadPlacer.createShotestPathsToConnected(luaFile, connectedPairs);
 
     AddBorderObstacles(luaFile, map);
     

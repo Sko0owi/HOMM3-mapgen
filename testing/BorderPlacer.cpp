@@ -3,7 +3,6 @@
 #include "./Zone.h"
 #include "./Tile.h"
 #include "./Template.h"
-#include "./global/Random.h"
 
 
 BorderPlacer::BorderPlacer(Map & map, TemplateInfo & temp) : map(map), temp(temp){

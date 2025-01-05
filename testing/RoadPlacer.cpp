@@ -3,9 +3,9 @@
 #include "./Map.h"
 #include "./Tile.h"
 
-RoadPlacer::RoadPlacer() {};
+RoadPlacer::RoadPlacer(Map &map, TemplateInfo &temp) : map(map), temp(temp) {};
 
-std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, int x2, int y2, Map& map) {
+std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, int x2, int y2) {
     std::vector<std::pair<int, int>> path;
 
     if (x1 == x2 && y1 == y2) {
@@ -54,7 +54,7 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
     return path;
 }
 
-void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs, Map& map, TemplateInfo& temp) {
+void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
     auto zonesI = temp.getZonesI();
     std::set<std::pair<int, int>> processedConnections;
 
@@ -68,7 +68,7 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
 
     for(auto e : connectedPairs){
         auto [x1, y1, x2, y2, castle] = e;
-        auto path = generateSimplePath(x1, y1, x2, y2, map);
+        auto path = generateSimplePath(x1, y1, x2, y2);
 
         int i = 0, max = path.size();
         for (const auto &point : path)

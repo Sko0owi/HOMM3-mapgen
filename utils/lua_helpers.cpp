@@ -86,8 +86,9 @@ void AddBorderObstacles(std::ofstream& luaFile, Map& map){
             std::string terrain;
             
             if (isTileEdge) {
-                AddObstacle(luaFile, "Mountain4", x+1, y, 0);
+                AddObstacle(luaFile, "Mushrooms", x+1, y, 0);
             }
+
             //Example Obstacles
             // Lava Flow
             // Mountain4
