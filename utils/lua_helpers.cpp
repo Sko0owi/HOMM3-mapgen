@@ -86,7 +86,7 @@ void AddEdgeObstacles(std::ofstream& luaFile, Map& map){
             std::string terrain;
             
             if (isTileEdge) {
-                AddObstacle(luaFile, "Lava Flow", x, y, 0);
+                AddObstacle(luaFile, "Lava Flow", x+1, y, 0);
             }
             //Example Obstacles
             // Lava Flow
@@ -170,7 +170,7 @@ void AddArtifact(std::ofstream& luaFile, std::string artifact, int x, int y, int
 // @tparam      integer     y                position on y axis of obstacle.
 // @tparam      integer     z                position on z axis of obstacle.
 void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int z){
-    luaFile << "instance:obstacle('" << obstacle << "', {x=" << x+1 << ", y=" << y+1 << ", z=" << z << "})\n";  
+    luaFile << "instance:obstacle('" << obstacle << "', {x=" << x << ", y=" << y+1 << ", z=" << z << "})\n";  
 }
 
 // @function    AddSign

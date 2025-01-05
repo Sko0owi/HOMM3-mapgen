@@ -1,5 +1,5 @@
 {
-  "debug": false,
+  "debug": false  ,
   "name": "2P Duel Template",
   "description": "A balanced map for 2 players with a contested central area.",
   "size": "SMALL",
@@ -8,7 +8,7 @@
     {
       "size": "SMALL",
       "id": 1,
-      "owner": "PLAYER_3",
+      "owner": "PLAYER_1",
       "hero": "HERO_CHRISTIAN",
       "terrain": "GRASS",
       "towns" : {
@@ -30,7 +30,7 @@
     {
       "size": "SMALL",
       "id": 3,
-      "owner": "PLAYER_1",
+      "owner": "PLAYER_3",
       "hero": "HERO_JENOVA",
       "terrain": "LAVA",
       "towns" : {
