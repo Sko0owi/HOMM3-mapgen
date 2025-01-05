@@ -9,9 +9,6 @@ public:
     
     Faction getFaction() const;
 
-
-
-
 private:
     Faction faction;
 };

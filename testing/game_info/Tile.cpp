@@ -41,14 +41,6 @@ bool Tile::getIsRoad() {
     return isRoad;
 }
 
-void Tile::setIsMiddleGate(bool isMiddleGate){
-    this->isMiddleGate = isMiddleGate;
-}
-
-bool Tile::getIsMiddleGate(){
-    return isMiddleGate;
-}
-
 void Tile::setNeighbourZones(int zoneId){
     this->neighbourZones.insert(zoneId);
 }

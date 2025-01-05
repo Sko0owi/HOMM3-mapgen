@@ -42,7 +42,6 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
 
             auto TilePtr = map.getTile(nx, ny);
 
-            //!TilePtr->getIsBorder() &&
             if (TilePtr && cameFrom.find({nx, ny}) == cameFrom.end() && 
                     (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
                 q.emplace(nx, ny);
@@ -75,9 +74,10 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
         {
             auto TilePtr = map.getTile(point.first, point.second);
             TilePtr->setIsBorder(false);
+            TilePtr->setIsRoad(true);
 
             if(i == max-2 && !castle){
-                TilePtr->setIsMiddleGate(true);
+                TilePtr->setIsGate(true);
             }
             i++;
 

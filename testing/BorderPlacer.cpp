@@ -130,7 +130,7 @@ void BorderPlacer::connectZones() {
                 findOuter(X, Y, &outerX1, &outerY1, &outerX2, &outerY2, zone1Id, zone2Id);
                 connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false); // Add points of connection
 
-                // map.getTile((outerX1), (outerY1))->setIsMiddleGate(true);
+                // map.getTile((outerX1), (outerY1))->setIsGate(true);
 
                 int XX1 = zone1.second->getPosition().x;
                 int YY1 = zone1.second->getPosition().y;

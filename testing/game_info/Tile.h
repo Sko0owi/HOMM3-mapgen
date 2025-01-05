@@ -14,9 +14,6 @@ public:
     void setIsGate(bool isGate);
     bool getIsGate();
 
-    void setIsMiddleGate(bool isMiddleGate);
-    bool getIsMiddleGate();
-
     void setNeighbourZones(int zoneId);
     std::set<int> getNeighbourZones();
 

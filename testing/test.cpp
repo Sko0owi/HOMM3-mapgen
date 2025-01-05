@@ -18,7 +18,7 @@ void placeGateCreatures(std::ofstream& luaFile, Map& map){
         for (int x = 0; x < map.getWidth(); x++) {
             auto TilePtr = map.getTile(x, y);
 
-            if(TilePtr && TilePtr->getIsMiddleGate()){
+            if(TilePtr && TilePtr->getIsGate()){
                 AddCreature(luaFile, "ARCHANGEL", x, y, 0, 100, "AGGRESSIVE", true, true);
             }
         }
@@ -28,7 +28,7 @@ void placeGateCreatures(std::ofstream& luaFile, Map& map){
             for (int x = 0; x < map.getWidth(); x++) {
                 auto TilePtr = map.getTile(x, y);
 
-                if(TilePtr && TilePtr->getIsMiddleGate()){
+                if(TilePtr && TilePtr->getIsGate()){
                     std::cerr << "G ";
                 } else if(TilePtr && TilePtr->getIsBorder()){
                     std::cerr << "E ";
