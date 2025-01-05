@@ -415,11 +415,84 @@ void ZonePlacer::prepareZones() {
 
 }
 
+void ZonePlacer::moveToCenterOfTheMass() {
 
+    auto zones = map.getZones();
+
+    
+
+    for (auto& zone : zones) {
+
+        int3 total(0, 0, 0);
+
+        int totalTiles = 0;
+        for(int x = 0; x < mapWidth; x++) {
+            for(int y = 0; y < mapHeight; y++) {
+                auto TilePtr = map.getTile(x, y);
+                if(TilePtr && TilePtr->getZoneId() == zone.first) {
+                    total += int3(x, y, 0);
+                    totalTiles++;
+                }
+            }
+        }
+
+        assert(totalTiles);
+
+        int3 newPos = int3(total.x / totalTiles, total.y / totalTiles, total.z / totalTiles);
+
+        zone.second->setPosition(newPos);
+        zone.second->setCenter(float3(float(newPos.x) / mapWidth, float(newPos.y) / mapHeight, newPos.z));
+
+	}
+}
 
 void ZonePlacer::paintTiles() {
     std::cerr << "Painting tiles\n";
     auto zones = map.getZones();
+
+
+    for(int x = 0; x < mapWidth; x++) {
+        for(int y = 0; y < mapHeight; y++) {
+
+            float minDist = 1000000;
+            int minDistZone = -1;
+            for(auto& zone : zones) {
+                
+                auto zonePos = zone.second->getPosition();
+                float3 zonePosF = float3(zonePos.x, zonePos.y, 0);
+                float3 tilePos = float3(x, y, 0);
+
+                float dist = zonePosF.distance2DSQ(tilePos);
+                
+                if(dist < minDist) {
+                    minDist = dist;
+                    minDistZone = zone.first;
+                }
+            }
+
+            auto TilePtr = map.getTile(x, y); 
+            if(TilePtr) {
+                TilePtr->setZoneId(minDistZone);
+            } else {
+                std::cerr << "TilePtr is null\n";
+            }
+        }
+    }
+
+    std::cerr << "BEFORE MOVING TO CENTER OF MASS\n";
+    for(auto& zone : zones) {
+        auto zonePos = zone.second->getPosition();
+        std::cerr << "Zone id: " << zone.first << " Position: " << zonePos.x << " " << zonePos.y << " " << zonePos.z << "\n";
+    }
+
+    moveToCenterOfTheMass();    
+
+    std::cerr << "AFTER MOVING TO CENTER OF MASS\n";
+
+    for(auto& zone : zones) {
+        auto zonePos = zone.second->getPosition();
+        std::cerr << "Zone id: " << zone.first << " Position: " << zonePos.x << " " << zonePos.y << " " << zonePos.z << "\n";
+    }
 
     PenroseTiling penrose;
     auto vertices = penrose.generatePenroseTiling(zones.size(), rng);

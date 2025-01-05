@@ -27,6 +27,8 @@ public:
     void generateZones();
 
     void paintTiles();
+
+    void moveToCenterOfTheMass();
     
     bool areConnected(int ZoneA, int ZoneB);
     bool isMapEdge(int x, int y);
