@@ -59,7 +59,7 @@ void AddTerrainTiles(std::ofstream& luaFile, Map& map){
         for(int x = 0; x < map.getWidth(); x++){
             auto tile = map.getTile(x, y);
             int tileZoneId = tile->getZoneId();
-            bool isTileEdge = tile->getIsEdge();
+            bool isTileEdge = tile->getIsBorder();
 
             std::string terrain;
 
@@ -74,22 +74,24 @@ void AddTerrainTiles(std::ofstream& luaFile, Map& map){
     luaFile << "end)\n";
 }
 
-// @function    AddEdgeObstacles
+// @function    AddBorderObstacles
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      Map         map         object of map class with finised setup.
-void AddEdgeObstacles(std::ofstream& luaFile, Map& map){
+void AddBorderObstacles(std::ofstream& luaFile, Map& map){
     for(int x = 0; x < map.getWidth(); x++){
         for(int y = 0; y < map.getHeight(); y++){
             auto tile = map.getTile(x, y);
-            bool isTileEdge = tile->getIsEdge();
+            bool isTileEdge = tile->getIsBorder();
 
             std::string terrain;
             
             if (isTileEdge) {
-                AddObstacle(luaFile, "Lava Flow", x+1, y, 0);
+                AddObstacle(luaFile, "Mushrooms", x+1, y, 0);
             }
+
             //Example Obstacles
             // Lava Flow
+            // Mountain4
 
             // Pine Trees
             // Rock

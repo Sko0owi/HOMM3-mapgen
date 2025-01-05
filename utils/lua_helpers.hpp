@@ -15,7 +15,7 @@ void AddPlayer(std::ofstream& luaFile, int playerId);
 void AddTown(std::ofstream &luaFile, std::shared_ptr<Zone> &zone, Town town, bool is_main = true);
 void AddHero(std::ofstream &luaFile, std::shared_ptr<Zone> &zone);
 void AddTerrainTiles(std::ofstream& luaFile, Map& map);
-void AddEdgeObstacles(std::ofstream &luaFile, Map &map);
+void AddBorderObstacles(std::ofstream &luaFile, Map &map);
 void AddTerrain(std::ofstream &luaFile, std::string terrain = "GRASS");
 void AddHeader(std::ofstream& luaFile);
 void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int z, int quantity, std::string disposition, bool never_flees, bool does_not_grow);
