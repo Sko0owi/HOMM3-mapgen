@@ -69,17 +69,17 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
         auto [x1, y1, x2, y2, castle] = e;
         auto path = generateSimplePath(x1, y1, x2, y2);
 
-        int i = 0, max = path.size();
+        int j = 0, max = path.size();
         for (const auto &point : path)
         {
             auto TilePtr = map.getTile(point.first, point.second);
             TilePtr->setIsBorder(false);
             TilePtr->setIsRoad(true);
 
-            if(i == max-2 && !castle){
+            if(j == max-2 && !castle){
                 TilePtr->setIsGate(true);
             }
-            i++;
+            j++;
 
             for (int i = 0; i < 4; ++i) {
                 int nx = point.first + dx[i];
