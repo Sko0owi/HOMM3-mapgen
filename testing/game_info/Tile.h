@@ -18,12 +18,13 @@ public:
     bool getIsMiddleGate();
 
     void setNeighbourZones(int zoneId);
-    int getNeighbourZones();
+    std::set<int> getNeighbourZones();
 
 private:
     int zoneId;
     bool isEdge;
     bool isGate;
     bool isMiddleGate;
+
     std::set<int> neighbourZones;
 };
