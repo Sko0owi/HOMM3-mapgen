@@ -649,6 +649,10 @@ void ZonePlacer::modifyRandomConnectionTile(int range) {
                     if (TilePtr) {
                         TilePtr->setIsEdge(false);
                         TilePtr->setIsGate(true);
+                        TilePtr->setIsMiddleGate(false);
+                    } 
+                    if(nx == x && ny == y){
+                        TilePtr->setIsMiddleGate(true);
                     }
                 }
             }
@@ -680,12 +684,12 @@ void ZonePlacer::modifyRandomConnectionTile(int range) {
             for (int x = 0; x < mapWidth; x++) {
                 auto TilePtr = map.getTile(x, y);
 
-                if(TilePtr->getIsGate() && !TilePtr->getIsEdge()){
+                if(TilePtr->getIsGate() && !TilePtr->getIsMiddleGate() && !TilePtr->getIsEdge()){
                     std::cerr << "G ";
                 } else if(!TilePtr->getIsGate() && TilePtr->getIsEdge()){
                     std::cerr << "E ";
-                } else if(TilePtr->getIsGate() && TilePtr->getIsEdge()){
-                    std::cerr << "B ";
+                } else if(TilePtr->getIsGate() && TilePtr->getIsMiddleGate()){
+                    std::cerr << "M ";
                 } else {
                     std::cerr << ". ";
                 }

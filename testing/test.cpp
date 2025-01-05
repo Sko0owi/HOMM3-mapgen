@@ -10,7 +10,7 @@
 
 using json = nlohmann::json;
 
-std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int y2, Map& map, int ZoneA, int ZoneB) {
+std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int y2, Map& map, int ZoneA, int ZoneB) {
     std::vector<std::pair<int, int>> path;
 
     if (x1 == x2 && y1 == y2) {
@@ -61,7 +61,7 @@ std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int 
     return path;
 }
 
-void CreateShotestPathsToConnected(std::ofstream& luaFile, const std::vector<std::pair<int, int>>& towns, Map& map, TemplateInfo& temp) {
+void createShotestPathsToConnected(std::ofstream& luaFile, const std::vector<std::pair<int, int>>& towns, Map& map, TemplateInfo& temp) {
     auto zonesI = temp.getZonesI();
     std::set<std::pair<int, int>> processedConnections;
 
@@ -99,7 +99,7 @@ void CreateShotestPathsToConnected(std::ofstream& luaFile, const std::vector<std
 
             if (!isConnected) continue;
 
-            auto path = GenerateSimplePath(townA.first, townA.second, townB.first, townB.second, map, zoneA, zoneB);
+            auto path = generateSimplePath(townA.first, townA.second, townB.first, townB.second, map, zoneA, zoneB);
             for (const auto& point : path) {
                 luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
             }
@@ -108,6 +108,21 @@ void CreateShotestPathsToConnected(std::ofstream& luaFile, const std::vector<std
 
     luaFile << "    return nil\n"; // Default terrain
     luaFile << "end)\n";
+}
+
+
+void placeGateCreatures(std::ofstream& luaFile, Map& map){
+    std::cerr << "Place creatures blocking gates\n";
+
+    for (int y = 0; y < map.getHeight(); y++) {
+        for (int x = 0; x < map.getWidth(); x++) {
+            auto TilePtr = map.getTile(x, y);
+
+            if(TilePtr && TilePtr->getIsMiddleGate()){
+                AddCreature(luaFile, "ARCHANGEL", x, y, 0, 100, "AGGRESSIVE", true, true);
+            }
+        }
+    }
 }
 
 void generateLuaScript(const json& config) {
@@ -181,12 +196,14 @@ void generateLuaScript(const json& config) {
         AddHero(luaFile, zone.second);
     }
 
-    CreateShotestPathsToConnected(luaFile, towns, map, templateInfo);
+    createShotestPathsToConnected(luaFile, towns, map, templateInfo);
     if (config["debug"]){
         for(auto e : towns){
             std::cerr << e.first << " " << e.second << "\n";
         }
     }
+
+    placeGateCreatures(luaFile, map);
 
     //TEST STUFF
     AddArtifact(luaFile, "PENDANT_OF_COURAGE", 8, 1, 0);
