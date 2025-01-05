@@ -153,7 +153,7 @@ void generateLuaScript(const json& config) {
 
     RNG rng;
 
-    rng.setSeed(5);
+    rng.setSeed(12345);
 
     Map map(&rng);
     map.generateMap(templateInfo);

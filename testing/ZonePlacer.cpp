@@ -14,7 +14,7 @@ ZonePlacer::ZonePlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), tem
 }
 
 int3 ZonePlacer::getRealCoords(float3 f) {
-    return int3(std::max(0.0f, f.x * mapWidth - 1), std::max(0.0f, f.y * mapHeight - 1), f.z);
+    return int3(std::max(0.0f, (f.x * mapWidth) - 2), std::max(0.0f, f.y * mapHeight - 1), f.z);
 }
 
 void ZonePlacer::generateZones() {

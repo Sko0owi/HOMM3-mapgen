@@ -41,12 +41,31 @@
     {
       "size": "SMALL",
       "id": 4,
-      "owner": "PLAYER_4",
+      "owner": "NONE",
       "hero": "HERO_JENOVA",
       "terrain": "SWAMP",
       "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_INFERNO"
+        "count" : 0
+      }
+    },
+    {
+      "size": "SMALL",
+      "id": 5,
+      "owner": "NONE",
+      "hero": "HERO_JENOVA",
+      "terrain" : "DESERT",
+      "towns" : {
+        "count" : 0
+      }
+    },
+    {
+      "size": "SMALL",
+      "id": 7,
+      "owner": "NONE",
+      "hero": "HERO_JENOVA",
+      "terrain" : "SUBTERRANEAN",
+      "towns" : {
+        "count" : 0
       }
     },
     {
@@ -77,8 +96,33 @@
       "type": "road"
     },
     {
+      "zoneA": 1,
+      "zoneB": 5,
+      "type": "road"
+    },
+    {
+      "zoneA": 2,
+      "zoneB": 5,
+      "type": "road"
+    },
+    {
+      "zoneA": 3,
+      "zoneB": 5,
+      "type": "road"
+    },
+    {
       "zoneA": 4,
       "zoneB": 1,
+      "type": "road"
+    },
+    {
+      "zoneA": 3,
+      "zoneB": 7,
+      "type": "road"
+    },
+    {
+      "zoneA": 2,
+      "zoneB": 7,
       "type": "road"
     }
   ]
