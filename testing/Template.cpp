@@ -40,14 +40,27 @@ ZoneInfo::ZoneInfo(bool debug) {
 
 void ZoneInfo::addConnection(const json& connectionConfig) {
     ZoneConnection zoneConnection;
+    std::cerr << "ADDING " << connectionConfig["zoneA"].get<int>() << " " << connectionConfig["zoneB"].get<int>() << "\n";
     int zoneA = connectionConfig["zoneA"].get<int>();
     int zoneB = connectionConfig["zoneB"].get<int>();
     zoneConnection.setZoneA(zoneA);
     zoneConnection.setZoneB(zoneB);
+
+    std::cerr << "ADD2 " << zoneA << " " << zoneB << "\n";
     connections.push_back(zoneConnection);
+
+    std::cerr << "CURR STATE\n";
+    for (auto c : connections){
+        std::cerr << c.getZoneA() << " " << c.getZoneB() << "\n";
+    }
+    std::cerr << "\n";
 }
 
 std::vector<ZoneConnection> ZoneInfo::getConnections() {
+    std::cerr << "SIZE " << connections.size() <<  "\n";
+    for(auto e : connections){
+        std::cerr << e.getZoneA() << " " << e.getZoneB() << "\n";
+    }
     return connections;
 }
 

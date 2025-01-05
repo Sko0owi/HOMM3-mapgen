@@ -50,7 +50,8 @@ std::vector<std::pair<int, int>> GenerateSimplePath(int x1, int y1, int x2, int 
             if(TilePtr)
                 ZoneC = TilePtr->getZoneId();
 
-            if (TilePtr && !TilePtr->getIsEdge() && cameFrom.find({nx, ny}) == cameFrom.end() && (ZoneC == ZoneA || ZoneC == ZoneB)) {
+            if (TilePtr && !TilePtr->getIsEdge() && cameFrom.find({nx, ny}) == cameFrom.end() && (ZoneC == ZoneA || ZoneC == ZoneB) && 
+                    (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
                 q.emplace(nx, ny);
                 cameFrom[{nx, ny}] = {cx, cy};
             }
@@ -137,7 +138,7 @@ void generateLuaScript(const json& config) {
 
     RNG rng;
 
-    rng.setSeed(12345);
+    rng.setSeed(125);
 
     Map map(&rng);
     map.generateMap(templateInfo);

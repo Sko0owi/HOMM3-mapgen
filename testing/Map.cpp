@@ -64,6 +64,26 @@ std::shared_ptr<Tile> Map::getTile(i32 x, i32 y) {
     return nullptr;
 }
 
+bool Map::isMiddle(i32 x, i32 y){
+    int no = 0;
+
+    const int dx[] = {0, 0, -1, 1};
+    const int dy[] = {-1, 1, 0, 0};
+
+    for (int i = 0; i < 4; ++i) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            auto TilePtr = getTile(nx, ny);
+
+            if(TilePtr && TilePtr->getIsGate()){
+                no++;
+            }
+    }
+
+    return no > 2;
+}
+
 void Map::print() {
     std::cerr << "===================== MAP DEBUG =====================\n";
     std::cerr << "Map width: " << width << "\n";

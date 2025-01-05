@@ -18,6 +18,8 @@ public:
     i32 getWidth();
     i32 getHeight();
 
+    bool isMiddle(i32 x, i32 y);
+
     std::shared_ptr<Tile> getTile(i32 x, i32 y);
 
 private:
