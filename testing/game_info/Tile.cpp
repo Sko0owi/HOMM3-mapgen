@@ -5,7 +5,6 @@ Tile::Tile() {
     zoneId = -1;
     isBorder = false;
     isGate = false;
-    isMiddleGate = false;
     isRoad = false;
 }
 

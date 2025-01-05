@@ -25,7 +25,6 @@ private:
     int zoneId;
     bool isBorder;
     bool isGate;
-    bool isMiddleGate;
     bool isRoad;
 
     std::set<int> neighbourZones;
