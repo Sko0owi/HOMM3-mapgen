@@ -8,8 +8,8 @@ public:
     void setZoneId(int zoneId);
     int getZoneId();
 
-    void setIsEdge(bool isEdge);
-    bool getIsEdge();
+    void setIsBorder(bool isBorder);
+    bool getIsBorder();
 
     void setIsGate(bool isGate);
     bool getIsGate();
@@ -20,11 +20,16 @@ public:
     void setNeighbourZones(int zoneId);
     std::set<int> getNeighbourZones();
 
+    void setIsRoad(bool isRoad);
+
+    bool getIsRoad();
+
 private:
     int zoneId;
-    bool isEdge;
+    bool isBorder;
     bool isGate;
     bool isMiddleGate;
+    bool isRoad;
 
     std::set<int> neighbourZones;
 };

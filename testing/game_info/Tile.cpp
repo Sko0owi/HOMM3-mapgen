@@ -3,8 +3,10 @@
 
 Tile::Tile() {
     zoneId = -1;
-    isEdge = false;
+    isBorder = false;
     isGate = false;
+    isMiddleGate = false;
+    isRoad = false;
 }
 
 void Tile::setZoneId(int zoneId) {
@@ -15,12 +17,12 @@ int Tile::getZoneId() {
     return zoneId;
 }
 
-void Tile::setIsEdge(bool isEdge) {
-    this->isEdge = isEdge;
+void Tile::setIsBorder(bool isBorder) {
+    this->isBorder = isBorder;
 }
 
-bool Tile::getIsEdge() {
-    return isEdge;
+bool Tile::getIsBorder() {
+    return isBorder;
 }
 
 void Tile::setIsGate(bool isGate) {
@@ -29,6 +31,14 @@ void Tile::setIsGate(bool isGate) {
 
 bool Tile::getIsGate() {
     return isGate;
+}
+
+void Tile::setIsRoad(bool isRoad) {
+    this->isRoad = isRoad;
+}
+
+bool Tile::getIsRoad() {
+    return isRoad;
 }
 
 void Tile::setIsMiddleGate(bool isMiddleGate){

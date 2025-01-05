@@ -22,8 +22,8 @@ public:
 
     std::shared_ptr<Tile> getTile(i32 x, i32 y);
 
-    void setConnectedPairs(vector<std::tuple<int, int, int, int>> connectedPairs);
-    vector<std::tuple<int, int, int, int>>  getConnectedPairs();
+    void setConnectedPairs(vector<std::tuple<int, int, int, int, bool>> connectedPairs);
+    vector<std::tuple<int, int, int, int, bool>>  getConnectedPairs();
 
 private:
     i32 width;
@@ -31,7 +31,7 @@ private:
     MapZones zones;
 
     std::map<i32, map<i32, std::shared_ptr<Tile>>> Tiles;
-    vector<std::tuple<int, int, int, int>> connectedPairs;
+    vector<std::tuple<int, int, int, int, bool>> connectedPairs;
 
     RNG *rng;
 };

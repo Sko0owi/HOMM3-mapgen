@@ -1,6 +1,7 @@
 #include "./Map.h"
 #include "./Zone.h"
 #include "./Template.h"
+#include "./BorderPlacer.h"
 #include "./ZonePlacer.h"
 #include "./Faction.h"
 #include "./Tile.h"
@@ -45,14 +46,17 @@ void Map::generateMap(TemplateInfo &temp) {
     class ZonePlacer zonePlacer(*this, temp, rng);
 
     zonePlacer.generateZones();
-    setConnectedPairs(zonePlacer.getConnectedPairs());
+
+    class BorderPlacer borderPlacer(*this, temp);
+    borderPlacer.generateBorders();
+    setConnectedPairs(borderPlacer.getConnectedPairs());
 }
 
-void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int>> connectedPairs){
+void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool>> connectedPairs){
     this->connectedPairs = connectedPairs;
 }
 
-vector<std::tuple<int, int, int, int>> Map::getConnectedPairs(){
+vector<std::tuple<int, int, int, int, bool>> Map::getConnectedPairs(){
     return connectedPairs;
 }
 

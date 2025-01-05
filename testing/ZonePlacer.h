@@ -29,15 +29,6 @@ public:
     void paintTiles();
 
     void moveToCenterOfTheMass();
-    
-    bool areConnected(int ZoneA, int ZoneB);
-    bool isMapEdge(int x, int y);
-    void findOuter(int X, int Y, int *outerX1, int *outerY1, int *outerX2, int *outerY2, int zone1Id, int zone2Id);
-    void determineZoneEdges();
-    void connectZones();
-    void modifyRandomConnectionTile(int range = 1);
-    std::vector<std::tuple<int, int, int, int>> getConnectedPairs();
-    
 
     void prepareZones();
     bool evaluateZones(TDistanceVector &distances, TDistanceVector &overlaps, TBestSolution &bestSolution);
@@ -65,5 +56,5 @@ private:
     RNG *rng;
 
     std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> connections;
-    std::vector<std::tuple<int, int, int, int>> connectedPairs;
+    std::vector<std::tuple<int, int, int, int, bool>> connectedPairs;
 };

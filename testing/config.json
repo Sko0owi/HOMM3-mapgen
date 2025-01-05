@@ -8,7 +8,7 @@
     {
       "size": "SMALL",
       "id": 1,
-      "owner": "PLAYER_1",
+      "owner": "PLAYER_2",
       "hero": "HERO_CHRISTIAN",
       "terrain": "GRASS",
       "towns" : {
@@ -19,7 +19,7 @@
     {
       "size": "SMALL",
       "id": 2,
-      "owner": "PLAYER_2",
+      "owner": "PLAYER_1",
       "hero": "HERO_JENOVA",
       "terrain": "SNOW",
       "towns" : {

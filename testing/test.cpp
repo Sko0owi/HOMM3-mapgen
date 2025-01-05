@@ -4,100 +4,12 @@
 #include "../game_info/Tile.h"
 #include "../game_info/Town.h"
 #include "../Template.h"
+#include "../RoadPlacer.h"
 #include "../Map.h"
 #include "./Zone.h"
 #include "./global/Random.h"
 
 using json = nlohmann::json;
-
-std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int y2, Map& map) {
-    std::vector<std::pair<int, int>> path;
-
-    if (x1 == x2 && y1 == y2) {
-        path.emplace_back(x1, y1);
-        return path;
-    }
-
-    const int dx[] = {0, 0, -1, 1};
-    const int dy[] = {-1, 1, 0, 0};
-
-    std::queue<std::pair<int, int>> q;
-    std::map<std::pair<int, int>, std::pair<int, int>> cameFrom;
-
-    q.emplace(x1, y1);
-    cameFrom[{x1, y1}] = {-1, -1}; 
-
-    while (!q.empty()) {
-        auto [cx, cy] = q.front();
-        q.pop();
-
-        if (cx == x2 && cy == y2) {
-            while (cameFrom[{cx, cy}] != std::make_pair(-1, -1)) {
-                path.emplace_back(cx, cy);
-                std::tie(cx, cy) = cameFrom[{cx, cy}];
-            }
-            path.emplace_back(x1, y1);
-            std::reverse(path.begin(), path.end());
-            return path;
-        }
-
-        for (int i = 0; i < 4; ++i) {
-            int nx = cx + dx[i];
-            int ny = cy + dy[i];
-
-            auto TilePtr = map.getTile(nx, ny);
-
-            //!TilePtr->getIsEdge() &&
-            if (TilePtr && cameFrom.find({nx, ny}) == cameFrom.end() && 
-                    (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
-                q.emplace(nx, ny);
-                cameFrom[{nx, ny}] = {cx, cy};
-            }
-        }
-    }
-
-    return path;
-}
-
-void createShotestPathsToConnected(std::ofstream& luaFile, vector<std::tuple<int, int, int, int>> &connectedPairs, Map& map, TemplateInfo& temp) {
-    auto zonesI = temp.getZonesI();
-    std::set<std::pair<int, int>> processedConnections;
-
-    const int dx[] = {0, 0, -1, 1};
-    const int dy[] = {-1, 1, 0, 0};
-
-
-
-    luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
-    luaFile << "instance:terrain(function (x, y, z)\n";
-
-    for(auto e : connectedPairs){
-        auto [x1, y1, x2, y2] = e;
-        auto path = generateSimplePath(x1, y1, x2, y2, map);
-
-        for (const auto& point : path) {
-            auto TilePtr = map.getTile(point.first, point.second);
-            TilePtr->setIsEdge(false);
-
-            for (int i = 0; i < 4; ++i) {
-                int nx = point.first + dx[i];
-                int ny = point.second + dy[i];
-
-                auto TilePtr = map.getTile(nx, ny);
-
-                if (TilePtr && TilePtr->getIsEdge()) {
-                    TilePtr->setIsEdge(false);
-                }
-            }
-
-            luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
-        }
-
-    }
-    luaFile << "    return nil\n"; // Default terrain
-    luaFile << "end)\n";
-}
-
 
 void placeGateCreatures(std::ofstream& luaFile, Map& map){
     std::cerr << "Place creatures blocking gates\n";
@@ -111,6 +23,21 @@ void placeGateCreatures(std::ofstream& luaFile, Map& map){
             }
         }
     }
+
+        for (int y = 0; y < map.getHeight(); y++) {
+            for (int x = 0; x < map.getWidth(); x++) {
+                auto TilePtr = map.getTile(x, y);
+
+                if(TilePtr && TilePtr->getIsMiddleGate()){
+                    std::cerr << "G ";
+                } else if(TilePtr && TilePtr->getIsBorder()){
+                    std::cerr << "E ";
+                } else {
+                    std::cerr << ". ";
+                }
+            }
+            std::cerr << "\n";
+        }
 }
 
 void generateLuaScript(const json& config) {
@@ -169,12 +96,14 @@ void generateLuaScript(const json& config) {
         }
 
         AddHero(luaFile, zone.second);
-    }
+    }   
 
     auto connectedPairs = map.getConnectedPairs();
-    createShotestPathsToConnected(luaFile, connectedPairs, map, templateInfo);
+    
+    RoadPlacer roadPlacer;
+    roadPlacer.createShotestPathsToConnected(luaFile, connectedPairs, map, templateInfo);
 
-    AddEdgeObstacles(luaFile, map);
+    AddBorderObstacles(luaFile, map);
     
     if (config["debug"]){
         for(auto e : towns){
