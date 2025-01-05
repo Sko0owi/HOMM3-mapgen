@@ -31,10 +31,10 @@ bool Tile::getIsGate() {
     return isGate;
 }
 
-// void Tile::setNeighbourZones(int zoneId){
-//     this->neighbourZones.insert(zoneId);
-// }
+void Tile::setNeighbourZones(int zoneId){
+    this->neighbourZones.insert(zoneId);
+}
 
-// int Tile::getNeighbourZones(){
-//     return neighbourZones.size();
-// }
+int Tile::getNeighbourZones(){
+    return neighbourZones.size();
+}

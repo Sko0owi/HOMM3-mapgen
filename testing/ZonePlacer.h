@@ -29,6 +29,8 @@ public:
     void paintTiles();
     
     bool areConnected(int ZoneA, int ZoneB);
+    bool isMapEdge(int x, int y);
+    int countEdges(int x, int y);
     void determineZoneEdges();
     void modifyRandomConnectionTile(int range=1);
 

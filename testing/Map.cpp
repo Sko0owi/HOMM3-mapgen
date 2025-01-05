@@ -43,6 +43,7 @@ void Map::generateMap(TemplateInfo &temp) {
     }
 
     class ZonePlacer zonePlacer(*this, temp, rng);
+
     zonePlacer.generateZones();
 }
 

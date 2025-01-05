@@ -21,6 +21,6 @@ private:
     int zoneId;
     bool isEdge;
     bool isGate;
-
+    
     std::set<int> neighbourZones;
 };
