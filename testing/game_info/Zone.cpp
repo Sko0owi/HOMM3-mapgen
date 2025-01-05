@@ -37,6 +37,10 @@ void Zone::setOwnerId(i32 ownerId){
     this->ownerId = ownerId;
 }
 
+void Zone::setSize(i32 size){
+    this->size = size;
+}
+
 int3 Zone::getPosition(){
     return position;
 }
@@ -52,6 +56,10 @@ int Zone::getId(){
 }
 int Zone::getOwnerId(){
     return ownerId;
+}
+
+int Zone::getSize(){
+    return size;
 }
 
 std::vector<Town>& Zone::getTowns(){

@@ -1,5 +1,5 @@
 {
-  "debug": false,
+  "debug": true,
   "name": "2P Duel Template",
   "description": "A balanced map for 2 players with a contested central area.",
   "size": "SMALL",
@@ -29,10 +29,32 @@
     },
     {
       "size": "SMALL",
+      "id": 3,
+      "owner": "PLAYER_3",
+      "hero": "HERO_JENOVA",
+      "terrain": "LAVA",
+      "towns" : {
+        "count" : 1,
+        "faction" : "TOWN_INFERNO"
+      }
+    },
+    {
+      "size": "SMALL",
+      "id": 4,
+      "owner": "PLAYER_4",
+      "hero": "HERO_JENOVA",
+      "terrain": "SWAMP",
+      "towns" : {
+        "count" : 1,
+        "faction" : "TOWN_INFERNO"
+      }
+    },
+    {
+      "size": "SMALL",
       "id": 6,
       "owner": "NONE",
       "hero": "HERO_CHRISTIAN",
-      "terrain": "LAVA",
+      "terrain": "SAND",
       "towns" : {
         "count" : 0
       }
@@ -47,6 +69,16 @@
     {
       "zoneA": 2,
       "zoneB": 6,
+      "type": "road"
+    },
+    {
+      "zoneA": 4,
+      "zoneB": 3,
+      "type": "road"
+    },
+    {
+      "zoneA": 4,
+      "zoneB": 1,
       "type": "road"
     }
   ]

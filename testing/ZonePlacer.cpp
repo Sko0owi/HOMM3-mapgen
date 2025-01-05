@@ -184,11 +184,236 @@ void ZonePlacer::placeZones() {
     std::cerr << "Placing zones on real Map\n";
 
     auto zones = map.getZones();
+
+    prepareZones();
+
+    TBestSolution bestSolution;
+
+	TForceVector forces;
+	TForceVector totalForces;
+	TDistanceVector distances;
+	TDistanceVector overlaps;
+
+    // bool check = evaluateZones(distances, overlaps, bestSolution);
+    // std::cerr << "Check: " << check << "\n";
+
+
+    for (stifness = stiffnessConstant / zones.size(); stifness <= stiffnessConstant;)
+	{
+        //1. attract connected zones
+		attractConnectedZones(forces, distances);
+		for(const auto & zone : forces)
+		{
+			zone.first->setCenter (zone.first->getCenter() + zone.second);
+			totalForces[zone.first] = zone.second; //override
+		}
+
+        //2. separate overlapping zones
+		separateOverlappingZones(forces, overlaps);
+		for(const auto & zone : forces)
+		{
+			zone.first->setCenter (zone.first->getCenter() + zone.second);
+			totalForces[zone.first] += zone.second; //accumulate
+		}
+
+        bool improved = evaluateZones(distances, overlaps, bestSolution);
+
+
+		if (!improved)
+		{
+			//Only cool down if we didn't see any improvement
+			stifness *= stiffnessIncreaseFactor;
+		}
+
+        std::cerr << "Total distance: " << bestTotalDistance << " Total overlap: " << bestTotalOverlap << " Improvement: " << improved << "\n";
+
+    }
+
+
+
+
     for(auto& zone : zones) {
-        auto realCoords = getRealCoords(zone.second->getCenter());
+        auto realCoords = getRealCoords(bestSolution[zone.second]);
         zone.second->setPosition(realCoords);
     }
 }
+
+void ZonePlacer::attractConnectedZones(TForceVector &forces, TDistanceVector &distances) {
+    auto zones = map.getZones();
+
+    for(const auto & zone : zones)
+	{
+		float3 forceVector(0, 0, 0);
+		float3 pos = zone.second->getCenter();
+		float totalDistance = 0;
+
+        for(auto c : temp.getZonesI()[zone.first]->getConnections()) {
+            if (c.getZoneA() == c.getZoneB())
+			{
+				continue;
+			}
+
+            auto otherZone = zones[c.getOtherZone(zone.second->getId())];
+			float3 otherZoneCenter = otherZone->getCenter();
+			auto distance = pos.distance2DSQ(otherZoneCenter);
+			
+			forceVector += (otherZoneCenter - pos) * distance * gravityConstant; //positive value
+
+			//Attract zone centers always
+
+			float minDistance = 0;
+
+            float mapSize = sqrt(mapWidth * mapHeight);
+
+			
+			minDistance = (zone.second->getSize() + otherZone->getSize()) / mapSize; //scale down to (0,1) coordinates
+
+            std::cerr << "Zone id: " << zone.first << " otherZoneID " << c.getOtherZone(zone.second->getId()) << " Distance: " << distance << " Min distance: " << minDistance << "\n";
+
+			if (distance > minDistance)
+				totalDistance += (distance - minDistance);
+        }
+
+        std::cerr << "Zone id: " << zone.first << " Total distance: " << totalDistance << "\n";
+        distances[zone.second] = totalDistance;
+        forceVector.z = 0; //operator - doesn't preserve z coordinate :/
+        forces[zone.second] = forceVector;
+    }
+
+}   
+
+void ZonePlacer::separateOverlappingZones(TForceVector &forces, TDistanceVector &overlaps) {
+    auto zones = map.getZones();
+
+    for(const auto & zone : zones)
+    {
+        float3 forceVector(0, 0, 0);
+        float3 pos = zone.second->getCenter();
+        float overlap = 0;
+
+        for(auto& otherZone : zones) {
+            if (zone.first == otherZone.first)
+            {
+                continue;
+            }
+
+            float3 otherZoneCenter = otherZone.second->getCenter();
+            auto distance = pos.distance2DSQ(otherZoneCenter);
+            float minDistance = (zone.second->getSize() + otherZone.second->getSize()) / sqrt(mapWidth * mapHeight); //scale down to (0,1) coordinates
+
+            if (distance < minDistance)
+            {
+
+                float3 localForce = (((otherZoneCenter - pos)*(minDistance / (distance ? distance : 1e-3f))) / (distance ? distance * distance : 1e-6f)) * stifness;
+				//negative value
+				// localForce *= scaleForceBetweenZones(zone.second, otherZone.second);
+				forceVector -= localForce * (DistancesBetweenZones[zone.second->getId()][otherZone.second->getId()] / 2.0f);
+				overlap += (minDistance - distance); //overlapping of small zones hurts us more
+            }
+        }
+
+
+        //move zones away from boundaries
+		//do not scale boundary distance - zones tend to get squashed
+		float size = zone.second->getSize() / sqrt(mapWidth * mapHeight);
+
+		auto pushAwayFromBoundary = [&forceVector, pos, size, &overlap, this](float x, float y)
+		{
+			float3 boundary = float3(x, y, pos.z);
+			auto distance = static_cast<float>(pos.distance2DSQ(boundary));
+			overlap += std::max<float>(0, distance - size); //check if we're closer to map boundary than value of zone size
+			forceVector -= (boundary - pos) * (size - distance) / (distance ? distance * distance : 1e-6f) * stifness; //negative value
+		};
+		if (pos.x < size)
+		{
+			pushAwayFromBoundary(0, pos.y);
+		}
+		if (pos.x > 1 - size)
+		{
+			pushAwayFromBoundary(1, pos.y);
+		}
+		if (pos.y < size)
+		{
+			pushAwayFromBoundary(pos.x, 0);
+		}
+		if (pos.y > 1 - size)
+		{
+			pushAwayFromBoundary(pos.x, 1);
+		}
+
+
+        overlaps[zone.second] = overlap;
+		forceVector.z = 0; //operator - doesn't preserve z coordinate :/
+		forces[zone.second] = forceVector;
+    }
+}
+
+bool ZonePlacer::evaluateZones(TDistanceVector &distances, TDistanceVector &overlaps, TBestSolution &bestSolution) {
+    auto zones = map.getZones();
+
+    bool improvement = false;
+
+    float totalDistance = 0;
+    float totalOverlap = 0;
+    for (const auto& zone : distances) //find most misplaced zone
+    {
+        totalDistance += zone.second;
+        float overlap = overlaps[zone.first];
+        totalOverlap += overlap;
+    }
+    //check fitness function
+    if ((totalDistance + 1) * (totalOverlap + 1) < (bestTotalDistance + 1) * (bestTotalOverlap + 1))
+    {
+        //multiplication is better for auto-scaling, but stops working if one factor is 0
+        improvement = true;
+    }
+
+    //Save best solution
+    if (improvement)
+    {
+        bestTotalDistance = totalDistance;
+        bestTotalOverlap = totalOverlap;
+
+        for (const auto& zone : zones)
+            bestSolution[zone.second] = zone.second->getCenter();
+    }
+
+    return improvement;
+    
+}
+
+void ZonePlacer::prepareZones() {
+    auto zones = map.getZones();
+
+    float totalSize[2]; // 0 - above, 1 - underground 
+    totalSize[0] = 0;
+    totalSize[1] = 0; 
+
+    for(auto& zone : zones) {
+        auto zoneSize = zone.second->getSize();
+
+        totalSize[0] += zoneSize * zoneSize;
+    }
+
+    /*
+	prescale zones
+
+	formula: sum((prescaler*n)^2)*pi = WH
+
+	prescaler = sqrt((WH)/(sum(n^2)*pi))
+	*/
+
+    float prescaler = std::sqrt((mapWidth * mapHeight) / (totalSize[0] * PI_CONSTANT));
+
+    for(auto& zone : zones) {
+        auto zoneSize = zone.second->getSize();
+        zoneSize = zoneSize * prescaler;
+        zone.second->setSize(zoneSize);
+    }
+
+}
+
+
 
 void ZonePlacer::paintTiles() {
     std::cerr << "Painting tiles\n";
@@ -337,6 +562,8 @@ void ZonePlacer::modifyRandomConnectionTile(int range) {
 
     for(auto e : zonesI){
         for(auto c : e.second->getConnections()){
+
+            std::cerr << e.first << " " << c.getZoneA() << " " << c.getZoneB() << "\n";
             zone1 = c.getZoneA();
             zone2 = c.getZoneB();
             
@@ -372,4 +599,5 @@ void ZonePlacer::modifyRandomConnectionTile(int range) {
             }
         }
     }
+    std::cerr << "Finished modifying connection tiles\n";
 }

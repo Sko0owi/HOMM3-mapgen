@@ -17,6 +17,7 @@ void setPosition(int3 pos);
 void setCenter(float3 cent);
 void setTerrain(Terrain ter);
 void setOwnerId(i32 ownerId);
+void setSize(i32 size);
 
 std::vector<Town>& getTowns();
 int3 getPosition();
@@ -24,6 +25,7 @@ float3 getCenter();
 Terrain getTerrain();
 int getId();
 int getOwnerId();
+int getSize();
 
 
 void printZone();
@@ -34,6 +36,8 @@ private:
     float3 center;
     Terrain terrain;
     i32 id;
+
+    i32 size = 1000;
 
     i32 ownerId;
 

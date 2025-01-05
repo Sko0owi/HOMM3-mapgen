@@ -55,8 +55,8 @@ void AddHero(std::ofstream& luaFile, std::shared_ptr<Zone>& zone) {
 void AddTerrainTiles(std::ofstream& luaFile, Map& map){
     luaFile << "instance:terrain(function (x, y, z)\n";
 
-    for(int x = 0; x < map.getWidth(); x++){
-        for(int y = 0; y < map.getHeight(); y++){
+    for(int y = 0; y < map.getHeight(); y++){
+        for(int x = 0; x < map.getWidth(); x++){
             auto tile = map.getTile(x, y);
             int tileZoneId = tile->getZoneId();
             bool isTileEdge = tile->getIsEdge();
