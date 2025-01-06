@@ -16,24 +16,6 @@ void BorderPlacer::generateBorders() {
 
     determineZoneBorders();
     createExtenstion();
-    // for (int y = 0; y < map.getHeight(); y++) {
-    //     for (int x = 0; x < map.getWidth(); x++) {
-    //         auto TilePtr = map.getTile(x, y);
-
-    //         if(TilePtr->getIsGate()){
-    //             std::cerr << "G ";
-    //         } 
-    //         // else if(TilePtr->getIsRoad()){    std::cerr << "R ";} 
-    //         else if(TilePtr->getIsExtension()){
-    //             std::cerr << "E ";
-    //         } else if(TilePtr->getIsBorder()){
-    //             std::cerr << "B ";
-    //         } else {
-    //             std::cerr << ". ";
-    //         }
-    //     }
-    //     std::cerr << "\n";
-    // }
     connectZones();
     fixBorders();
 }

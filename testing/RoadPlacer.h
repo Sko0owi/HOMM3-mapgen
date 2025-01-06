@@ -15,6 +15,8 @@ public:
     void writeRoadsToFile(std::ofstream &luaFile);
 
     void clearSquares();
+    void fixBorders();
+    bool gateSquare(int x, int y);
 
 private:
     std::map<int, std::map<int, size_t>> DistancesBetweenZones;
@@ -22,6 +24,6 @@ private:
     Map & map;
     TemplateInfo & temp;
 
-    static constexpr int dx[] = {-1, 1, 0, 0, -1, -1, 1, 1};
-    static constexpr int dy[] = {0, 0, -1, 1, -1, 1, -1, 1};
+    static constexpr int dx[] = {0, -1, 1, 0, -1, -1, 1, 1};
+    static constexpr int dy[] = {1, 0, 0, -1, -1, 1, -1, 1};
 };
