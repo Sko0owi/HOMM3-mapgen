@@ -31,14 +31,14 @@ void placeGateCreatures(std::ofstream& luaFile, Map& map){
             // if(TilePtr->getIsGate()){
             //     std::cerr << "G ";
             // } 
-            // if(TilePtr->getIsRoad()){    std::cerr << "R ";} 
+            if(TilePtr->getIsRoad()){    std::cerr << "R ";} 
             // else if(TilePtr->getIsExtension()){
             //     std::cerr << "E ";
             // } 
             // else 
-            if(TilePtr->getIsBorder()){
-                std::cerr << "B ";
-            } 
+            // if(TilePtr->getIsBorder()){
+            //     std::cerr << "B ";
+            // } 
             else {
                 std::cerr << ". ";
             }

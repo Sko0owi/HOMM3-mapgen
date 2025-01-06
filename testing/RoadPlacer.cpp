@@ -68,13 +68,122 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
     return path;
 }
 
-void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
-    auto zonesI = temp.getZonesI();
-    std::set<std::pair<int, int>> processedConnections;
-
+void RoadPlacer::writeRoadsToFile(std::ofstream& luaFile){
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
 
+    for (int x = 0; x < map.getWidth(); x++){
+        for (int y = 0; y < map.getHeight(); y++){
+            auto TilePtr = map.getTile(y, x);
+            if (TilePtr->getIsRoad()) {            
+                luaFile << "    if x == " << y << " and y == " << x << " then return nil, 3 end\n";
+                std::cerr << "R ";
+            } else{
+                std::cerr << ". ";
+            }
+        }
+        std::cerr << "\n";
+    }
+
+    luaFile << "    return nil\n"; // Default terrain
+    luaFile << "end)\n";
+}
+
+void RoadPlacer::clearSquares(){
+    // TODO PLS DO IT IN SMART 100% WORKING WAY
+    for (int x = 0; x < map.getWidth() - 1; x++){
+        for (int y = 0; y < map.getHeight() - 1; y++){
+            bool found = true;
+
+            found = (map.getTile(x, y)->getIsRoad() && map.getTile(x + 1, y)->getIsRoad() && map.getTile(x, y + 1)->getIsRoad() && map.getTile(x + 1, y + 1)->getIsRoad());
+
+            if(found){
+
+                auto Tile1 = map.getTile(x, y - 1), Tile2 = map.getTile(x, y + 2), Tile3 = map.getTile(x, y - 1);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x + 2, y);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x + 2, y + 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+
+                    map.getTile(x + 1, y)->setIsRoad(false);
+                    map.getTile(x + 1, y + 1)->setIsRoad(false);
+                    continue;
+                }
+
+                Tile1 = map.getTile(x + 1, y - 1), Tile2 = map.getTile(x + 1, y + 2);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x - 1, y);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x - 1, y + 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    map.getTile(x, y)->setIsRoad(false);
+                    map.getTile(x, y + 1)->setIsRoad(false);
+                    continue;
+                }
+
+                Tile1 = map.getTile(x - 1, y), Tile2 = map.getTile(x + 2, y);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x + 1, y + 2);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x, y + 2);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    map.getTile(x, y + 1)->setIsRoad(false);
+                    map.getTile(x + 1, y + 1)->setIsRoad(false);
+                    continue;
+                }
+
+                Tile1 = map.getTile(x - 1, y + 1), Tile2 = map.getTile(x + 2, y + 1);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x, y - 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x + 1, y - 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    map.getTile(x, y)->setIsRoad(false);
+                    map.getTile(x + 1, y)->setIsRoad(false);
+                    continue;
+                }
+            }
+        }
+    }
+}
+
+void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
+    auto zonesI = temp.getZonesI();
+    std::set<std::pair<int, int>> processedConnections;
+    
     for(auto e : connectedPairs){
         auto [x1, y1, x2, y2, castle] = e;
         auto path = generateSimplePath(x1, y1, x2, y2);
@@ -102,11 +211,11 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
                 }
             }
 
-            luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
         }
     }
-    luaFile << "    return nil\n"; // Default terrain
-    luaFile << "end)\n";
+
+    clearSquares();
+    writeRoadsToFile(luaFile);
 }
 
 
