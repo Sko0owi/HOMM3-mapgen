@@ -1,3 +1,4 @@
+#pragma once
 
 #include "./global/Global.h"
 #include <nlohmann/json.hpp> 
