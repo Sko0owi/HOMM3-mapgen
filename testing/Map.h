@@ -8,6 +8,7 @@ class Tile;
 class Zone;
 class TemplateInfo;
 class RNG;
+class Town;
 
 using MapZones = std::map<i32, std::shared_ptr<Zone>>;
 class Map {
@@ -17,9 +18,15 @@ public:
     ~Map();
     void generateMap(TemplateInfo &temp);
     void print();
+    
+    void addTown(Town town);
+    
+    std::vector<Town> getTowns();
     MapZones & getZones();
     i32 getWidth();
     i32 getHeight();
+
+
 
     bool isMiddle(i32 x, i32 y);
 
@@ -32,6 +39,9 @@ private:
     i32 width;
     i32 height;
     MapZones zones;
+
+    std::vector<Town> towns;
+    
 
     std::map<i32, map<i32, std::shared_ptr<Tile>>> Tiles;
     vector<std::tuple<int, int, int, int, bool>> connectedPairs;

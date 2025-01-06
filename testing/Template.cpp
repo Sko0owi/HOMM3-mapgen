@@ -125,6 +125,8 @@ void ZoneInfo::deserializeZone(const json& config) {
         if(debug)
             std::cerr << "Sanity check1: " << town_faction << "\n";
         town.setFaction(stringToFaction(config["towns"]["faction"].get<std::string>()));
+        town.setOwner(decodeOwner(ownerStr));
+        town.setName("TOWN_");
         if(debug)
             std::cerr << "Sanity check: " << factionToString(town.getFaction()) << "\n";
         addTown(town);

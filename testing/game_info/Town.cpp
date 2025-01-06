@@ -15,3 +15,11 @@ void Town::setFaction(Faction faction) {
 Faction Town::getFaction() const {
     return faction;
 }
+
+void Town::setOwner(int owner) {
+    this->owner = owner;
+}
+
+int Town::getOwner() const {
+    return owner;
+}

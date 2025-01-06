@@ -14,7 +14,7 @@ public:
 
     void placeObjects();
 
-    
+    void placeTowns();
 
 
 private:

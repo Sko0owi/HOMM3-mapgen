@@ -12,7 +12,7 @@ class Zone;
 class Town;
 
 void AddPlayer(std::ofstream& luaFile, int playerId);
-void AddTown(std::ofstream &luaFile, std::shared_ptr<Zone> &zone, Town town, bool is_main = true);
+void AddTown(std::ofstream &luaFile, Town town, bool is_main = true);
 void AddHero(std::ofstream &luaFile, std::shared_ptr<Zone> &zone);
 void AddTerrainTiles(std::ofstream& luaFile, Map& map);
 void AddBorderObstacles(std::ofstream &luaFile, Map &map);
