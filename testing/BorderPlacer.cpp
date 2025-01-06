@@ -15,7 +15,29 @@ void BorderPlacer::generateBorders() {
     mapHeight = map.getHeight();
 
     determineZoneBorders();
+    createExtenstion();
     connectZones();
+    fixBorders();
+}
+
+void BorderPlacer::createExtenstion(){
+    for (int y = 0; y < mapHeight; y++){
+        for (int x = 0; x < mapWidth; x++) {
+            auto TilePtr = map.getTile(x, y);
+
+            for (int i = 0; i < 4; i++){
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                auto NeighborTilePtr = map.getTile(nx, ny);
+
+                if(!TilePtr->getIsBorder() && NeighborTilePtr && NeighborTilePtr->getIsBorder()){
+                    TilePtr->setIsExtension(true);
+                }
+            }
+        }
+    }
+
 }
 
 bool BorderPlacer::areConnected(int ZoneA, int ZoneB){
@@ -51,32 +73,50 @@ bool BorderPlacer::isMapBorder(int x, int y){
 }
 
 void BorderPlacer::findOuter(int X, int Y, int *outerX1, int *outerY1, int *outerX2, int *outerY2, int zone1Id, int zone2Id){
-    std::queue<std::tuple<int, int, int, int>> q;
-    std::set<std::pair<int, int>> visited;
+    using Node = std::tuple<int, int, int, int, double>; // x, y, fromx, fromy, dist
+    
+    auto cmp = [](const Node &a, const Node &b) {
+        return std::get<4>(a) > std::get<4>(b); // Comparator for Node
+    };
 
-    const int dx[] = {-1, 1, 0, 0};
-    const int dy[] = {0, 0, -1, 1};
+    std::priority_queue<Node, std::vector<Node>, decltype(cmp)> pq(cmp);
+    std::vector<std::vector<double>> distance(mapHeight, std::vector<double>(mapWidth, std::numeric_limits<double>::max()));
 
-    q.emplace(X, Y, -1, -1);
-    visited.insert({X, Y});
+    const int dx[] = {-1, 1, 0, 0, -1, -1, 1, 1};
+    const int dy[] = {0, 0, -1, 1, -1, 1, -1, 1};
 
-    while (!q.empty()) {
-        auto [cx, cy, fromx, fromy] = q.front();
-        q.pop();
+    pq.emplace(X, Y, -1, -1, 0.0);
+    distance[Y][X] = 0;
 
-        for (int i = 0; i < 4; ++i) {
+    while (!pq.empty()) {
+        auto [cx, cy, fromx, fromy, dist] = pq.top();
+        pq.pop();
+
+        if (dist > distance[cy][cx]) continue;
+
+        for (int i = 0; i < 8; ++i) {
             int nx = cx + dx[i];
             int ny = cy + dy[i];
 
-            if (visited.count({nx, ny})) continue;
+            double delta = sqrt((nx - cx) * (nx - cx) + (ny - cy) * (ny - cy));
+
+            if (nx < 0 || ny < 0 || nx >= mapWidth || ny >= mapHeight) continue;
         
             auto TilePtr = map.getTile(nx, ny);
             int ZoneC = -1;
             if(TilePtr)
                 ZoneC = TilePtr->getZoneId();
 
+            int newDist = dist + delta;
+
+            // if(TilePtr->getIsExtension()) //We would want to run from extension tiles
+            //     newDist += 1.0;
+
+            if (newDist < distance[ny][nx])
+                distance[ny][nx] = newDist;
+
             if(zone1Id == ZoneC && !TilePtr->getIsBorder()){ // We didn't get out of zone
-                q.emplace(nx, ny, -1, -1);
+                pq.emplace(nx, ny, -1, -1, newDist);
             } else if (zone2Id == ZoneC && !TilePtr->getIsBorder()) { // We found good zone 
                 (*outerX1) = fromx;
                 (*outerY1) = fromy;
@@ -86,15 +126,13 @@ void BorderPlacer::findOuter(int X, int Y, int *outerX1, int *outerY1, int *oute
             }
             else if (((zone1Id == ZoneC && TilePtr->getIsBorder()) || (zone2Id == ZoneC && TilePtr->getIsBorder())) && fromx != -1)
             { // Travelling through Border
-                q.emplace(nx, ny, fromx, fromy);
+                pq.emplace(nx, ny, fromx, fromy, newDist);
             }
             else
             { // We get out of zone
                 if(ZoneC == zone1Id || ZoneC == zone2Id)
-                    q.emplace(nx, ny, cx, cy);
+                    pq.emplace(nx, ny, cx, cy, newDist);
             }
-
-            visited.insert({nx, ny});
         }
     }
 }
@@ -126,7 +164,6 @@ void BorderPlacer::connectZones() {
                 int Y = zone1.second->getPosition().y;
 
                 int outerX1 = -1, outerY1 = -1, outerX2 = -1, outerY2 = -1;
-
                 findOuter(X, Y, &outerX1, &outerY1, &outerX2, &outerY2, zone1Id, zone2Id);
                 connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false); // Add points of connection
 
@@ -189,8 +226,6 @@ void BorderPlacer::determineZoneBorders() {
             int currentZoneId = TilePtr->getZoneId();
             bool isBorder = false;
     
-            int dx[] = {-1, 1, 0, 0};
-            int dy[] = {0, 0, -1, 1};
             for (int i = 0; i < 4; i++)
             {
                 int nx = x + dx[i];
@@ -215,4 +250,12 @@ void BorderPlacer::determineZoneBorders() {
             }
         }
     }
+}
+
+bool BorderPlacer::roadInRange(int range){
+    return true;
+}
+
+void BorderPlacer::fixBorders(){
+
 }

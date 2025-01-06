@@ -18,16 +18,24 @@ public:
     void findOuter(int X, int Y, int *outerX1, int *outerY1, int *outerX2, int *outerY2, int zone1Id, int zone2Id);
     void determineZoneBorders();
     void connectZones();
-    
+
+    void createExtenstion();
+
+    bool roadInRange(int range = 1);
+    void fixBorders();
+
     std::vector<std::tuple<int, int, int, int, bool>> getConnectedPairs();
-    
+
 private:
     int mapWidth;
     int mapHeight;
     bool debug = false;
 
-    Map & map;
-    TemplateInfo & temp;
+    static constexpr int dx[] = {-1, 1, 0, 0};
+    static constexpr int dy[] = {0, 0, -1, 1};
+
+    Map &map;
+    TemplateInfo &temp;
 
     std::vector<std::tuple<int, int, int, int, bool>> connectedPairs;
 };

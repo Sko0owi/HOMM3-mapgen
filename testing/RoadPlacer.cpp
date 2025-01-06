@@ -13,39 +13,54 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
         return path;
     }
 
-    const int dx[] = {0, 0, -1, 1};
-    const int dy[] = {-1, 1, 0, 0};
+    int mapHeight = map.getHeight();
+    int mapWidth = map.getWidth();
 
-    std::queue<std::pair<int, int>> q;
-    std::map<std::pair<int, int>, std::pair<int, int>> cameFrom;
+    std::vector<std::vector<int>> distance(mapHeight, std::vector<int>(mapWidth, std::numeric_limits<int>::max()));
+    distance[y1][x1] = 0;
 
-    q.emplace(x1, y1);
-    cameFrom[{x1, y1}] = {-1, -1}; 
+    std::queue<std::vector<std::pair<int, int>>> q;
+    q.push({{x1, y1}}); 
 
     while (!q.empty()) {
-        auto [cx, cy] = q.front();
+        std::vector<std::pair<int, int>> currentPath = q.front();
         q.pop();
 
+        auto [cx, cy] = currentPath.back();
+
         if (cx == x2 && cy == y2) {
-            while (cameFrom[{cx, cy}] != std::make_pair(-1, -1)) {
-                path.emplace_back(cx, cy);
-                std::tie(cx, cy) = cameFrom[{cx, cy}];
-            }
-            path.emplace_back(x1, y1);
-            std::reverse(path.begin(), path.end());
-            return path;
+            return currentPath;
         }
 
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 8; ++i) {
             int nx = cx + dx[i];
             int ny = cy + dy[i];
 
+            if (nx < 0 || nx >= mapWidth || ny < 0 || ny >= mapHeight) continue;
+
             auto TilePtr = map.getTile(nx, ny);
 
-            if (TilePtr && cameFrom.find({nx, ny}) == cameFrom.end() && 
-                    (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
-                q.emplace(nx, ny);
-                cameFrom[{nx, ny}] = {cx, cy};
+            if (TilePtr && (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
+                int newDistance = distance[cy][cx] + 1; 
+
+                if (newDistance < distance[ny][nx]) {
+                    distance[ny][nx] = newDistance;
+
+                    std::vector<std::pair<int, int>> newPath = currentPath;
+
+                    if (i == 4) { // LU
+                        newPath.emplace_back(cx, cy + dy[i]);
+                    } else if (i == 5) { // LD 
+                        newPath.emplace_back(cx + dx[i], cy);
+                    } else if (i == 6) { // RU
+                        newPath.emplace_back(cx + dx[i], cy);
+                    } else if (i == 7) { // RD
+                        newPath.emplace_back(cx, cy + dy[i]);
+                    }
+
+                    newPath.emplace_back(nx, ny); 
+                    q.push(newPath);
+                }
             }
         }
     }
@@ -53,35 +68,186 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
     return path;
 }
 
+void RoadPlacer::writeRoadsToFile(std::ofstream& luaFile){
+    luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
+    luaFile << "instance:terrain(function (x, y, z)\n";
+
+    for (int x = 0; x < map.getWidth(); x++){
+        for (int y = 0; y < map.getHeight(); y++){
+            auto TilePtr = map.getTile(y, x);
+            if (TilePtr->getIsRoad()) {            
+                luaFile << "    if x == " << y << " and y == " << x << " then return nil, 3 end\n";
+            }
+        }
+    }
+
+    luaFile << "    return nil\n"; // Default terrain
+    luaFile << "end)\n";
+}
+
+void RoadPlacer::fixBorders(){
+    for (int x = 0; x < map.getWidth() - 1; x++){
+        for (int y = 0; y < map.getHeight() - 1; y++){
+            int cnt = 0;
+
+            auto Tile = map.getTile(x, y);
+
+            if(!(Tile->getIsExtension() || Tile->getIsBorder())){ // If is empty
+                for (int i = 0; i < 4; i++){
+                    int nx = x + dx[i];
+                    int ny = y + dy[i];
+
+                    auto TileNeigbour = map.getTile(nx, ny);
+
+                    if(TileNeigbour && (TileNeigbour->getIsExtension() || TileNeigbour->getIsBorder())){
+                        cnt++;
+                    }
+                }
+            }
+
+            if(cnt >= 3)
+                Tile->setIsBorder(true);
+        }
+    }
+}
+
+void RoadPlacer::clearSquares(){
+    // TODO PLS DO IT IN SMART 100% WORKING WAY
+    for (int x = 0; x < map.getWidth() - 1; x++){
+        for (int y = 0; y < map.getHeight() - 1; y++){
+            bool found = true;
+
+            found = (map.getTile(x, y)->getIsRoad() && map.getTile(x + 1, y)->getIsRoad() && map.getTile(x, y + 1)->getIsRoad() && map.getTile(x + 1, y + 1)->getIsRoad());
+
+            if(found){
+
+                auto Tile1 = map.getTile(x, y - 1), Tile2 = map.getTile(x, y + 2), Tile3 = map.getTile(x, y - 1);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x + 2, y);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x + 2, y + 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+
+                    map.getTile(x + 1, y)->setIsRoad(false);
+                    map.getTile(x + 1, y + 1)->setIsRoad(false);
+                    continue;
+                }
+
+                Tile1 = map.getTile(x + 1, y - 1), Tile2 = map.getTile(x + 1, y + 2);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x - 1, y);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x - 1, y + 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    map.getTile(x, y)->setIsRoad(false);
+                    map.getTile(x, y + 1)->setIsRoad(false);
+                    continue;
+                }
+
+                Tile1 = map.getTile(x - 1, y), Tile2 = map.getTile(x + 2, y);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x + 1, y + 2);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x, y + 2);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y + 1)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    map.getTile(x, y + 1)->setIsRoad(false);
+                    map.getTile(x + 1, y + 1)->setIsRoad(false);
+                    continue;
+                }
+
+                Tile1 = map.getTile(x - 1, y + 1), Tile2 = map.getTile(x + 2, y + 1);
+                if(Tile1 && Tile2 && Tile1->getIsRoad() && Tile2->getIsRoad()){
+                    Tile3 = map.getTile(x, y - 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x + 1, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    Tile3 = map.getTile(x + 1, y - 1);
+                    if(Tile3 && Tile3->getIsRoad()){
+                        map.getTile(x, y)->setIsRoad(false);
+                        continue;
+                    } 
+
+                    map.getTile(x, y)->setIsRoad(false);
+                    map.getTile(x + 1, y)->setIsRoad(false);
+                    continue;
+                }
+            }
+        }
+    }
+}
+
+bool RoadPlacer::gateSquare(int x, int y){
+    auto Tile1 = map.getTile(x + 1, y), Tile2 = map.getTile(x - 1, y);
+    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+        std::cerr << x << " " << y << " 1\n";
+        return true;
+    }
+
+    Tile1 = map.getTile(x, y + 1), Tile2 = map.getTile(x, y - 1);
+    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+        std::cerr << x << " " << y << " 2\n";
+        return true;
+    }
+
+    Tile1 = map.getTile(x + 1, y + 1), Tile2 = map.getTile(x - 1, y - 1);
+    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+        std::cerr << x << " " << y << " 3\n";
+        return true;
+    }
+
+    Tile1 = map.getTile(x + 1, y - 1), Tile2 = map.getTile(x - 1, y + 1);
+    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+        std::cerr << x << " " << y << " 4\n";
+        return true;
+    }
+
+    return false;
+}
+
 void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
     auto zonesI = temp.getZonesI();
     std::set<std::pair<int, int>> processedConnections;
-
-    const int dx[] = {0, 0, -1, 1};
-    const int dy[] = {-1, 1, 0, 0};
-
-
-
-    luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
-    luaFile << "instance:terrain(function (x, y, z)\n";
+    
+    fixBorders();
 
     for(auto e : connectedPairs){
         auto [x1, y1, x2, y2, castle] = e;
         auto path = generateSimplePath(x1, y1, x2, y2);
 
-        int j = 0, max = path.size();
         for (const auto &point : path)
         {
             auto TilePtr = map.getTile(point.first, point.second);
             TilePtr->setIsBorder(false);
+            TilePtr->setIsExtension(false);
             TilePtr->setIsRoad(true);
 
-            if(j == max-2 && !castle){
-                TilePtr->setIsGate(true);
-            }
-            j++;
-
-            for (int i = 0; i < 4; ++i) {
+            for (int i = 0; i < 1; ++i) {
                 int nx = point.first + dx[i];
                 int ny = point.second + dy[i];
 
@@ -89,12 +255,28 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
 
                 if (TilePtr && TilePtr->getIsBorder()) {
                     TilePtr->setIsBorder(false);
+                    TilePtr->setIsExtension(false);
                 }
             }
 
-            luaFile << "    if x == " << point.first << " and y == " << point.second << " then return nil, 3 end\n";
+
+        }
+
+        if(!castle){
+            for (const auto &point : path)
+            {
+                auto TilePtr = map.getTile(point.first, point.second);
+                if(gateSquare(point.first, point.second)){
+                    TilePtr->setIsGate(true);
+                    break;
+                }
+
+            }
         }
     }
-    luaFile << "    return nil\n"; // Default terrain
-    luaFile << "end)\n";
+
+    clearSquares();
+    writeRoadsToFile(luaFile);
 }
+
+

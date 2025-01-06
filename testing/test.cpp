@@ -19,25 +19,31 @@ void placeGateCreatures(std::ofstream& luaFile, Map& map){
             auto TilePtr = map.getTile(x, y);
 
             if(TilePtr && TilePtr->getIsGate()){
-                AddCreature(luaFile, "ARCHANGEL", x, y, 0, 100, "AGGRESSIVE", true, true);
+                AddCreature(luaFile, "ARCHANGEL", x, y , 0, 100, "AGGRESSIVE", true, true);
             }
         }
     }
 
-        for (int y = 0; y < map.getHeight(); y++) {
-            for (int x = 0; x < map.getWidth(); x++) {
-                auto TilePtr = map.getTile(x, y);
+    for (int y = 0; y < map.getHeight(); y++) {
+        for (int x = 0; x < map.getWidth(); x++) {
+            auto TilePtr = map.getTile(x, y);
 
-                if(TilePtr && TilePtr->getIsGate()){
-                    std::cerr << "G ";
-                } else if(TilePtr && TilePtr->getIsBorder()){
-                    std::cerr << "E ";
-                } else {
-                    std::cerr << ". ";
-                }
+            if(TilePtr->getIsGate()){
+                std::cerr << "G ";  
+            } 
+            else if(TilePtr->getIsRoad()){    std::cerr << "R ";} 
+            else if(TilePtr->getIsExtension()){
+                std::cerr << "E ";
+            } 
+            else if(TilePtr->getIsBorder()){
+                std::cerr << "B ";
+            } 
+            else {
+                std::cerr << ". ";
             }
-            std::cerr << "\n";
         }
+        std::cerr << "\n";
+    }
 }
 
 void generateLuaScript(const json& config) {
@@ -104,6 +110,7 @@ void generateLuaScript(const json& config) {
     roadPlacer.createShotestPathsToConnected(luaFile, connectedPairs);
 
     AddBorderObstacles(luaFile, map);
+
     
     if (config["debug"]){
         for(auto e : towns){

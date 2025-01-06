@@ -20,14 +20,17 @@ public:
     std::set<int> getNeighbourZones();
 
     void setIsRoad(bool isRoad);
-
     bool getIsRoad();
+
+    void setIsExtension(bool isExtension);
+    bool getIsExtension();
 
 private:
     int zoneId;
     bool isBorder;
     bool isGate;
     bool isRoad;
+    bool isExtension;
 
     std::set<int> neighbourZones;
 };
