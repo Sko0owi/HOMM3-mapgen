@@ -30,7 +30,8 @@ void ObjectPlacer::placeTowns() {
         auto zoneI = temp.getZonesI()[zoneId];
 
         for (auto& town : zoneI->getTowns()) {
-
+            
+            town.setSizeOfObject(int3(5,3,1));
             town.setPosition(zonePtr->getPosition());
 
             map.addTown(town);
