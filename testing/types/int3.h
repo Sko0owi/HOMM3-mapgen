@@ -64,4 +64,9 @@ public:
 	{
 		return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z);
 	}
+
+	std::string toString() const
+	{
+		return std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z);
+	}
 };

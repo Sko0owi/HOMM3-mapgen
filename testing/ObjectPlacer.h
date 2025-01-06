@@ -16,6 +16,8 @@ public:
 
     void placeTowns();
 
+    void placeMines();
+
 
 private:
 
@@ -25,5 +27,8 @@ private:
     Map & map;
     TemplateInfo & temp;
     RNG *rng;
+
+
+    std::vector<std::shared_ptr<Object>> objects;
 
 };
