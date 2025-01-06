@@ -26,6 +26,7 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(GAME_INFO_DIR)/Tile.cpp  \
           $(GAME_INFO_DIR)/Town.cpp  \
           $(SRC_DIR)/ZonePlacer.cpp \
+          $(SRC_DIR)/ObjectPlacer.cpp \
 		  $(SRC_DIR)/BorderPlacer.cpp \
 		  $(SRC_DIR)/RoadPlacer.cpp \
           $(SRC_DIR)/ObjectPlacer.cpp \

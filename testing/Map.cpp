@@ -4,10 +4,11 @@
 #include "./BorderPlacer.h"
 #include "./ZonePlacer.h"
 #include "./ObjectPlacer.h"
+#include "./ObjectPlacer.h"
 #include "./Faction.h"
 #include "./Tile.h"
 #include "./global/Random.h"
-#include "./game_info/Town.h"
+#include "./game_info/Town.h"#include "./game_info/Town.h"
 
 Map::Map(RNG *rng) {
     this->rng = rng;
@@ -56,6 +57,7 @@ void Map::generateMap(TemplateInfo &temp) {
     class ObjectPlacer objectPlacer(*this, temp, rng);
 
     objectPlacer.placeObjects();
+    
 }
 
 void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool>> connectedPairs){
