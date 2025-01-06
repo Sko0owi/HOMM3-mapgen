@@ -1,4 +1,4 @@
-
+#pragma once
 #include "../global/Global.h"
 
 class int3

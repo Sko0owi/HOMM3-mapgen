@@ -21,6 +21,7 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(SRC_DIR)/Map.cpp \
 		  $(GAME_INFO_DIR)/Faction.cpp \
 		  $(GAME_INFO_DIR)/Terrain.cpp \
+		  $(GAME_INFO_DIR)/Object.cpp \
           $(GAME_INFO_DIR)/Zone.cpp  \
           $(GAME_INFO_DIR)/Tile.cpp  \
           $(GAME_INFO_DIR)/Town.cpp  \

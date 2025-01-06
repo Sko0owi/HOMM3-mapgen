@@ -3,6 +3,7 @@
 #include "./Template.h"
 #include "./BorderPlacer.h"
 #include "./ZonePlacer.h"
+#include "./ObjectPlacer.h"
 #include "./Faction.h"
 #include "./Tile.h"
 #include "./global/Random.h"
@@ -50,6 +51,11 @@ void Map::generateMap(TemplateInfo &temp) {
     class BorderPlacer borderPlacer(*this, temp);
     borderPlacer.generateBorders();
     setConnectedPairs(borderPlacer.getConnectedPairs());
+    
+
+    class ObjectPlacer objectPlacer(*this, temp, rng);
+
+    objectPlacer.placeObjects();
 }
 
 void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool>> connectedPairs){

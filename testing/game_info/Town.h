@@ -1,6 +1,9 @@
-#include "./Faction.h"
+#pragma once
 
-class Town {
+#include "./Faction.h"
+#include "./Object.h"
+
+class Town : Object {
 public:
     Town();
     Town(Faction faction);

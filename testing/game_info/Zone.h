@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../types/int3.h"
 #include "../types/float3.h"
 
