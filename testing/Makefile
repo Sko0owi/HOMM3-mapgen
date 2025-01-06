@@ -28,6 +28,7 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(SRC_DIR)/ZonePlacer.cpp \
 		  $(SRC_DIR)/BorderPlacer.cpp \
 		  $(SRC_DIR)/RoadPlacer.cpp \
+          $(SRC_DIR)/ObjectPlacer.cpp \
 		  $(GLOBAL_DIR)/Random.cpp \
 		  $(GLOBAL_DIR)/PenroseTiling.cpp \
           $(UTILS_DIR)/lua_helpers.cpp 
