@@ -8,6 +8,11 @@ Town::Town(Faction faction) {
     this->faction = faction;
 }
 
+Town::Town(Faction faction, int owner, int3 pos, std::string name) : Object(pos, name) {
+    this->faction = faction;
+    this->owner = owner;
+}
+
 void Town::setFaction(Faction faction) {
     this->faction = faction;
 }

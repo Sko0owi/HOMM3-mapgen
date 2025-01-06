@@ -8,6 +8,8 @@ public:
     Town();
     Town(Faction faction);
 
+    Town(Faction faction, int owner, int3 pos, std::string name);
+
     void setFaction(Faction faction);
     void setOwner(int owner);
 
