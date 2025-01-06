@@ -13,39 +13,54 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
         return path;
     }
 
-    const int dx[] = {0, 0, -1, 1};
-    const int dy[] = {-1, 1, 0, 0};
+    int mapHeight = map.getHeight();
+    int mapWidth = map.getWidth();
 
-    std::queue<std::pair<int, int>> q;
-    std::map<std::pair<int, int>, std::pair<int, int>> cameFrom;
+    std::vector<std::vector<int>> distance(mapHeight, std::vector<int>(mapWidth, std::numeric_limits<int>::max()));
+    distance[y1][x1] = 0;
 
-    q.emplace(x1, y1);
-    cameFrom[{x1, y1}] = {-1, -1}; 
+    std::queue<std::vector<std::pair<int, int>>> q;
+    q.push({{x1, y1}}); 
 
     while (!q.empty()) {
-        auto [cx, cy] = q.front();
+        std::vector<std::pair<int, int>> currentPath = q.front();
         q.pop();
 
+        auto [cx, cy] = currentPath.back();
+
         if (cx == x2 && cy == y2) {
-            while (cameFrom[{cx, cy}] != std::make_pair(-1, -1)) {
-                path.emplace_back(cx, cy);
-                std::tie(cx, cy) = cameFrom[{cx, cy}];
-            }
-            path.emplace_back(x1, y1);
-            std::reverse(path.begin(), path.end());
-            return path;
+            return currentPath;
         }
 
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 8; ++i) {
             int nx = cx + dx[i];
             int ny = cy + dy[i];
 
+            if (nx < 0 || nx >= mapWidth || ny < 0 || ny >= mapHeight) continue;
+
             auto TilePtr = map.getTile(nx, ny);
 
-            if (TilePtr && cameFrom.find({nx, ny}) == cameFrom.end() && 
-                    (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
-                q.emplace(nx, ny);
-                cameFrom[{nx, ny}] = {cx, cy};
+            if (TilePtr && (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
+                int newDistance = distance[cy][cx] + 1; 
+
+                if (newDistance < distance[ny][nx]) {
+                    distance[ny][nx] = newDistance;
+
+                    std::vector<std::pair<int, int>> newPath = currentPath;
+
+                    if (i == 4) { // LU
+                        newPath.emplace_back(cx, cy + dy[i]);
+                    } else if (i == 5) { // LD 
+                        newPath.emplace_back(cx + dx[i], cy);
+                    } else if (i == 6) { // RU
+                        newPath.emplace_back(cx + dx[i], cy);
+                    } else if (i == 7) { // RD
+                        newPath.emplace_back(cx, cy + dy[i]);
+                    }
+
+                    newPath.emplace_back(nx, ny); 
+                    q.push(newPath);
+                }
             }
         }
     }
@@ -56,11 +71,6 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
 void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
     auto zonesI = temp.getZonesI();
     std::set<std::pair<int, int>> processedConnections;
-
-    const int dx[] = {0, 0, -1, 1};
-    const int dy[] = {-1, 1, 0, 0};
-
-
 
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
@@ -76,7 +86,7 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
             TilePtr->setIsBorder(false);
             TilePtr->setIsRoad(true);
 
-            if(j == max-2 && !castle){
+            if(j == max/2 && !castle){
                 TilePtr->setIsGate(true);
             }
             j++;
@@ -98,3 +108,5 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
     luaFile << "    return nil\n"; // Default terrain
     luaFile << "end)\n";
 }
+
+

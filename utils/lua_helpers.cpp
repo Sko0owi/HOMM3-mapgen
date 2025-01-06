@@ -59,13 +59,10 @@ void AddTerrainTiles(std::ofstream& luaFile, Map& map){
         for(int x = 0; x < map.getWidth(); x++){
             auto tile = map.getTile(x, y);
             int tileZoneId = tile->getZoneId();
-            bool isTileEdge = tile->getIsBorder();
 
-            std::string terrain;
-
-            if(!isTileEdge)
+            if(!tile->getIsBorder())
             {
-                terrain = terrainToString(map.getZones()[tileZoneId]->getTerrain());
+                std::string terrain = terrainToString(map.getZones()[tileZoneId]->getTerrain());
                 luaFile << "if x == " << x << " and y == " << y << " then return homm3lua.TERRAIN_" << terrain << " end\n";
             }
         }
@@ -78,15 +75,14 @@ void AddTerrainTiles(std::ofstream& luaFile, Map& map){
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      Map         map         object of map class with finised setup.
 void AddBorderObstacles(std::ofstream& luaFile, Map& map){
-    for(int x = 0; x < map.getWidth(); x++){
-        for(int y = 0; y < map.getHeight(); y++){
+    for(int y = 0; y < map.getHeight(); y++){
+        for(int x = 0; x < map.getWidth(); x++){
             auto tile = map.getTile(x, y);
-            bool isTileEdge = tile->getIsBorder();
 
             std::string terrain;
-            
-            if (isTileEdge) {
-                AddObstacle(luaFile, "Pine Trees", x+1, y, 0);
+
+            if ((tile->getIsBorder() || tile->getIsExtension()) && !tile->getIsRoad()) {
+                AddObstacle(luaFile, "Pine Trees", x, y, 0);
             }
 
             //Example Obstacles
@@ -172,7 +168,7 @@ void AddArtifact(std::ofstream& luaFile, std::string artifact, int x, int y, int
 // @tparam      integer     y                position on y axis of obstacle.
 // @tparam      integer     z                position on z axis of obstacle.
 void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int z){
-    luaFile << "instance:obstacle('" << obstacle << "', {x=" << x << ", y=" << y+1 << ", z=" << z << "})\n";  
+    luaFile << "instance:obstacle('" << obstacle << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
 }
 
 // @function    AddSign
