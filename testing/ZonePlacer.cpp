@@ -30,10 +30,6 @@ void ZonePlacer::generateZones() {
 
         map.getZones()[zoneI.first]->setTerrain(zoneI.second->getTerrain());
 
-        for (auto& town : zoneI.second->getTowns()) {
-            map.getZones()[zoneI.first]->addTown(town);
-        }
-
         map.getZones()[zoneI.first]->setOwnerId(zoneI.second->getOwner());
     }
 

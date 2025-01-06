@@ -20,10 +20,6 @@ Zone::Zone(i32 Id, float3 center) {
     this->center = center;
 }
 
-void Zone::addTown(Town town) {
-    towns.push_back(town);
-}
-
 void Zone::setPosition(int3 pos){
     position = pos;
 }
@@ -62,10 +58,6 @@ int Zone::getSize(){
     return size;
 }
 
-std::vector<Town>& Zone::getTowns(){
-    return towns;
-}
-
 
 
 void Zone::printZone(){
@@ -74,8 +66,4 @@ void Zone::printZone(){
     std::cerr << "Zone center: " << center.x << " " << center.y << " " << center.z << "\n";
     std::cerr << "Zone terrain: " << terrainToString(terrain) << "\n";
     std::cerr << "Zone owner: " << ownerId << "\n";
-    std::cerr << "Towns in zone: " << towns.size() << "\n";
-    for(auto& town : towns){
-        std::cerr << "Town faction: " << factionToString(town.getFaction()) << "\n";
-    }
 }

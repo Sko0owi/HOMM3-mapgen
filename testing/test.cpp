@@ -164,8 +164,8 @@ void generateLuaScript(const json& config) {
             AddPlayer(luaFile, playerId);
         }
 
-        for (auto& town : zone.second->getTowns()) {
-            AddTown(luaFile, zone.second, town);
+        for (auto& town : map.getTowns()) {
+            AddTown(luaFile, town);
         }
 
         AddHero(luaFile, zone.second);

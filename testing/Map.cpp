@@ -6,7 +6,7 @@
 #include "./Faction.h"
 #include "./Tile.h"
 #include "./global/Random.h"
-
+#include "./game_info/Town.h"
 
 Map::Map(RNG *rng) {
     this->rng = rng;
@@ -60,6 +60,14 @@ void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int>> connecte
 
 vector<std::tuple<int, int, int, int>> Map::getConnectedPairs(){
     return connectedPairs;
+}
+
+void Map::addTown(Town town){
+    towns.push_back(town);
+}
+
+std::vector<Town> Map::getTowns(){
+    return towns;
 }
 
 MapZones & Map::getZones() {
