@@ -20,6 +20,14 @@ Zone::Zone(i32 Id, float3 center) {
     this->center = center;
 }
 
+void Zone::addObject(std::shared_ptr<Object> object){
+    objects.push_back(object);
+}
+
+std::vector<std::shared_ptr<Object>> Zone::getObjects(){
+    return objects;
+}
+
 void Zone::setPosition(int3 pos){
     position = pos;
 }

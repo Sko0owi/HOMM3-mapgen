@@ -6,6 +6,9 @@ class Object
 {
 public:
 
+    virtual ~Object() = default;  // Add virtual destructor
+
+
     Object();
     Object(int3 pos, std::string name);
     Object(int3 pos, std::string name, int3 size);

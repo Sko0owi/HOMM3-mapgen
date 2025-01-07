@@ -97,20 +97,17 @@ void generateLuaScript(const json& config) {
             AddPlayer(luaFile, playerId);
         }
 
-        for (auto& town : map.getTowns()) {
-            AddTown(luaFile, town);
+        for(auto& object : zone.second->getObjects()){
+            if (auto town = std::dynamic_pointer_cast<Town>(object)) {
+                AddTown(luaFile, *town);
+            }
         }
 
         AddHero(luaFile, zone.second);
     }   
-
-    auto connectedPairs = map.getConnectedPairs();
-    
-    RoadPlacer roadPlacer(map, templateInfo);
-    roadPlacer.createShotestPathsToConnected(luaFile, connectedPairs);
-
     AddBorderObstacles(luaFile, map);
 
+    AddRoads(luaFile, map);
     
     if (config["debug"]){
         for(auto e : towns){

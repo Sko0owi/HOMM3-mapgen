@@ -35,6 +35,23 @@ void AddTown(std::ofstream &luaFile, Town town, bool is_main){
             << ", " << is_main << ")\n";
 }
 
+void AddRoads(std::ofstream& luaFile, Map& map){
+    luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
+    luaFile << "instance:terrain(function (x, y, z)\n";
+
+    for (int x = 0; x < map.getWidth(); x++){
+        for (int y = 0; y < map.getHeight(); y++){
+            auto TilePtr = map.getTile(y, x);
+            if (TilePtr->getIsRoad()) {            
+                luaFile << "    if x == " << y << " and y == " << x << " then return nil, 3 end\n";
+            }
+        }
+    }
+
+    luaFile << "    return nil\n"; // Default terrain
+    luaFile << "end)\n";
+}
+
 // @function    AddHero
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
 // @tparam      json        zone        zone description from json, like player id, hero xyz position.

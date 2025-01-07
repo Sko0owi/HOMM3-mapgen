@@ -19,9 +19,6 @@ public:
     void generateMap(TemplateInfo &temp);
     void print();
     
-    void addTown(Town town);
-    
-    std::vector<Town> getTowns();
     MapZones & getZones();
     i32 getWidth();
     i32 getHeight();
@@ -39,8 +36,6 @@ private:
     i32 width;
     i32 height;
     MapZones zones;
-
-    std::vector<Town> towns;
     
 
     std::map<i32, map<i32, std::shared_ptr<Tile>>> Tiles;

@@ -11,9 +11,8 @@ public:
     RoadPlacer(Map & map, TemplateInfo & temp);
     
     std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int y2);
-    void createShotestPathsToConnected(std::ofstream &luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs);
-    void writeRoadsToFile(std::ofstream &luaFile);
-
+    void createShotestPathsToConnected(std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs);
+    
     void clearSquares();
     void fixBorders();
     bool gateSquare(int x, int y);

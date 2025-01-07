@@ -24,5 +24,6 @@ void AddResource(std::ofstream& luaFile, std::string resource, int x, int y, int
 void AddArtifact(std::ofstream& luaFile, std::string artifact, int x, int y, int z);
 void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int z);
 void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z);
+void AddRoads(std::ofstream& luaFile, Map& map);
 
 #endif

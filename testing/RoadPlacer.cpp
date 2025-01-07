@@ -68,23 +68,6 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
     return path;
 }
 
-void RoadPlacer::writeRoadsToFile(std::ofstream& luaFile){
-    luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
-    luaFile << "instance:terrain(function (x, y, z)\n";
-
-    for (int x = 0; x < map.getWidth(); x++){
-        for (int y = 0; y < map.getHeight(); y++){
-            auto TilePtr = map.getTile(y, x);
-            if (TilePtr->getIsRoad()) {            
-                luaFile << "    if x == " << y << " and y == " << x << " then return nil, 3 end\n";
-            }
-        }
-    }
-
-    luaFile << "    return nil\n"; // Default terrain
-    luaFile << "end)\n";
-}
-
 void RoadPlacer::fixBorders(){
     for (int x = 0; x < map.getWidth() - 1; x++){
         for (int y = 0; y < map.getHeight() - 1; y++){
@@ -230,7 +213,7 @@ bool RoadPlacer::gateSquare(int x, int y){
     return false;
 }
 
-void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
+void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
     auto zonesI = temp.getZonesI();
     std::set<std::pair<int, int>> processedConnections;
     
@@ -276,7 +259,6 @@ void RoadPlacer::createShotestPathsToConnected(std::ofstream& luaFile, std::vect
     }
 
     clearSquares();
-    writeRoadsToFile(luaFile);
 }
 
 

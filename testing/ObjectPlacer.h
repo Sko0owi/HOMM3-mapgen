@@ -28,6 +28,7 @@ private:
     TemplateInfo & temp;
     RNG *rng;
 
+    std::vector<std::vector<int>> objectsMap;
 
     std::vector<std::shared_ptr<Object>> objects;
 

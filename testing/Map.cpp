@@ -9,6 +9,7 @@
 #include "./Tile.h"
 #include "./global/Random.h"
 #include "./game_info/Town.h"
+#include "./RoadPlacer.h"
 
 Map::Map(RNG *rng) {
     this->rng = rng;
@@ -52,7 +53,11 @@ void Map::generateMap(TemplateInfo &temp) {
     class BorderPlacer borderPlacer(*this, temp);
     borderPlacer.generateBorders();
     setConnectedPairs(borderPlacer.getConnectedPairs());
-    
+
+
+    RoadPlacer roadPlacer(*this, temp);
+    roadPlacer.createShotestPathsToConnected(connectedPairs);
+
 
     class ObjectPlacer objectPlacer(*this, temp, rng);
 
@@ -66,14 +71,6 @@ void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool>> co
 
 vector<std::tuple<int, int, int, int, bool>> Map::getConnectedPairs(){
     return connectedPairs;
-}
-
-void Map::addTown(Town town){
-    towns.push_back(town);
-}
-
-std::vector<Town> Map::getTowns(){
-    return towns;
 }
 
 MapZones & Map::getZones() {
