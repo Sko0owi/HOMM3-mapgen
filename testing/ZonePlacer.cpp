@@ -29,8 +29,6 @@ void ZonePlacer::generateZones() {
         map.getZones().emplace(zoneI.first, std::make_shared<Zone>(zoneI.first));
 
         map.getZones()[zoneI.first]->setTerrain(zoneI.second->getTerrain());
-
-        map.getZones()[zoneI.first]->setOwnerId(zoneI.second->getOwner());
     }
 
 

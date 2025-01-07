@@ -54,7 +54,7 @@ void AddMine(std::ofstream& luaFile, Mine mine){
 
     std::string mineType = mineTypeToString(mine.getMineType());
 
-    std::string owner = owner_id < 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
+    std::string owner = owner_id <= 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
     luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 }
 
@@ -80,7 +80,7 @@ void AddRoads(std::ofstream& luaFile, Map& map){
 // @tparam      json        zone        zone description from json, like player id, hero xyz position.
 void AddHero(std::ofstream& luaFile, std::shared_ptr<Zone>& zone) {
     std::string hero = "HERO_CHRISTIAN";
-    i32 Id = zone->getOwnerId();
+    i32 Id = 1;
     i32 X = zone->getPosition().x;
     i32 Y = zone->getPosition().y;
     luaFile << "instance:hero(homm3lua." << hero

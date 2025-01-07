@@ -37,9 +37,6 @@ void Zone::setCenter(float3 cent){
 void Zone::setTerrain(Terrain ter){
     terrain = ter;
 }
-void Zone::setOwnerId(i32 ownerId){
-    this->ownerId = ownerId;
-}
 
 void Zone::setSize(i32 size){
     this->size = size;
@@ -58,9 +55,6 @@ Terrain Zone::getTerrain(){
 int Zone::getId(){
     return id;
 }
-int Zone::getOwnerId(){
-    return ownerId;
-}
 
 int Zone::getSize(){
     return size;
@@ -73,5 +67,4 @@ void Zone::printZone(){
     std::cerr << "Zone position: " << position.x << " " << position.y << " " << position.z << "\n";
     std::cerr << "Zone center: " << center.x << " " << center.y << " " << center.z << "\n";
     std::cerr << "Zone terrain: " << terrainToString(terrain) << "\n";
-    std::cerr << "Zone owner: " << ownerId << "\n";
 }

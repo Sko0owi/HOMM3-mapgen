@@ -56,6 +56,17 @@ public:
 		return *this;
 	}
 
+	constexpr bool operator<(const int3 & i) const
+	{
+		if (z != i.z)
+			return z < i.z;
+
+		if (y != i.y)
+			return y < i.y;
+
+		return x < i.x;
+	}
+
 	float distance2DSQ(const int3& other) const
 	{
 		return std::sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z));

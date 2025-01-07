@@ -6,6 +6,7 @@
 enum class Terrain;
 
 class Town;
+class Mine;
 
 using json = nlohmann::json;
 
@@ -39,16 +40,16 @@ public:
     std::vector<ZoneConnection> getConnections();
 
     void addTown(Town town);
+    void addMine(Mine mine);
     std::vector<Town> getTowns();
+    std::vector<Mine> getMines();
 
     void setId(i32 id);
     void setSize(std::string size);
-    void setOwner(i32 ownerId);
     void setHero(std::string hero);
     void setTerrain(Terrain terrain);
     i32 getId();
     std::string getSize();
-    i32 getOwner();
     std::string getHero();
     Terrain getTerrain();
     void deserializeZone(const json& config);
@@ -56,11 +57,11 @@ public:
 private:
     bool debug;
     i32 id;
-    i32 ownerId;
     std::string size;
     std::string hero;
     Terrain terrain;
     std::vector<Town> towns;
+    std::vector<Mine> mines;
     std::vector<ZoneConnection> connections;
 
 

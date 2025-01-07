@@ -17,14 +17,12 @@ Zone(i32 Id, float3 center);
 void setPosition(int3 pos);
 void setCenter(float3 cent);
 void setTerrain(Terrain ter);
-void setOwnerId(i32 ownerId);
 void setSize(i32 size);
 
 int3 getPosition();
 float3 getCenter();
 Terrain getTerrain();
 int getId();
-int getOwnerId();
 int getSize();
 
 void addObject(std::shared_ptr<Object> object);
@@ -41,8 +39,6 @@ private:
     i32 id;
 
     i32 size = 1000;
-
-    i32 ownerId;
 
     std::vector<std::shared_ptr<Object>> objects;
 
