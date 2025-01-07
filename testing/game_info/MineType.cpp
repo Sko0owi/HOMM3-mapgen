@@ -1,5 +1,6 @@
 
 #include "./MineType.h"
+#include "../types/int3.h"
 
 std::string mineTypeToString(MineType mineType) {
     switch (mineType) {
@@ -30,4 +31,24 @@ MineType stringToMineType(std::string mineType) {
     if (mineType == "Sawmill") return MineType::MINE_SAWMILL;
     if (mineType == "Sulfur Dune") return MineType::MINE_SULFUR_DUNE;
     return MineType::MINE_SAWMILL;
+}
+
+int3 getMineSize(MineType mineType) {
+    switch(mineType) {
+        case MineType::MINE_ALCHEMISTS_LAB:
+            return int3(3,1,1);
+        case MineType::MINE_CRYSTAL_CAVERN:
+            return int3(3,1,1);
+        case MineType::MINE_GEM_POND:
+            return int3(3,2,1);
+        case MineType::MINE_GOLD_MINE:
+            return int3(3,1,1);
+        case MineType::MINE_ORE_PIT:
+            return int3(3,2,1);
+        case MineType::MINE_SAWMILL:
+            return int3(4,2,1);
+        case MineType::MINE_SULFUR_DUNE:
+            return int3(3,1,1);
+    }
+    return int3(1,1,1);
 }

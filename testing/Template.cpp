@@ -1,6 +1,7 @@
 #include "./Template.h"
 #include "../game_info/Terrain.h"
 #include "../game_info/Town.h"
+#include "../game_info/Mine.h"
 
 ZoneConnection::ZoneConnection() {
     zoneA = 0;
@@ -58,8 +59,16 @@ void ZoneInfo::addTown(Town town) {
     towns.push_back(town);
 }
 
+void ZoneInfo::addMine(Mine mine) {
+    mines.push_back(mine);
+}
+
 std::vector<Town> ZoneInfo::getTowns() {
     return towns;
+}
+
+std::vector<Mine> ZoneInfo::getMines() {
+    return mines;
 }
 
 void ZoneInfo::setId(i32 id) {
@@ -130,6 +139,23 @@ void ZoneInfo::deserializeZone(const json& config) {
         if(debug)
             std::cerr << "Sanity check: " << factionToString(town.getFaction()) << "\n";
         addTown(town);
+    }
+
+    i32 mine_count = config["number_of_mines"].get<int>();
+    std::cerr << "Mine count: " << mine_count << "\n";
+    for(int i = 0; i < mine_count; i++) {
+        Mine mine;
+        std::string mineType = config["mines"][i]["type"].get<std::string>();
+        std::string mineOwner = config["mines"][i]["owner"].get<std::string>();
+        
+        std::cerr << "Mine type: " << mineType << "\n";
+        std::cerr << "Mine owner: " << mineOwner << "\n";
+
+        mine.setMineType(stringToMineType(mineType));
+        mine.setOwner(decodeOwner(mineOwner));
+        mine.setPosition(int3(0,0,0));
+        mine.setName(mineType);
+        addMine(mine);
     }
 
     setId(id);

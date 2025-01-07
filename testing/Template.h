@@ -6,6 +6,7 @@
 enum class Terrain;
 
 class Town;
+class Mine;
 
 using json = nlohmann::json;
 
@@ -33,7 +34,9 @@ public:
     std::vector<ZoneConnection> getConnections();
 
     void addTown(Town town);
+    void addMine(Mine mine);
     std::vector<Town> getTowns();
+    std::vector<Mine> getMines();
 
     void setId(i32 id);
     void setSize(std::string size);
@@ -55,6 +58,7 @@ private:
     std::string hero;
     Terrain terrain;
     std::vector<Town> towns;
+    std::vector<Mine> mines;
     std::vector<ZoneConnection> connections;
 
 

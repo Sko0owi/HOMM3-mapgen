@@ -55,7 +55,7 @@ void AddMine(std::ofstream& luaFile, Mine mine){
 
     std::string mineType = mineTypeToString(mine.getMineType());
 
-    std::string owner = owner_id < 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
+    std::string owner = owner_id <= 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
     luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 }
 

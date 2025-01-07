@@ -14,7 +14,20 @@
       "towns" : {
         "count" : 1,
         "faction" : "TOWN_STRONGHOLD"
-      }
+      },
+      "number_of_mines": 2,
+      "mines": [
+        {
+          "type": "Gold Mine",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Sawmill",
+          "owner": "NONE",
+          "count": 1
+        }
+      ]
     },
     {
       "size": "SMALL",
@@ -25,7 +38,45 @@
       "towns" : {
         "count" : 1,
         "faction" : "TOWN_INFERNO"
-      }
+      },
+      "number_of_mines": 7,
+      "mines": [
+        {
+          "type": "Gold Mine",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Ore Pit",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Alchemists Lab",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Crystal Cavern",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Gem Pond",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Sulfur Dune",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Sawmill",
+          "owner": "NONE",
+          "count": 1
+        }
+      ]
     },
     {
       "size": "SMALL",
@@ -36,7 +87,20 @@
       "towns" : {
         "count" : 1,
         "faction" : "TOWN_INFERNO"
-      }
+      },
+      "number_of_mines": 2,
+      "mines": [
+        {
+          "type": "Gold Mine",
+          "owner": "NONE",
+          "count": 1
+        },
+        {
+          "type": "Sawmill",
+          "owner": "NONE",
+          "count": 1
+        }
+      ]
     },
     {
       "size": "SMALL",
@@ -46,7 +110,8 @@
       "terrain": "SWAMP",
       "towns" : {
         "count" : 0
-      }
+      },
+      "number_of_mines": 0
     },
     {
       "size": "SMALL",
@@ -56,7 +121,8 @@
       "terrain" : "DESERT",
       "towns" : {
         "count" : 0
-      }
+      },
+      "number_of_mines": 0
     },
     {
       "size": "SMALL",
@@ -66,7 +132,8 @@
       "terrain" : "SUBTERRANEAN",
       "towns" : {
         "count" : 0
-      }
+      },
+      "number_of_mines": 0
     },
     {
       "size": "SMALL",
@@ -76,7 +143,8 @@
       "terrain": "SAND",
       "towns" : {
         "count" : 0
-      }
+      },
+      "number_of_mines": 0
     }
   ],
   "connections": [

@@ -6,6 +6,7 @@ class Object;
 class Map;
 class TemplateInfo;
 class RNG;
+class int3;
 
 class ObjectPlacer {
 public:
@@ -18,6 +19,11 @@ public:
 
     void placeMines();
 
+    void recalculateDistances();
+
+    void calculateShortestDistances(std::shared_ptr<Object> object);
+
+    bool canPlaceObject(int3 pos, int3 size);
 
 private:
 
@@ -32,6 +38,14 @@ private:
 
     std::vector<std::shared_ptr<Object>> objects;
 
-    std::map<std::shared_ptr<Object>, std::vector<std::vector<int>>> objectsDistances;
+
+    struct ObjectPtrCompare {
+        bool operator()(const std::shared_ptr<Object>& a, const std::shared_ptr<Object>& b) const {
+            return a.get() < b.get();
+        }
+    };
+
+    std::map<std::shared_ptr<Object>, std::vector<std::vector<int>>, ObjectPtrCompare> objectsDistances;
+
 
 };

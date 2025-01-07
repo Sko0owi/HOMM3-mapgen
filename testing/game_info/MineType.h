@@ -1,5 +1,7 @@
 #include<string>
 
+class int3;
+
 enum class MineType {
     MINE_ALCHEMISTS_LAB = 0,
     MINE_CRYSTAL_CAVERN,
@@ -13,3 +15,5 @@ enum class MineType {
 std::string mineTypeToString(MineType mineType);
 
 MineType stringToMineType(std::string mineType);
+
+int3 getMineSize(MineType mineType);
