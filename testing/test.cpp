@@ -3,6 +3,7 @@
 
 #include "../game_info/Tile.h"
 #include "../game_info/Town.h"
+#include "../game_info/Mine.h"
 #include "../Template.h"
 #include "../RoadPlacer.h"
 #include "../Map.h"
@@ -101,7 +102,13 @@ void generateLuaScript(const json& config) {
             if (auto town = std::dynamic_pointer_cast<Town>(object)) {
                 AddTown(luaFile, *town);
             }
+
+            if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
+                AddMine(luaFile, *mine);
+            }
         }
+
+        
 
         AddHero(luaFile, zone.second);
     }   

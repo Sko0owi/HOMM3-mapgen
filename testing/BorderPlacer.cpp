@@ -114,6 +114,9 @@ void BorderPlacer::findOuter(int X, int Y, int *outerX1, int *outerY1, int *oute
 
             if (newDist < distance[ny][nx])
                 distance[ny][nx] = newDist;
+            else 
+                continue;
+            
 
             if(zone1Id == ZoneC && !TilePtr->getIsBorder()){ // We didn't get out of zone
                 pq.emplace(nx, ny, -1, -1, newDist);

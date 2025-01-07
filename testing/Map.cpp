@@ -28,6 +28,7 @@ Map::~Map() {
 pair<int,int> decodeMapSize(std::string MapSize) {
     if (MapSize == "SMALL") return {36, 36};
     if (MapSize == "MEDIUM") return {72, 72};
+    if (MapSize == "LARGE") return {108, 108};
     return {-1,-1};
 }
 

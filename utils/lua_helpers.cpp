@@ -7,6 +7,7 @@
 #include "./Zone.h"
 #include "./game_info/Terrain.h"
 #include "./game_info/Town.h"
+#include "./game_info/Mine.h"
 
 using json = nlohmann::json;
 
@@ -33,6 +34,29 @@ void AddTown(std::ofstream &luaFile, Town town, bool is_main){
             << ", y=" << Y
             << ", z=0}, homm3lua.PLAYER_" << Id
             << ", " << is_main << ")\n";
+}
+
+
+// @function    AddMine
+// @tparam      ofstream    luaFile          file where we save lua script parts. 
+// @tparam      string      mine             type of mine, See MINE_*.
+// @tparam      integer     x                position on x axis of mine.
+// @tparam      integer     y                position on y axis of mine.
+// @tparam      integer     z                position on z axis of mine.
+// @tparam      integer     owner_id         owner of mine, by default -1, which means neutral.
+
+void AddMine(std::ofstream& luaFile, Mine mine){
+    // std::string mine = mine.getName();
+    i32 x = mine.getPosition().x;
+    i32 y = mine.getPosition().y;
+    i32 z = mine.getPosition().z;
+
+    i32 owner_id = mine.getOwner();
+
+    std::string mineType = mineTypeToString(mine.getMineType());
+
+    std::string owner = owner_id < 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
+    luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 }
 
 void AddRoads(std::ofstream& luaFile, Map& map){
@@ -143,19 +167,6 @@ local homm3lua = require('homm3lua'))";
 // @tparam      boolean     does_not_grow    disallows creatures to grow.
 void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int z, int quantity, std::string disposition, bool never_flees, bool does_not_grow){
     luaFile << "instance:creature(homm3lua.CREATURE_" << creature << ", {x=" << x << ", y=" << y << ", z=" << z << "}, " << quantity << ", homm3lua.DISPOSITION_" << disposition << ", " << never_flees << ", " << does_not_grow <<  ")\n";  
-}
-
-// @function    AddMine
-// @tparam      ofstream    luaFile          file where we save lua script parts. 
-// @tparam      string      mine             type of mine, See MINE_*.
-// @tparam      integer     x                position on x axis of mine.
-// @tparam      integer     y                position on y axis of mine.
-// @tparam      integer     z                position on z axis of mine.
-// @tparam      integer     owner_id         owner of mine, by default -1, which means neutral.
-
-void AddMine(std::ofstream& luaFile, std::string mine, int x, int y, int z, int owner_id){
-    std::string owner = owner_id < 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
-    luaFile << "instance:mine(homm3lua.MINE_" << mine << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 }
 
 // @function    AddResource

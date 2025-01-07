@@ -32,4 +32,6 @@ private:
 
     std::vector<std::shared_ptr<Object>> objects;
 
+    std::map<std::shared_ptr<Object>, std::vector<std::vector<int>>> objectsDistances;
+
 };
