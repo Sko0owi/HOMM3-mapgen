@@ -63,14 +63,13 @@ void Map::generateMap(TemplateInfo &temp) {
     class ObjectPlacer objectPlacer(*this, temp, rng);
 
     objectPlacer.placeObjects();
-    
 }
 
-void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool>> connectedPairs){
+void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool, int>> connectedPairs){
     this->connectedPairs = connectedPairs;
 }
 
-vector<std::tuple<int, int, int, int, bool>> Map::getConnectedPairs(){
+vector<std::tuple<int, int, int, int, bool, int>> Map::getConnectedPairs(){
     return connectedPairs;
 }
 

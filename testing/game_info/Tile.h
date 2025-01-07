@@ -25,8 +25,13 @@ public:
     void setIsExtension(bool isExtension);
     bool getIsExtension();
 
+    void setTier(int tier);
+    int getTier();
+
 private:
     int zoneId;
+    int tier;
+    
     bool isBorder;
     bool isGate;
     bool isRoad;

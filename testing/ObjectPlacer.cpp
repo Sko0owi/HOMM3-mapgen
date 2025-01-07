@@ -32,7 +32,6 @@ ObjectPlacer::ObjectPlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map),
                 objectsMap[y][x] = 1;
             }
         }
-        std::cerr << "\n";
     }
 }
 

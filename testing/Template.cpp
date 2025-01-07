@@ -5,6 +5,8 @@
 ZoneConnection::ZoneConnection() {
     zoneA = 0;
     zoneB = 0;
+    tier = 0;
+    type = "narrow";
 }
 
 i32 ZoneConnection::getZoneA() {
@@ -13,6 +15,14 @@ i32 ZoneConnection::getZoneA() {
 
 i32 ZoneConnection::getZoneB() {
     return zoneB;
+}
+
+i32 ZoneConnection::getTier() {
+    return tier;
+}
+
+string ZoneConnection::getType() {
+    return type;
 }
 
 i32 ZoneConnection::getOtherZone(i32 zone) {
@@ -31,6 +41,14 @@ void ZoneConnection::setZoneB(i32 zone) {
     zoneB = zone;
 }
 
+void ZoneConnection::setTier(i32 tier) {
+    this->tier = tier;
+}
+
+void ZoneConnection::setType(string type) {
+    this->type = type;
+}
+
 ZoneInfo::ZoneInfo(bool debug) {
     id = 0;
     size = "";
@@ -44,8 +62,14 @@ void ZoneInfo::addConnection(const json& connectionConfig) {
 
     int zoneA = connectionConfig["zoneA"].get<int>();
     int zoneB = connectionConfig["zoneB"].get<int>();
+    int tier = connectionConfig["tier"].get<int>();
+    string type = connectionConfig["type"].get<string>();
+
     zoneConnection.setZoneA(zoneA);
     zoneConnection.setZoneB(zoneB);
+    zoneConnection.setTier(tier);
+    zoneConnection.setType(type);
+
 
     connections.push_back(zoneConnection);
 }
@@ -148,7 +172,9 @@ void ZoneInfo::printZone() {
     for(auto connection : connections) {
         std::cerr << "Connection: \n" << \
         "ZoneA: " << connection.getZoneA() << " " << \
-        "ZoneB: " << connection.getZoneB() << "\n";
+        "ZoneB: " << connection.getZoneB() << " " << \
+        "Tier: " << connection.getTier() << "\n";
+
     }
 }
 

@@ -32,7 +32,7 @@ void placeGateCreatures(std::ofstream& luaFile, Map& map){
             if(TilePtr->getIsGate()){
                 std::cerr << "G ";  
             } 
-            else if(TilePtr->getIsRoad()){    std::cerr << "R ";} 
+            else if(TilePtr->getIsRoad()){    std::cerr << TilePtr->getTier() << " ";} 
             else if(TilePtr->getIsExtension()){
                 std::cerr << "E ";
             } 
@@ -134,7 +134,8 @@ void generateLuaScript(const json& config) {
 }
 
 void execute_lua_script(const std::string& script_name) {
-    lua_State* L = luaL_newstate();
+    std::cerr << "Executing generated lua\n";
+    lua_State *L = luaL_newstate();
     luaL_openlibs(L);
 
     if (luaL_dofile(L, script_name.c_str())) {

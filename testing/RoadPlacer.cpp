@@ -213,14 +213,14 @@ bool RoadPlacer::gateSquare(int x, int y){
     return false;
 }
 
-void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, int, int, bool>> &connectedPairs) {
+void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, int, int, bool, int>> &connectedPairs) {
     auto zonesI = temp.getZonesI();
     std::set<std::pair<int, int>> processedConnections;
     
     fixBorders();
 
     for(auto e : connectedPairs){
-        auto [x1, y1, x2, y2, castle] = e;
+        auto [x1, y1, x2, y2, castle, tier] = e;
         auto path = generateSimplePath(x1, y1, x2, y2);
 
         for (const auto &point : path)
@@ -229,6 +229,7 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
             TilePtr->setIsBorder(false);
             TilePtr->setIsExtension(false);
             TilePtr->setIsRoad(true);
+            TilePtr->setTier(tier);
 
             for (int i = 0; i < 1; ++i) {
                 int nx = point.first + dx[i];

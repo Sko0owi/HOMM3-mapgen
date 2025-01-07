@@ -44,7 +44,6 @@ void AddTown(std::ofstream &luaFile, Town town, bool is_main){
 // @tparam      integer     y                position on y axis of mine.
 // @tparam      integer     z                position on z axis of mine.
 // @tparam      integer     owner_id         owner of mine, by default -1, which means neutral.
-
 void AddMine(std::ofstream& luaFile, Mine mine){
     // std::string mine = mine.getName();
     i32 x = mine.getPosition().x;
@@ -67,7 +66,7 @@ void AddRoads(std::ofstream& luaFile, Map& map){
         for (int y = 0; y < map.getHeight(); y++){
             auto TilePtr = map.getTile(y, x);
             if (TilePtr->getIsRoad()) {            
-                luaFile << "    if x == " << y << " and y == " << x << " then return nil, 3 end\n";
+                luaFile << "    if x == " << y << " and y == " << x << " then return nil, " << TilePtr->getTier() << " end\n";
             }
         }
     }

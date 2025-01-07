@@ -3,6 +3,7 @@
 
 Tile::Tile() {
     zoneId = -1;
+    tier = 0;
     isBorder = false;
     isGate = false;
     isRoad = false;
@@ -51,6 +52,14 @@ bool Tile::getIsExtension() {
 
 void Tile::setNeighbourZones(int zoneId){
     this->neighbourZones.insert(zoneId);
+}
+
+int Tile::getTier() {
+    return tier;
+}
+
+void Tile::setTier(int tier){
+    this->tier = tier;
 }
 
 std::set<int> Tile::getNeighbourZones(){

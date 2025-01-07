@@ -1,5 +1,5 @@
 {
-  "debug": false  ,
+  "debug": false,
   "name": "2P Duel Template",
   "description": "A balanced map for 2 players with a contested central area.",
   "size": "MEDIUM",
@@ -83,47 +83,56 @@
     {
       "zoneA": 1,
       "zoneB": 6,
-      "type": "road"
+      "type": "wide",
+      "tier": 2
     },
     {
       "zoneA": 2,
       "zoneB": 6,
-      "type": "road"
+      "type": "narrow",
+      "tier": 1
     },
     {
       "zoneA": 4,
       "zoneB": 3,
-      "type": "road"
+      "type": "wide",
+      "tier": 2
     },
     {
       "zoneA": 1,
       "zoneB": 5,
-      "type": "road"
+      "type": "narrow",
+      "tier": 3
     },
     {
       "zoneA": 2,
       "zoneB": 5,
-      "type": "road"
+      "type": "wide",
+      "tier": 2
     },
     {
       "zoneA": 3,
       "zoneB": 5,
-      "type": "road"
+      "type": "narrow",
+      "tier": 1
     },
     {
       "zoneA": 4,
       "zoneB": 1,
-      "type": "road"
+      "type": "wide",
+      "tier": 2
     },
     {
       "zoneA": 3,
       "zoneB": 7,
-      "type": "road"
+      "type": "narrow",
+      "tier": 3
     },
     {
       "zoneA": 2,
       "zoneB": 7,
-      "type": "road"
+      "type": "wide",
+      "tier": 2
     }
   ]
 }

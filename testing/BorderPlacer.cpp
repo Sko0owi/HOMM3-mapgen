@@ -17,7 +17,8 @@ void BorderPlacer::generateBorders() {
     determineZoneBorders();
     createExtenstion();
     connectZones();
-    fixBorders();
+    setWideConnections();
+    removeExtension();
 }
 
 void BorderPlacer::createExtenstion(){
@@ -37,7 +38,28 @@ void BorderPlacer::createExtenstion(){
             }
         }
     }
+}
 
+void BorderPlacer::removeExtension(){
+    for (int y = 0; y < mapHeight; y++){
+        for (int x = 0; x < mapWidth; x++) {
+            auto TilePtr = map.getTile(x, y);
+
+            bool found = false;
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                auto NeighborTilePtr = map.getTile(nx, ny);
+
+                if(TilePtr->getIsExtension() && NeighborTilePtr && NeighborTilePtr->getIsBorder()){
+                    found = true;
+                }
+            }
+            TilePtr->setIsExtension(found);
+        }
+    }
 }
 
 bool BorderPlacer::areConnected(int ZoneA, int ZoneB){
@@ -52,6 +74,21 @@ bool BorderPlacer::areConnected(int ZoneA, int ZoneB){
         }
     }
     return false;
+}
+
+int BorderPlacer::getTier(int ZoneA, int ZoneB){
+    auto zonesI = temp.getZonesI();
+
+    for(auto e : zonesI){
+        for(auto c : e.second->getConnections()){
+            if ((c.getZoneA() == ZoneA && c.getZoneB() == ZoneB) ||
+                (c.getZoneA() == ZoneB && c.getZoneB() == ZoneA))
+            {
+                return c.getTier();
+            }
+        }
+    }
+    return 0;
 }
 
 bool BorderPlacer::isMapBorder(int x, int y){
@@ -140,7 +177,7 @@ void BorderPlacer::findOuter(int X, int Y, int *outerX1, int *outerY1, int *oute
     }
 }
 
-std::vector<std::tuple<int, int, int, int, bool>> BorderPlacer::getConnectedPairs(){
+std::vector<std::tuple<int, int, int, int, bool, int>> BorderPlacer::getConnectedPairs(){
     return connectedPairs;
 }
 
@@ -165,21 +202,27 @@ void BorderPlacer::connectZones() {
                 processedConnections.insert(connectionPair);
                 int X = zone1.second->getPosition().x;
                 int Y = zone1.second->getPosition().y;
+                int tier = getTier(zone1Id, zone2Id);
 
                 int outerX1 = -1, outerY1 = -1, outerX2 = -1, outerY2 = -1;
                 findOuter(X, Y, &outerX1, &outerY1, &outerX2, &outerY2, zone1Id, zone2Id);
-                connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false); // Add points of connection
+                // OuterXi -> outer X coord from zonei
+                // OuterYi -> outer Y coord from zone1
+                // castle -> bool does have castle
+                // tier -> tier of road
+
+                connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false, tier); // Add points of connection
 
                 // map.getTile((outerX1), (outerY1))->setIsGate(true);
 
                 int XX1 = zone1.second->getPosition().x;
                 int YY1 = zone1.second->getPosition().y;
 
-                connectedPairs.emplace_back(outerX1, outerY1, XX1, YY1, true); // Castle1 -> Connect1
+                connectedPairs.emplace_back(outerX1, outerY1, XX1, YY1, true, tier); // Castle1 -> Connect1
                 
                 int XX2 = zone2.second->getPosition().x;
                 int YY2 = zone2.second->getPosition().y;
-                connectedPairs.emplace_back(XX2, YY2, outerX2, outerY2, true); // Castle2 -> Connect2
+                connectedPairs.emplace_back(XX2, YY2, outerX2, outerY2, true, tier); // Castle2 -> Connect2
 
                 
                 if(debug){
@@ -217,6 +260,49 @@ void BorderPlacer::connectZones() {
         }
     }
 
+}
+
+bool BorderPlacer::isWide(int ZoneA, int ZoneB){
+    auto connectionPair = std::make_pair(std::min(ZoneA, ZoneB), std::max(ZoneA, ZoneB));
+    return (wideConnections.find(connectionPair) != wideConnections.end());
+}
+
+void BorderPlacer::setWideConnections(){
+    auto zonesI = temp.getZonesI();
+
+    for(auto e : zonesI){
+        for(auto c : e.second->getConnections()){
+            if(c.getType() == "wide"){
+                auto connectionPair = std::make_pair(std::min(c.getZoneA(), c.getZoneB()), std::max(c.getZoneA(), c.getZoneB()));
+                this->wideConnections.insert(connectionPair);
+            }
+        }
+    }
+
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            auto TilePtr = map.getTile(x, y);
+
+            int currentZoneId = TilePtr->getZoneId();
+    
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                auto NeighborTilePtr = map.getTile(nx, ny);
+
+                if (NeighborTilePtr && NeighborTilePtr->getZoneId() != currentZoneId && !isWide(NeighborTilePtr->getZoneId(), currentZoneId)) {
+                    TilePtr->setIsBorder(false);
+                    break;
+                }
+            }
+
+            if (debug) {
+                std::cerr << "Border Tile: (" << x << ", " << y << ")\n";
+            }
+        }
+    }
 }
 
 void BorderPlacer::determineZoneBorders() {
@@ -257,8 +343,4 @@ void BorderPlacer::determineZoneBorders() {
 
 bool BorderPlacer::roadInRange(int range){
     return true;
-}
-
-void BorderPlacer::fixBorders(){
-
 }
