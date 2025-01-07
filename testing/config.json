@@ -8,13 +8,16 @@
     {
       "size": "SMALL",
       "id": 1,
-      "owner": "PLAYER_1",
       "hero": "HERO_CHRISTIAN",
       "terrain": "GRASS",
-      "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_STRONGHOLD"
-      },
+      "number_of_towns": 1, 
+      "towns" : [
+        {
+          "faction" : "TOWN_STRONGHOLD",
+          "owner" : "PLAYER_1",
+          "count" : 1
+        }
+      ],
       "number_of_mines": 2,
       "mines": [
         {
@@ -32,13 +35,16 @@
     {
       "size": "SMALL",
       "id": 2,
-      "owner": "PLAYER_2",
       "hero": "HERO_JENOVA",
       "terrain": "SNOW",
-      "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_INFERNO"
-      },
+      "number_of_towns": 1, 
+      "towns" : [
+        {
+          "faction" : "TOWN_INFERNO",
+          "owner" : "PLAYER_2",
+          "count" : 1
+        }
+      ],
       "number_of_mines": 7,
       "mines": [
         {
@@ -81,13 +87,16 @@
     {
       "size": "SMALL",
       "id": 3,
-      "owner": "PLAYER_3",
       "hero": "HERO_JENOVA",
       "terrain": "LAVA",
-      "towns" : {
-        "count" : 1,
-        "faction" : "TOWN_INFERNO"
-      },
+      "number_of_towns": 1, 
+      "towns" : [
+        {
+          "faction" : "TOWN_INFERNO",
+          "owner" : "PLAYER_3",
+          "count" : 1
+        }
+      ],
       "number_of_mines": 2,
       "mines": [
         {
@@ -105,45 +114,33 @@
     {
       "size": "SMALL",
       "id": 4,
-      "owner": "NONE",
       "hero": "HERO_JENOVA",
       "terrain": "SWAMP",
-      "towns" : {
-        "count" : 0
-      },
+      "number_of_towns": 0, 
       "number_of_mines": 0
     },
     {
       "size": "SMALL",
       "id": 5,
-      "owner": "NONE",
       "hero": "HERO_JENOVA",
       "terrain" : "DESERT",
-      "towns" : {
-        "count" : 0
-      },
+      "number_of_towns": 0, 
       "number_of_mines": 0
     },
     {
       "size": "SMALL",
       "id": 7,
-      "owner": "NONE",
       "hero": "HERO_JENOVA",
       "terrain" : "SUBTERRANEAN",
-      "towns" : {
-        "count" : 0
-      },
+      "number_of_towns": 0, 
       "number_of_mines": 0
     },
     {
       "size": "SMALL",
       "id": 6,
-      "owner": "NONE",
       "hero": "HERO_CHRISTIAN",
       "terrain": "SAND",
-      "towns" : {
-        "count" : 0
-      },
+      "number_of_towns": 0, 
       "number_of_mines": 0
     }
   ],

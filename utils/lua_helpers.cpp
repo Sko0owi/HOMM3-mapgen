@@ -81,7 +81,7 @@ void AddRoads(std::ofstream& luaFile, Map& map){
 // @tparam      json        zone        zone description from json, like player id, hero xyz position.
 void AddHero(std::ofstream& luaFile, std::shared_ptr<Zone>& zone) {
     std::string hero = "HERO_CHRISTIAN";
-    i32 Id = zone->getOwnerId();
+    i32 Id = 1;
     i32 X = zone->getPosition().x;
     i32 Y = zone->getPosition().y;
     luaFile << "instance:hero(homm3lua." << hero

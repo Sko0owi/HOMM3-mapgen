@@ -89,13 +89,15 @@ void generateLuaScript(const json& config) {
     
     auto zones = map.getZones();
     for (auto& zone : zones) {
-        int playerId = zone.second->getOwnerId();
-        
-        if(playerId == 0) continue;
 
-        if (addedPlayers.find(playerId) == addedPlayers.end()){
-            addedPlayers.insert(playerId);
-            AddPlayer(luaFile, playerId);
+        for(auto& object : zone.second->getObjects()){
+            if (auto town = std::dynamic_pointer_cast<Town>(object)) {
+                int playerId = town->getOwner();
+                if (addedPlayers.find(playerId) == addedPlayers.end()){
+                    addedPlayers.insert(playerId);
+                    AddPlayer(luaFile, playerId);
+                }
+            }
         }
 
         for(auto& object : zone.second->getObjects()){

@@ -35,7 +35,6 @@ void ZoneConnection::setZoneB(i32 zone) {
 ZoneInfo::ZoneInfo(bool debug) {
     id = 0;
     size = "";
-    ownerId = 0;
     hero = "";
     debug = debug;
 }
@@ -79,9 +78,6 @@ void ZoneInfo::setSize(std::string size) {
     this->size = size;
 }
 
-void ZoneInfo::setOwner(i32 ownerId) {
-    this->ownerId = ownerId;
-}
 
 void ZoneInfo::setHero(std::string hero) {
     this->hero = hero;
@@ -97,10 +93,6 @@ i32 ZoneInfo::getId() {
 
 std::string ZoneInfo::getSize() {
     return size;
-}
-
-i32 ZoneInfo::getOwner() {
-    return ownerId;
 }
 
 std::string ZoneInfo::getHero() {
@@ -122,19 +114,22 @@ void ZoneInfo::deserializeZone(const json& config) {
 
     i32 id = config["id"].get<int>();
     std::string size = config["size"].get<std::string>();
-    std::string ownerStr = config["owner"].get<std::string>();
     std::string hero = config["hero"].get<std::string>();
     
     std::string terrain = config["terrain"].get<std::string>();
 
-    i32 town_count = config["towns"]["count"].get<int>();
+    i32 town_count = config["number_of_towns"].get<int>();
     for (int i = 0; i < town_count; i++) {
         Town town;
-        std::string town_faction = config["towns"]["faction"].get<std::string>();
+        std::cerr << i << "\n";
+        std::string townFaction = config["towns"][i]["faction"].get<std::string>();
+        std::cerr << "Town faction: " << townFaction << "\n";
+        std::string townOwner = config["towns"][i]["owner"].get<std::string>();
+        std::cerr << "Town owner: " << townOwner << "\n";
         if(debug)
-            std::cerr << "Sanity check1: " << town_faction << "\n";
-        town.setFaction(stringToFaction(config["towns"]["faction"].get<std::string>()));
-        town.setOwner(decodeOwner(ownerStr));
+            std::cerr << "Sanity check1: " << townFaction << "\n";
+        town.setFaction(stringToFaction(townFaction));
+        town.setOwner(decodeOwner(townOwner));
         town.setName("TOWN_");
         if(debug)
             std::cerr << "Sanity check: " << factionToString(town.getFaction()) << "\n";
@@ -160,7 +155,6 @@ void ZoneInfo::deserializeZone(const json& config) {
 
     setId(id);
     setSize(size);
-    setOwner(decodeOwner(ownerStr));
     setHero(hero);
     setTerrain(stringToTerrain(terrain));
     
@@ -169,7 +163,6 @@ void ZoneInfo::deserializeZone(const json& config) {
 void ZoneInfo::printZone() {
     std::cerr << "Zone id: " << id << "\n";
     std::cerr << "Zone size: " << size << "\n";
-    std::cerr << "Zone owner: " << ownerId << "\n";
     std::cerr << "Zone hero: " << hero << "\n";
     for(auto connection : connections) {
         std::cerr << "Connection: \n" << \

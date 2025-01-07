@@ -13,9 +13,9 @@ Object::Object(int3 pos, std::string name){
 }
 
 Object::Object(int3 pos, std::string name, int3 size){
-    position = pos;
     this->name = name;
     this->sizeOfObject = size;
+    setPosition(pos);
 }
 
 int3 Object::getSizeOfObject(){

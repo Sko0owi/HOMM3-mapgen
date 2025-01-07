@@ -33,6 +33,19 @@ ObjectPlacer::ObjectPlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map),
             }
         }
     }
+
+    std::cerr << "calculating center of zones\n";
+    for(auto& zone : map.getZones()) {
+        auto zonePtr = zone.second;
+        
+        auto centerOfZone = std::make_shared<Object>(Object(zonePtr->getPosition(), "Center Of Zone", int3(5,3,1)));
+
+        zonePtr->addObject(centerOfZone);
+        objects.push_back(centerOfZone);
+    }
+
+    recalculateDistances();
+
 }
 
 void ObjectPlacer::placeObjects() {
@@ -41,11 +54,6 @@ void ObjectPlacer::placeObjects() {
     placeTowns();
 
     placeMines();
-
-    // for(auto object : objects) {
-    //     std::cerr << "Object: " << object->getName() << " at " << object->getPosition().toString() << "\n";
-    // }
-
 
     for(int y = 0; y < mapHeight; y++) {
         for(int x = 0; x < mapWidth; x++) {
@@ -132,16 +140,20 @@ void ObjectPlacer::placeMines() {
         auto zoneId = zone.first;
         auto zonePtr = zone.second;
 
-        if(zonePtr->getOwnerId() == 0) continue;
-
         auto zoneI = temp.getZonesI()[zoneId];
 
-        auto townPtr = zone.second->getObjects()[0];
+
+        std::shared_ptr<Object> centerPtr = nullptr;
         for(auto& object : zone.second->getObjects()){
-            if (auto town = std::dynamic_pointer_cast<Town>(object)) {
-                townPtr = object;
+            if(object->getName() == "Center Of Zone") {
+                centerPtr = object;
                 break;
             }
+        }
+
+        if(centerPtr == nullptr) {
+            std::cerr << "No center of zone\n";
+            assert(false);
         }
 
         for(auto& mine : zoneI->getMines()) {
@@ -154,13 +166,13 @@ void ObjectPlacer::placeMines() {
                 auto [pos,tile] = tiles;
                 auto [x,y] = pos;
 
-                if(objectsDistances[townPtr][y][x] < 15 && canPlaceObject(int3(x,y,0), mineSize)) {
+                if(objectsDistances[centerPtr][y][x] < 15 && canPlaceObject(int3(x,y,0), mineSize)) {
                     possiblePositions.push_back(int3(x,y,0));
                 }
             }
 
             if(possiblePositions.empty()) {
-                std::cerr << "GAY\n";
+                std::cerr << "No possible placement\n";
                 continue;
             }
 
@@ -190,6 +202,7 @@ void ObjectPlacer::placeMines() {
 
         }
     }
+
     recalculateDistances();
 }
 
@@ -256,14 +269,14 @@ void ObjectPlacer::calculateShortestDistances(std::shared_ptr<Object> object) {
 
     }
 
-    std::cerr << "Distances for object " << object->getName() << "\n"; 
-    for(int y = 0; y < mapHeight; y++) {
-        for(int x = 0; x < mapWidth; x++) {
-            int dist = objectsDistances[object][y][x];
-            if(dist == INT_MAX) dist = -1;
-            fprintf(stderr,"%05d ", dist);
-        }
-        std::cerr << "\n";
-    }
+    // std::cerr << "Distances for object " << object->getName() << "\n"; 
+    // for(int y = 0; y < mapHeight; y++) {
+    //     for(int x = 0; x < mapWidth; x++) {
+    //         int dist = objectsDistances[object][y][x];
+    //         if(dist == INT_MAX) dist = -1;
+    //         fprintf(stderr,"%05d ", dist);
+    //     }
+    //     std::cerr << "\n";
+    // }
 
 }
