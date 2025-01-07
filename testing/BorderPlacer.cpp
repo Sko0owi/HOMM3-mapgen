@@ -264,7 +264,7 @@ void BorderPlacer::connectZones() {
 
 bool BorderPlacer::isWide(int ZoneA, int ZoneB){
     auto connectionPair = std::make_pair(std::min(ZoneA, ZoneB), std::max(ZoneA, ZoneB));
-    return (wideConnections.find(connectionPair) != wideConnections.end());
+    return (wideConnections.find(connectionPair) == wideConnections.end());
 }
 
 void BorderPlacer::setWideConnections(){
