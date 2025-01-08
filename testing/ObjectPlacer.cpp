@@ -1,16 +1,18 @@
 #include "./ObjectPlacer.h"
 
 #include "./Map.h"
-#include "./Template.h"
+#include "../template_info/TemplateInfo.h"
+#include "../template_info/ZoneInfo.h"
+#include "../template_info/ConnectionInfo.h"
+#include "./template_info/MineInfo.h"
+#include "./template_info/TownInfo.h"
+#include "./types/int3.h"
 #include "./global/Random.h"
 #include "./game_info/Town.h"
 #include "./game_info/Zone.h"
 #include "./game_info/Mine.h"
 #include "./game_info/Tile.h"
 #include "./game_info/Object.h"
-#include "./types/int3.h"
-#include "./template_info/TownInfo.h"
-#include "./template_info/MineInfo.h"
 
 ObjectPlacer::ObjectPlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), temp(temp), rng(rng) {
     mapWidth = map.getWidth();

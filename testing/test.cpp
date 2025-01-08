@@ -1,13 +1,13 @@
 #include <bits/stdc++.h>
 #include "../utils/lua_helpers.hpp"
 
-#include "../game_info/Tile.h"
-#include "../game_info/Town.h"
-#include "../game_info/Mine.h"
-#include "../Template.h"
-#include "../RoadPlacer.h"
-#include "../Map.h"
-#include "./Zone.h"
+#include "./game_info/Tile.h"
+#include "./game_info/Town.h"
+#include "./game_info/Mine.h"
+#include "./template_info/TemplateInfo.h"
+#include "./RoadPlacer.h"
+#include "./Map.h"
+#include "./game_info/Zone.h"
 #include "./global/Random.h"
 
 using json = nlohmann::json;

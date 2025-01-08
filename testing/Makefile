@@ -18,9 +18,11 @@ LDFLAGS = -L/usr/lib -llua
 
 # Source files
 SOURCES = $(SRC_DIR)/test.cpp \
+		  $(TEMPLATE_INFO_DIR)/ConnectionInfo.cpp \
+		  $(TEMPLATE_INFO_DIR)/ZoneInfo.cpp \
 		  $(TEMPLATE_INFO_DIR)/MineInfo.cpp \
 		  $(TEMPLATE_INFO_DIR)/TownInfo.cpp \
-          $(SRC_DIR)/Template.cpp \
+          $(TEMPLATE_INFO_DIR)/TemplateInfo.cpp \
           $(SRC_DIR)/Map.cpp \
 		  $(GAME_INFO_DIR)/Faction.cpp \
 		  $(GAME_INFO_DIR)/Terrain.cpp \

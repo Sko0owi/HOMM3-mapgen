@@ -1,6 +1,6 @@
 #include "./Map.h"
 #include "./Zone.h"
-#include "./Template.h"
+#include "./template_info/TemplateInfo.h"
 #include "./BorderPlacer.h"
 #include "./ZonePlacer.h"
 #include "./ObjectPlacer.h"

@@ -1,54 +1,8 @@
-#include "./Template.h"
+#include "./ZoneInfo.h"
+#include "./ConnectionInfo.h"
+#include "./TownInfo.h"
+#include "./MineInfo.h"
 #include "../game_info/Terrain.h"
-#include "../template_info/MineInfo.h"
-#include "../template_info/TownInfo.h"
-
-ZoneConnection::ZoneConnection() {
-    zoneA = 0;
-    zoneB = 0;
-    tier = 0;
-    type = "narrow";
-}
-
-i32 ZoneConnection::getZoneA() {
-    return zoneA;
-}
-
-i32 ZoneConnection::getZoneB() {
-    return zoneB;
-}
-
-i32 ZoneConnection::getTier() {
-    return tier;
-}
-
-string ZoneConnection::getType() {
-    return type;
-}
-
-i32 ZoneConnection::getOtherZone(i32 zone) {
-    if (zone == zoneA)
-    {
-        return zoneB;
-    }
-    return zoneA;
-}
-
-void ZoneConnection::setZoneA(i32 zone) {
-    zoneA = zone;
-}
-
-void ZoneConnection::setZoneB(i32 zone) {
-    zoneB = zone;
-}
-
-void ZoneConnection::setTier(i32 tier) {
-    this->tier = tier;
-}
-
-void ZoneConnection::setType(string type) {
-    this->type = type;
-}
 
 ZoneInfo::ZoneInfo(bool debug) {
     id = 0;
@@ -58,7 +12,7 @@ ZoneInfo::ZoneInfo(bool debug) {
 }
 
 void ZoneInfo::addConnection(const json& connectionConfig) {
-    ZoneConnection zoneConnection;
+    ConnectionInfo zoneConnection;
 
     int zoneA = connectionConfig["zoneA"].get<int>();
     int zoneB = connectionConfig["zoneB"].get<int>();
@@ -74,7 +28,7 @@ void ZoneInfo::addConnection(const json& connectionConfig) {
     connections.push_back(zoneConnection);
 }
 
-std::vector<ZoneConnection> ZoneInfo::getConnections() {
+std::vector<ConnectionInfo> ZoneInfo::getConnections() {
     return connections;
 }
 
@@ -126,6 +80,7 @@ std::string ZoneInfo::getHero() {
 Terrain ZoneInfo::getTerrain() {
     return terrain;
 }
+
 
 int decodeOwner(std::string owner) {
     if(owner == "NONE") return 0;
@@ -186,87 +141,4 @@ void ZoneInfo::printZone() {
         "Tier: " << connection.getTier() << "\n";
 
     }
-}
-
-TemplateInfo::TemplateInfo() {
-    name = "";
-    description = "";
-    mapSize = "";
-    difficulty = "";
-}
-
-ZonesI & TemplateInfo::getZonesI() {
-    return zonesI;
-}
-
-void TemplateInfo::setName(std::string name) {
-    this->name = name;
-}
-
-void TemplateInfo::setDescription(std::string description) {
-    this->description = description;
-}
-
-void TemplateInfo::setMapSize(std::string mapSize) {
-    this->mapSize = mapSize;
-}
-
-void TemplateInfo::setDifficulty(std::string difficulty) {
-    this->difficulty = difficulty;
-}
-
-std::string TemplateInfo::getName() {
-    return name;
-}
-
-std::string TemplateInfo::getDescription() {
-    return description;
-}
-
-std::string TemplateInfo::getMapSize() {
-    return mapSize;
-}
-
-std::string TemplateInfo::getDifficulty() {
-    return difficulty;
-}
-
-
-void TemplateInfo::deserialize(const json& config) {
-
-    std::string name = config["name"].get<std::string>();
-    std::string description = config["description"].get<std::string>();
-    std::string mapSize = config["size"].get<std::string>();
-    std::string difficulty = config["difficulty"].get<std::string>();
-
-    setName(name);
-    setDescription(description);
-    setMapSize(mapSize);
-    setDifficulty(difficulty);
-
-    for (const auto& zoneConfig : config["zones"]) {
-        auto zone = std::make_shared<ZoneInfo>(config["debug"]);
-        zone->deserializeZone(zoneConfig);
-        zonesI[zone->getId()] = zone;
-        
-    }
-
-    for (const auto& connectionConfig : config["connections"]) {
-        i32 zoneA = connectionConfig["zoneA"].get<int>();
-        i32 zoneB = connectionConfig["zoneB"].get<int>();
-        zonesI[zoneA]->addConnection(connectionConfig);
-        zonesI[zoneB]->addConnection(connectionConfig);
-    }
-}
-void TemplateInfo::printTemplate() {
-    std::cerr << "Template name: " << getName() << "\n";
-    std::cerr << "Template description: " << getDescription() << "\n";
-    std::cerr << "Template map size: " << getMapSize() << "\n";
-    std::cerr << "Template difficulty: " << getDifficulty() << "\n";
-
-    for(auto zone : zonesI) {
-        zone.second->printZone();
-    }
-
-
 }

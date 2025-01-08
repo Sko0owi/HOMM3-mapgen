@@ -2,7 +2,9 @@
 #include <sstream>
 
 #include "../game_info/Tile.h"
-#include "../Template.h"
+#include "../template_info/TemplateInfo.h"
+#include "../template_info/ZoneInfo.h"
+#include "../template_info/ConnectionInfo.h"
 #include "./Map.h"
 #include "./Zone.h"
 #include "./game_info/Terrain.h"

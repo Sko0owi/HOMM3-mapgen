@@ -1,5 +1,7 @@
 #include "./RoadPlacer.h"
-#include "./Template.h"
+#include "../template_info/TemplateInfo.h"
+#include "../template_info/ZoneInfo.h"
+#include "../template_info/ConnectionInfo.h"
 #include "./Map.h"
 #include "./Tile.h"
 

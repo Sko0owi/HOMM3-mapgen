@@ -2,7 +2,9 @@
 #include "./Map.h"
 #include "./Zone.h"
 #include "./Tile.h"
-#include "./Template.h"
+#include "../template_info/TemplateInfo.h"
+#include "../template_info/ZoneInfo.h"
+#include "../template_info/ConnectionInfo.h"
 
 
 BorderPlacer::BorderPlacer(Map & map, TemplateInfo & temp) : map(map), temp(temp){
