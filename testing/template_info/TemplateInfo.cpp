@@ -51,26 +51,29 @@ std::string TemplateInfo::getDifficulty() {
 
 void TemplateInfo::deserialize(const json& config) {
 
-    std::string name = config["name"].get<std::string>();
-    std::string description = config["description"].get<std::string>();
-    std::string mapSize = config["size"].get<std::string>();
-    std::string difficulty = config["difficulty"].get<std::string>();
+    std::string name = getOrError<std::string>(config, "name");
+    std::string difficulty = getOrError<std::string>(config, "difficulty");
+    std::string description = getOrError<std::string>(config, "description");
+    std::string mapSize = config.value("size", "MEDIUM");
+
 
     setName(name);
     setDescription(description);
     setMapSize(mapSize);
     setDifficulty(difficulty);
-
-    for (const auto& zoneConfig : config["zones"]) {
-        auto zone = std::make_shared<ZoneInfo>(config["debug"]);
+    
+    const auto& zonesConfig = getOrError<json>(config, "zones");
+    for (const auto &zoneConfig : zonesConfig)
+    {   
+        auto zone = std::make_shared<ZoneInfo>(config.value("debug", false));
         zone->deserializeZone(zoneConfig);
         zonesI[zone->getId()] = zone;
-        
     }
 
-    for (const auto& connectionConfig : config["connections"]) {
-        i32 zoneA = connectionConfig["zoneA"].get<int>();
-        i32 zoneB = connectionConfig["zoneB"].get<int>();
+    const auto& connectionsConfig = getOrError<json>(config, "connections");
+    for (const auto& connectionConfig : connectionsConfig) {
+        i32 zoneA =  getOrError<int>(connectionConfig, "zoneA");
+        i32 zoneB =  getOrError<int>(connectionConfig, "zoneB");
         zonesI[zoneA]->addConnection(connectionConfig);
         zonesI[zoneB]->addConnection(connectionConfig);
     }

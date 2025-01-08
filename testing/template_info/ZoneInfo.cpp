@@ -1,4 +1,5 @@
 #include "./ZoneInfo.h"
+#include "./TemplateInfo.h"
 #include "./ConnectionInfo.h"
 #include "./TownInfo.h"
 #include "./MineInfo.h"
@@ -14,10 +15,11 @@ ZoneInfo::ZoneInfo(bool debug) {
 void ZoneInfo::addConnection(const json& connectionConfig) {
     ConnectionInfo zoneConnection;
 
-    int zoneA = connectionConfig["zoneA"].get<int>();
-    int zoneB = connectionConfig["zoneB"].get<int>();
-    int tier = connectionConfig["tier"].get<int>();
-    string type = connectionConfig["type"].get<string>();
+    
+    int zoneA = TemplateInfo::getOrError<int>(connectionConfig, "zoneA");
+    int zoneB = TemplateInfo::getOrError<int>(connectionConfig, "zoneB");
+    int tier = connectionConfig.value("tier", 3);
+    std::string type = connectionConfig.value("type", "narrow");
 
     zoneConnection.setZoneA(zoneA);
     zoneConnection.setZoneB(zoneB);
@@ -97,33 +99,33 @@ int decodeSize(std::string size) {
 }
 
 void ZoneInfo::deserializeZone(const json& config) {
-
-    i32 id = config["id"].get<int>();
-    std::string size = config["size"].get<std::string>();
-    std::string hero = config["hero"].get<std::string>();
     
-    std::string terrain = config["terrain"].get<std::string>();
+    i32 id = TemplateInfo::getOrError<int>(config, "id");
+    std::string size = TemplateInfo::getOrError<std::string>(config, "size");
+    std::string hero = TemplateInfo::getOrError<std::string>(config, "hero");
+    
+    std::string terrain = config.value("terrain", "GRASS");
 
-    i32 town_count = config["number_of_towns"].get<int>();
+    i32 town_count = TemplateInfo::getOrError<int>(config, "number_of_towns");
     for (int i = 0; i < town_count; i++) {
 
-        std::string townFaction = config["towns"][i]["faction"].get<std::string>();
-        std::string townOwner = config["towns"][i]["owner"].get<std::string>();
-        int townDensity = config["towns"][i]["density"].get<int>();
-        int townMinCount = config["towns"][i]["min_count"].get<int>();
+        std::string townFaction = TemplateInfo::getOrError<std::string>(config["towns"][i], "faction");
+        std::string townOwner = TemplateInfo::getOrError<std::string>(config["towns"][i], "owner");
+        int townDensity = TemplateInfo::getOrError<int>(config["towns"][i], "density");
+        int townMinCount = TemplateInfo::getOrError<int>(config["towns"][i], "min_count");
 
         TownInfo townI(stringToFaction(townFaction), decodeOwner(townOwner), townDensity, townMinCount);
 
         addTown(townI);
     }
 
-    i32 mine_count = config["number_of_mines"].get<int>();
+    i32 mine_count =  TemplateInfo::getOrError<int>(config, "number_of_mines");
     for(int i = 0; i < mine_count; i++) {
     
-        std::string mineType = config["mines"][i]["type"].get<std::string>();
-        std::string mineOwner = config["mines"][i]["owner"].get<std::string>();
-        int mineDensity = config["mines"][i]["density"].get<int>();
-        int mineMinCount = config["mines"][i]["min_count"].get<int>();
+        std::string mineType = TemplateInfo::getOrError<std::string>(config["mines"][i], "type");
+        std::string mineOwner = TemplateInfo::getOrError<std::string>(config["mines"][i], "owner");
+        int mineDensity = TemplateInfo::getOrError<int>(config["mines"][i], "density");
+        int mineMinCount = TemplateInfo::getOrError<int>(config["mines"][i], "min_count");
 
         MineInfo mineI(stringToMineType(mineType), decodeOwner(mineOwner), mineDensity, mineMinCount);
         
@@ -134,7 +136,6 @@ void ZoneInfo::deserializeZone(const json& config) {
     setSize(decodeSize(size));
     setHero(hero);
     setTerrain(stringToTerrain(terrain));
-    
 }
 
 void ZoneInfo::printZone() {
