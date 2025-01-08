@@ -232,20 +232,6 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
             TilePtr->setIsExtension(false);
             TilePtr->setIsRoad(true);
             TilePtr->setTier(tier);
-
-            for (int i = 0; i < 1; ++i) {
-                int nx = point.first + dx[i];
-                int ny = point.second + dy[i];
-
-                auto TilePtr = map.getTile(nx, ny);
-
-                if (TilePtr && TilePtr->getIsBorder()) {
-                    TilePtr->setIsBorder(false);
-                    TilePtr->setIsExtension(false);
-                }
-            }
-
-
         }
 
         if(!castle){
