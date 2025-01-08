@@ -59,7 +59,7 @@ void generateLuaScript(const json& config) {
     TemplateInfo templateInfo;
     templateInfo.deserialize(config);
 
-    if (config["debug"])
+    if (config.value("debug", false))
         templateInfo.printTemplate();
 
     luaFile << "local instance = homm3lua.new(homm3lua.FORMAT_ROE, homm3lua.SIZE_";
@@ -81,7 +81,7 @@ void generateLuaScript(const json& config) {
     map.generateMap(templateInfo);
 
     std::cerr << "Map generated\n";
-    if (config["debug"])
+    if (config.value("debug", false))
         map.print();
     
     AddTerrain(luaFile);
@@ -118,7 +118,7 @@ void generateLuaScript(const json& config) {
 
     AddRoads(luaFile, map);
     
-    if (config["debug"]){
+    if (config.value("debug", false)){
         for(auto e : towns){
             std::cerr << e.first << " " << e.second << "\n";
         }
