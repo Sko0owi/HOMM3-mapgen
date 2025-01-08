@@ -1,15 +1,14 @@
 #include "./Map.h"
 #include "./Zone.h"
 #include "./template_info/TemplateInfo.h"
-#include "./BorderPlacer.h"
-#include "./ZonePlacer.h"
-#include "./ObjectPlacer.h"
-#include "./ObjectPlacer.h"
+#include "./placers/BorderPlacer.h"
+#include "./placers/ZonePlacer.h"
+#include "./placers/ObjectPlacer.h"
+#include "./placers/RoadPlacer.h"
 #include "./Faction.h"
 #include "./Tile.h"
 #include "./global/Random.h"
 #include "./game_info/Town.h"
-#include "./RoadPlacer.h"
 
 Map::Map(RNG *rng) {
     this->rng = rng;

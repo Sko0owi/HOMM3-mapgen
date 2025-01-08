@@ -8,6 +8,7 @@ UTILS_DIR = ../utils
 GAME_INFO_DIR = ./game_info
 GLOBAL_DIR = ./global
 TEMPLATE_INFO_DIR = ./template_info
+PLACERS_DIR = ./placers
 
 
 # Include paths
@@ -32,10 +33,10 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(GAME_INFO_DIR)/Zone.cpp  \
           $(GAME_INFO_DIR)/Tile.cpp  \
           $(GAME_INFO_DIR)/Town.cpp  \
-          $(SRC_DIR)/ZonePlacer.cpp \
-          $(SRC_DIR)/ObjectPlacer.cpp \
-		  $(SRC_DIR)/BorderPlacer.cpp \
-		  $(SRC_DIR)/RoadPlacer.cpp \
+          $(PLACERS_DIR)/ZonePlacer.cpp \
+          $(PLACERS_DIR)/ObjectPlacer.cpp \
+		  $(PLACERS_DIR)/BorderPlacer.cpp \
+		  $(PLACERS_DIR)/RoadPlacer.cpp \
 		  $(GLOBAL_DIR)/Random.cpp \
 		  $(GLOBAL_DIR)/PenroseTiling.cpp \
           $(UTILS_DIR)/lua_helpers.cpp 

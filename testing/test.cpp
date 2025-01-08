@@ -5,7 +5,7 @@
 #include "./game_info/Town.h"
 #include "./game_info/Mine.h"
 #include "./template_info/TemplateInfo.h"
-#include "./RoadPlacer.h"
+#include "./placers/RoadPlacer.h"
 #include "./Map.h"
 #include "./game_info/Zone.h"
 #include "./global/Random.h"
