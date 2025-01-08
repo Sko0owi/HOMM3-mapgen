@@ -1,7 +1,7 @@
 #include "./Template.h"
 #include "../game_info/Terrain.h"
-#include "../game_info/Town.h"
-#include "../game_info/Mine.h"
+#include "../template_info/MineInfo.h"
+#include "../template_info/TownInfo.h"
 
 ZoneConnection::ZoneConnection() {
     zoneA = 0;
@@ -78,19 +78,19 @@ std::vector<ZoneConnection> ZoneInfo::getConnections() {
     return connections;
 }
 
-void ZoneInfo::addTown(Town town) {
+void ZoneInfo::addTown(TownInfo town) {
     towns.push_back(town);
 }
 
-void ZoneInfo::addMine(Mine mine) {
+void ZoneInfo::addMine(MineInfo mine) {
     mines.push_back(mine);
 }
 
-std::vector<Town> ZoneInfo::getTowns() {
+std::vector<TownInfo> ZoneInfo::getTowns() {
     return towns;
 }
 
-std::vector<Mine> ZoneInfo::getMines() {
+std::vector<MineInfo> ZoneInfo::getMines() {
     return mines;
 }
 
@@ -144,37 +144,28 @@ void ZoneInfo::deserializeZone(const json& config) {
 
     i32 town_count = config["number_of_towns"].get<int>();
     for (int i = 0; i < town_count; i++) {
-        Town town;
-        std::cerr << i << "\n";
+
         std::string townFaction = config["towns"][i]["faction"].get<std::string>();
-        std::cerr << "Town faction: " << townFaction << "\n";
         std::string townOwner = config["towns"][i]["owner"].get<std::string>();
-        std::cerr << "Town owner: " << townOwner << "\n";
-        if(debug)
-            std::cerr << "Sanity check1: " << townFaction << "\n";
-        town.setFaction(stringToFaction(townFaction));
-        town.setOwner(decodeOwner(townOwner));
-        town.setName("TOWN_");
-        if(debug)
-            std::cerr << "Sanity check: " << factionToString(town.getFaction()) << "\n";
-        addTown(town);
+        int townDensity = config["towns"][i]["density"].get<int>();
+        int townMinCount = config["towns"][i]["min_count"].get<int>();
+
+        TownInfo townI(stringToFaction(townFaction), decodeOwner(townOwner), townDensity, townMinCount);
+
+        addTown(townI);
     }
 
     i32 mine_count = config["number_of_mines"].get<int>();
-    std::cerr << "Mine count: " << mine_count << "\n";
     for(int i = 0; i < mine_count; i++) {
-        Mine mine;
+    
         std::string mineType = config["mines"][i]["type"].get<std::string>();
         std::string mineOwner = config["mines"][i]["owner"].get<std::string>();
-        
-        std::cerr << "Mine type: " << mineType << "\n";
-        std::cerr << "Mine owner: " << mineOwner << "\n";
+        int mineDensity = config["mines"][i]["density"].get<int>();
+        int mineMinCount = config["mines"][i]["min_count"].get<int>();
 
-        mine.setMineType(stringToMineType(mineType));
-        mine.setOwner(decodeOwner(mineOwner));
-        mine.setPosition(int3(0,0,0));
-        mine.setName(mineType);
-        addMine(mine);
+        MineInfo mineI(stringToMineType(mineType), decodeOwner(mineOwner), mineDensity, mineMinCount);
+        
+        addMine(mineI);
     }
 
     setId(id);

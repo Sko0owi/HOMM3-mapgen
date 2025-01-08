@@ -15,7 +15,8 @@
         {
           "faction" : "TOWN_STRONGHOLD",
           "owner" : "PLAYER_1",
-          "count" : 1
+          "min_count" : 1,
+          "density": 1
         }
       ],
       "number_of_mines": 2,
@@ -23,12 +24,14 @@
         {
           "type": "Gold Mine",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Sawmill",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         }
       ]
     },
@@ -42,7 +45,8 @@
         {
           "faction" : "TOWN_INFERNO",
           "owner" : "PLAYER_2",
-          "count" : 1
+          "min_count" : 1,
+          "density": 1
         }
       ],
       "number_of_mines": 7,
@@ -50,37 +54,44 @@
         {
           "type": "Gold Mine",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Ore Pit",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Alchemists Lab",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Crystal Cavern",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Gem Pond",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Sulfur Dune",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Sawmill",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         }
       ]
     },
@@ -94,7 +105,8 @@
         {
           "faction" : "TOWN_INFERNO",
           "owner" : "PLAYER_3",
-          "count" : 1
+          "min_count" : 1,
+          "density": 1
         }
       ],
       "number_of_mines": 2,
@@ -102,12 +114,14 @@
         {
           "type": "Gold Mine",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         },
         {
           "type": "Sawmill",
           "owner": "NONE",
-          "count": 1
+          "min_count": 1,
+          "density": 1
         }
       ]
     },

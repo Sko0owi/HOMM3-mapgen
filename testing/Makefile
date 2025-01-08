@@ -7,6 +7,7 @@ SRC_DIR = .
 UTILS_DIR = ../utils
 GAME_INFO_DIR = ./game_info
 GLOBAL_DIR = ./global
+TEMPLATE_INFO_DIR = ./template_info
 
 
 # Include paths
@@ -17,6 +18,8 @@ LDFLAGS = -L/usr/lib -llua
 
 # Source files
 SOURCES = $(SRC_DIR)/test.cpp \
+		  $(TEMPLATE_INFO_DIR)/MineInfo.cpp \
+		  $(TEMPLATE_INFO_DIR)/TownInfo.cpp \
           $(SRC_DIR)/Template.cpp \
           $(SRC_DIR)/Map.cpp \
 		  $(GAME_INFO_DIR)/Faction.cpp \

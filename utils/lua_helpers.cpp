@@ -24,7 +24,7 @@ void AddPlayer(std::ofstream& luaFile, int playerId) {
 // @tparam      boolean     is_main     tells if is main town.
 void AddTown(std::ofstream &luaFile, Town town, bool is_main){
     
-    std::string nameOfObject = town.getName() + factionToString(town.getFaction());
+    std::string nameOfObject = "TOWN_" + factionToString(town.getFaction());
     i32 Id = town.getOwner();
     i32 X = town.getPosition().x;
     i32 Y = town.getPosition().y;

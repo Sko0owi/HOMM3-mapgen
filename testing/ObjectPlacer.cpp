@@ -9,6 +9,8 @@
 #include "./game_info/Tile.h"
 #include "./game_info/Object.h"
 #include "./types/int3.h"
+#include "./template_info/TownInfo.h"
+#include "./template_info/MineInfo.h"
 
 ObjectPlacer::ObjectPlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), temp(temp), rng(rng) {
     mapWidth = map.getWidth();
@@ -75,8 +77,10 @@ void ObjectPlacer::placeTowns() {
 
         auto zoneI = temp.getZonesI()[zoneId];
 
-        for (auto& town : zoneI->getTowns()) {
+        for (auto& townI : zoneI->getTowns()) {
             
+            Town town(townI);
+
             town.setSizeOfObject(int3(5,3,1));
             town.setPosition(zonePtr->getPosition());
 
@@ -156,9 +160,9 @@ void ObjectPlacer::placeMines() {
             assert(false);
         }
 
-        for(auto& mine : zoneI->getMines()) {
+        for(auto& mineI : zoneI->getMines()) {
 
-            int3 mineSize = getMineSize(mine.getMineType());
+            int3 mineSize = getMineSize(mineI.getMineType());
 
             vector<int3> possiblePositions;
             for(auto& tiles : zoneTiles[zonePtr]) {
@@ -178,6 +182,8 @@ void ObjectPlacer::placeMines() {
 
             int rand = rng->nextInt(0, possiblePositions.size() - 1);
             auto pos = possiblePositions[rand];
+
+            Mine mine(mineI);
 
             mine.setPosition(pos);
             mine.setSizeOfObject(mineSize);

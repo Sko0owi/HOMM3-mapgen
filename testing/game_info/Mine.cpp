@@ -1,4 +1,5 @@
 #include "./Mine.h"
+#include "../template_info/MineInfo.h"
 
 Mine::Mine() {
     mineType = MineType::MINE_SAWMILL;
@@ -11,6 +12,11 @@ Mine::Mine(MineType mineType) {
 Mine::Mine(MineType mineType, int owner, int3 pos, std::string name) : Object(pos, name) {
     this->mineType = mineType;
     this->owner = owner;
+}
+
+Mine::Mine(MineInfo mineInfo) {
+    this->mineType = mineInfo.getMineType();
+    this->owner = mineInfo.getOwner();
 }
 
 void Mine::setMineType(MineType mineType) {
