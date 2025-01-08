@@ -6,7 +6,7 @@
   "difficulty": "EASY",
   "zones": [
     {
-      "size": "SMALL",
+      "size": "MEDIUM",
       "id": 1,
       "hero": "HERO_CHRISTIAN",
       "terrain": "GRASS",
@@ -36,7 +36,7 @@
       ]
     },
     {
-      "size": "SMALL",
+      "size": "MEDIUM",
       "id": 2,
       "hero": "HERO_JENOVA",
       "terrain": "SNOW",
@@ -96,7 +96,7 @@
       ]
     },
     {
-      "size": "SMALL",
+      "size": "MEDIUM",
       "id": 3,
       "hero": "HERO_JENOVA",
       "terrain": "LAVA",

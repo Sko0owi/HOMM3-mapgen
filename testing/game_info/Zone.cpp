@@ -67,4 +67,5 @@ void Zone::printZone(){
     std::cerr << "Zone position: " << position.x << " " << position.y << " " << position.z << "\n";
     std::cerr << "Zone center: " << center.x << " " << center.y << " " << center.z << "\n";
     std::cerr << "Zone terrain: " << terrainToString(terrain) << "\n";
+    std::cerr << "Zone size: " << size << "\n";
 }

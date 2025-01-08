@@ -6,7 +6,7 @@
 
 ZoneInfo::ZoneInfo(bool debug) {
     id = 0;
-    size = "";
+    size = 0;
     hero = "";
     debug = debug;
 }
@@ -52,7 +52,7 @@ void ZoneInfo::setId(i32 id) {
     this->id = id;
 }
 
-void ZoneInfo::setSize(std::string size) {
+void ZoneInfo::setSize(i32 size) {
     this->size = size;
 }
 
@@ -69,7 +69,7 @@ i32 ZoneInfo::getId() {
     return id;
 }
 
-std::string ZoneInfo::getSize() {
+i32 ZoneInfo::getSize() {
     return size;
 }
 
@@ -87,6 +87,13 @@ int decodeOwner(std::string owner) {
 
     return std::stoi(owner.substr(owner.find_first_of("0123456789")));
 
+}
+
+int decodeSize(std::string size) {
+    if(size == "SMALL") return 1000;
+    if(size == "MEDIUM") return 2000;
+    if(size == "LARGE") return 3000;
+    return 0;
 }
 
 void ZoneInfo::deserializeZone(const json& config) {
@@ -124,7 +131,7 @@ void ZoneInfo::deserializeZone(const json& config) {
     }
 
     setId(id);
-    setSize(size);
+    setSize(decodeSize(size));
     setHero(hero);
     setTerrain(stringToTerrain(terrain));
     

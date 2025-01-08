@@ -23,11 +23,11 @@ public:
     std::vector<MineInfo> getMines();
 
     void setId(i32 id);
-    void setSize(std::string size);
+    void setSize(i32 size);
     void setHero(std::string hero);
     void setTerrain(Terrain terrain);
     i32 getId();
-    std::string getSize();
+    i32 getSize();
     std::string getHero();
     Terrain getTerrain();
     void deserializeZone(const json& config);
@@ -35,7 +35,7 @@ public:
 private:
     bool debug;
     i32 id;
-    std::string size;
+    i32 size;
     std::string hero;
     Terrain terrain;
     std::vector<TownInfo> towns;
