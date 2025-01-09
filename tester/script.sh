@@ -41,11 +41,11 @@ run_client() {
 
   mkdir -p "$log_location"
 
-  time ../build/bin/vcmiclient --testmap "$mapPath" --headless --logLocation "$log_location" &>/dev/null &
+  time ../build/bin/vcmiclient --testmap "$mapPath" --headless --logLocation "$log_location" &>"$log_location/$log_file.txt" &
 
   local pid=$!
   pids+=($pid)
-  
+
   echo "Started client instance $instanceID (PID: $pid), logging to $log_file"
 }
 
