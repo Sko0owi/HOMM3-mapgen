@@ -4,3 +4,5 @@
 test
 **/debug.txt
 **/.vscode
+build/
+**/log*

@@ -38,10 +38,14 @@ run_client() {
   local testID=$2
   local log_file="log_${testID}_${instanceID}"
   local log_location="/home/skowi/INŻYNIERKA/another-HOMM3-mapgen/tester/$log_file"
+
   mkdir -p "$log_location"
-  time ../../build/bin/vcmiclient --testmap "$mapPath" --headless --logLocation "$log_location" &>/dev/null &
+
+  time ../build/bin/vcmiclient --testmap "$mapPath" --headless --logLocation "$log_location" &>/dev/null &
+
   local pid=$!
   pids+=($pid)
+  
   echo "Started client instance $instanceID (PID: $pid), logging to $log_file"
 }
 
