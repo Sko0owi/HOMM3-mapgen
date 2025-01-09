@@ -7,22 +7,19 @@ public:
     MineInfo();
     MineInfo(MineType mineType);
 
-    MineInfo(MineType mineType, int owner, int density, int minCount);
+    MineInfo(MineType mineType, int owner, int minCount);
 
     void setMineType(MineType mineType);
     void setOwner(int owner);
-    void setDensity(int density);
     void setMinCount(int minCount);
 
     int getOwner() const;
     MineType getMineType() const;
-    int getDensity() const;
     int getMinCount() const;
 
 
 private:
     MineType mineType;
     int owner;
-    int density;
     int minCount;
 };

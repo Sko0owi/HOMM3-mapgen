@@ -18,19 +18,18 @@
           "density": 1
         }
       ],
+      "max_number_of_mines": 6,
       "number_of_mines": 2,
       "mines": [
         {
           "type": "Gold Mine",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Sawmill",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         }
       ]
     },
@@ -48,49 +47,43 @@
           "density": 1
         }
       ],
+      "max_number_of_mines": 10,
       "number_of_mines": 7,
       "mines": [
         {
           "type": "Gold Mine",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Ore Pit",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Alchemists Lab",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Crystal Cavern",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Gem Pond",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Sulfur Dune",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Sawmill",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         }
       ]
     },
@@ -108,19 +101,18 @@
           "density": 1
         }
       ],
+      "max_number_of_mines": 5,
       "number_of_mines": 2,
       "mines": [
         {
           "type": "Gold Mine",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         },
         {
           "type": "Sawmill",
           "owner": "NONE",
-          "min_count": 1,
-          "density": 1
+          "min_count": 1
         }
       ]
     },

@@ -19,17 +19,19 @@ public:
 
     void addTown(TownInfo town);
     void addMine(MineInfo mine);
-    std::vector<TownInfo> getTowns();
-    std::vector<MineInfo> getMines();
+    std::vector<TownInfo>& getTowns();
+    std::vector<MineInfo>& getMines();
 
     void setId(i32 id);
     void setSize(i32 size);
     void setHero(std::string hero);
     void setTerrain(Terrain terrain);
+    void setMaxMinesCount(i32 maxMinesCount);
     i32 getId();
     i32 getSize();
     std::string getHero();
     Terrain getTerrain();
+    i32 getMaxMinesCount();
     void deserializeZone(const json& config);
     void printZone();
 private:
@@ -38,6 +40,8 @@ private:
     i32 size;
     std::string hero;
     Terrain terrain;
+
+    i32 maxMinesCount;
     std::vector<TownInfo> towns;
     std::vector<MineInfo> mines;
     std::vector<ConnectionInfo> connections;

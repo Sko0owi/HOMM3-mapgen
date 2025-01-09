@@ -14,7 +14,7 @@ Mine::Mine(MineType mineType, int owner, int3 pos, std::string name) : Object(po
     this->owner = owner;
 }
 
-Mine::Mine(MineInfo mineInfo) {
+Mine::Mine(MineInfo mineInfo) : Object(int3(0,0,0), "Mine") {
     this->mineType = mineInfo.getMineType();
     this->owner = mineInfo.getOwner();
 }

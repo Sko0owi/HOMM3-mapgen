@@ -42,11 +42,11 @@ void ZoneInfo::addMine(MineInfo mine) {
     mines.push_back(mine);
 }
 
-std::vector<TownInfo> ZoneInfo::getTowns() {
+std::vector<TownInfo>& ZoneInfo::getTowns() {
     return towns;
 }
 
-std::vector<MineInfo> ZoneInfo::getMines() {
+std::vector<MineInfo>& ZoneInfo::getMines() {
     return mines;
 }
 
@@ -66,6 +66,9 @@ void ZoneInfo::setHero(std::string hero) {
 void ZoneInfo::setTerrain(Terrain terrain) {
     this->terrain = terrain;
 }
+void ZoneInfo::setMaxMinesCount(i32 maxMinesCount) {
+    this->maxMinesCount = maxMinesCount;
+}
 
 i32 ZoneInfo::getId() {
     return id;
@@ -81,6 +84,9 @@ std::string ZoneInfo::getHero() {
 
 Terrain ZoneInfo::getTerrain() {
     return terrain;
+}
+i32 ZoneInfo::getMaxMinesCount() {
+    return maxMinesCount;
 }
 
 
@@ -119,15 +125,16 @@ void ZoneInfo::deserializeZone(const json& config) {
         addTown(townI);
     }
 
+    i32 maxMinesCount = config.value("max_number_of_mines", 0);
+    std::cerr << "Max mines count: " << maxMinesCount << "\n";
     i32 mine_count =  TemplateInfo::getOrError<int>(config, "number_of_mines");
     for(int i = 0; i < mine_count; i++) {
     
         std::string mineType = TemplateInfo::getOrError<std::string>(config["mines"][i], "type");
         std::string mineOwner = TemplateInfo::getOrError<std::string>(config["mines"][i], "owner");
-        int mineDensity = TemplateInfo::getOrError<int>(config["mines"][i], "density");
         int mineMinCount = TemplateInfo::getOrError<int>(config["mines"][i], "min_count");
 
-        MineInfo mineI(stringToMineType(mineType), decodeOwner(mineOwner), mineDensity, mineMinCount);
+        MineInfo mineI(stringToMineType(mineType), decodeOwner(mineOwner), mineMinCount);
         
         addMine(mineI);
     }
@@ -136,6 +143,7 @@ void ZoneInfo::deserializeZone(const json& config) {
     setSize(decodeSize(size));
     setHero(hero);
     setTerrain(stringToTerrain(terrain));
+    setMaxMinesCount(maxMinesCount);
 }
 
 void ZoneInfo::printZone() {

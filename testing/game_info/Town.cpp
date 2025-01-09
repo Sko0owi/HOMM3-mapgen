@@ -14,7 +14,7 @@ Town::Town(Faction faction, int owner, int3 pos, std::string name) : Object(pos,
     this->owner = owner;
 }
 
-Town::Town(TownInfo townInfo) {
+Town::Town(TownInfo townInfo) : Object(int3(0,0,0), "Town") {
     this->faction = townInfo.getFaction();
     this->owner = townInfo.getOwner();
 }

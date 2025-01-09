@@ -45,7 +45,7 @@ ObjectPlacer::ObjectPlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map),
         auto centerOfZone = std::make_shared<Object>(Object(zonePtr->getPosition(), "Center Of Zone", int3(5,3,1)));
 
         zonePtr->addObject(centerOfZone);
-        objects.push_back(centerOfZone);
+        objects[zonePtr].push_back(centerOfZone);
     }
 
     recalculateDistances();
@@ -102,7 +102,7 @@ void ObjectPlacer::placeTowns() {
             auto townPointer = std::make_shared<Town>(town);
             zonePtr->addObject(townPointer);
             
-            objects.push_back(townPointer);
+            objects[zonePtr].push_back(townPointer);
 
         }
     }
@@ -115,13 +115,95 @@ bool ObjectPlacer::canPlaceObject(int3 pos, int3 size) {
     int x = pos.x;
     int y = pos.y; 
 
+    if(y == mapHeight - 1) return false;
+
     if(x - size.x + 1 < 0 || y - size.y + 1 < 0) return false;
 
     for(int x_ = max(0, x - size.x + 1); x_ <= x ; x_++) {
         for(int y_ = max(0, y - size.y + 1); y_ <= y; y_++) {
             if(objectsMap[y_][x_] >= 1) return false;
+
+            auto TilePtr = map.getTile(x_, y_);
+            if(TilePtr->getIsRoad()) return false;
+            if(TilePtr->getZoneId() != map.getTile(x, y)->getZoneId()) return false;
         }
     }
+
+    return true;
+}
+
+bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, std::map<std::shared_ptr<Zone>, std::vector<pair<pair<int,int>,std::shared_ptr<Tile>>>> &zoneTiles, bool firstBasicMine, bool deterministic) {
+
+    int3 mineSize = getMineSize(mineI.getMineType());
+
+    vector<int3> possiblePositions;
+
+    if(!deterministic) {
+
+        for(auto& tiles : zoneTiles[zonePtr]) {
+
+            auto [pos,tile] = tiles;
+            auto [x,y] = pos;
+
+            if((!firstBasicMine || objectsDistances[centerPtr][y][x] < 15) && canPlaceObject(int3(x,y,0), mineSize)) {
+                possiblePositions.push_back(int3(x,y,0));
+            }
+        }
+    } else {    
+        
+        int maxMin = 0;
+        auto bestPos = int3(0,0,0);
+        for(auto& tiles : zoneTiles[zonePtr]) {
+            auto [pos,tile] = tiles;
+            auto [x,y] = pos;
+
+            if(!canPlaceObject(int3(x,y,0), mineSize)) continue;
+
+
+            int localMin = INT_MAX;
+            for(auto& object : objects[zonePtr]) {
+                if(object->getName() != "Mine") continue;
+                localMin = min(localMin, objectsDistances[object][y][x]);
+            }
+            if(localMin > maxMin) {
+                maxMin = localMin;
+                bestPos = int3(x,y,0);
+            }
+        }
+        possiblePositions.push_back(bestPos);
+        
+    }
+
+    if(possiblePositions.empty()) {
+        std::cerr << "No possible placement\n";
+        return false;
+    }
+
+    int rand = rng->nextInt(0, possiblePositions.size() - 1);
+    auto pos = possiblePositions[rand];
+
+    Mine mine(mineI);
+
+    mine.setPosition(pos);
+    mine.setSizeOfObject(mineSize);
+
+    int x = mine.getPosition().x;
+    int y = mine.getPosition().y;
+
+    for(int x_ = max(0, x - mine.getSizeOfObject().x ); x_ <= min(x + 1, mapWidth - 1) ; x_++) {
+        for(int y_ = max(0, y - mine.getSizeOfObject().y ); y_ <= min(y + 1, mapHeight - 1); y_++) {
+
+            objectsMap[y_][x_] = 3;
+            if(x_ == x - mine.getSizeOfObject().x || x_ == x + 1 || y_ == y - mine.getSizeOfObject().y || y_ == y + 1) {
+                objectsMap[y_][x_] = 1;
+            }
+        }
+    }
+
+    auto minePointer = std::make_shared<Mine>(mine);
+
+    zonePtr->addObject(minePointer);
+    objects[zonePtr].push_back(minePointer);
 
     return true;
 }
@@ -148,6 +230,8 @@ void ObjectPlacer::placeMines() {
 
         auto zoneI = temp.getZonesI()[zoneId];
 
+        std::cerr << "Placing mines in zone " << zoneId << "\n";
+
 
         std::shared_ptr<Object> centerPtr = nullptr;
         for(auto& object : zone.second->getObjects()){
@@ -163,51 +247,38 @@ void ObjectPlacer::placeMines() {
         }
 
         for(auto& mineI : zoneI->getMines()) {
-
-            int3 mineSize = getMineSize(mineI.getMineType());
-
-            vector<int3> possiblePositions;
-            for(auto& tiles : zoneTiles[zonePtr]) {
-
-                auto [pos,tile] = tiles;
-                auto [x,y] = pos;
-
-                if(objectsDistances[centerPtr][y][x] < 15 && canPlaceObject(int3(x,y,0), mineSize)) {
-                    possiblePositions.push_back(int3(x,y,0));
-                }
+            if(mineI.getMineType() == MineType::MINE_SAWMILL || mineI.getMineType() == MineType::MINE_ORE_PIT) {
+                placeMine(mineI, centerPtr, zonePtr, zoneTiles, true);
+                zoneI->setMaxMinesCount(zoneI->getMaxMinesCount() - 1);
+                mineI.setMinCount(mineI.getMinCount() - 1);
             }
+        }
 
-            if(possiblePositions.empty()) {
+        for(auto& mineI : zoneI->getMines()) {
+            for(int i = 0; i < mineI.getMinCount(); i++) {
+                placeMine(mineI, centerPtr, zonePtr, zoneTiles);
+                zoneI->setMaxMinesCount(zoneI->getMaxMinesCount() - 1);
+            }
+        }
+
+
+        std::vector<MineInfo> minesToPlace;
+        for(auto& mineI : zoneI->getMines()) {
+            minesToPlace.push_back(mineI);
+        }
+
+        int minesToPlaceCount = zoneI->getMaxMinesCount();
+        while(minesToPlaceCount > 0) {
+
+            recalculateDistances();
+
+            int rand = rng->nextInt(0, minesToPlace.size() - 1);
+            if(placeMine(minesToPlace[rand], centerPtr, zonePtr, zoneTiles, false, true) == false) {
                 std::cerr << "No possible placement\n";
-                continue;
-            }
-
-            int rand = rng->nextInt(0, possiblePositions.size() - 1);
-            auto pos = possiblePositions[rand];
-
-            Mine mine(mineI);
-
-            mine.setPosition(pos);
-            mine.setSizeOfObject(mineSize);
-
-            int x = mine.getPosition().x;
-            int y = mine.getPosition().y;
-
-            for(int x_ = max(0, x - mine.getSizeOfObject().x ); x_ <= x + 1 ; x_++) {
-                for(int y_ = max(0, y - mine.getSizeOfObject().y ); y_ <= y + 1; y_++) {
-
-                    objectsMap[y_][x_] = 3;
-                    if(x_ == x - mine.getSizeOfObject().x || x_ == x + 1 || y_ == y - mine.getSizeOfObject().y || y_ == y + 1) {
-                        objectsMap[y_][x_] = 1;
-                    }
-                }
-            }
-
-            auto minePointer = std::make_shared<Mine>(mine);
-
-            zonePtr->addObject(minePointer);
-            objects.push_back(minePointer);
-
+                break;
+            }    
+            minesToPlaceCount--;
+                   
         }
     }
 
@@ -217,24 +288,31 @@ void ObjectPlacer::placeMines() {
 void ObjectPlacer::recalculateDistances() {
 
     std::cerr << "STARTING RECALC\n";
-    for(auto& object : objects) {
-        objectsDistances[object].clear();
+    for(auto& zone : map.getZones()) {
+        auto zonePtr = zone.second;
+        for(auto& object : objects[zonePtr]) {
+            objectsDistances[object].clear();
 
-        objectsDistances[object].resize(mapHeight);
-        for(auto& row : objectsDistances[object]) {
-            row.resize(mapWidth);
+            objectsDistances[object].resize(mapHeight);
+            for(auto& row : objectsDistances[object]) {
+                row.resize(mapWidth);
+            }
+
+            calculateShortestDistances(object);
         }
-
-        calculateShortestDistances(object);
     }
 }
 
-void ObjectPlacer::calculateShortestDistances(std::shared_ptr<Object> object) {
+void ObjectPlacer::calculateShortestDistances(std::shared_ptr<Object>& object) {
 
     auto pos = object->getPosition();
-    
+    struct Compare {
+        bool operator()(const pair<int, int3>& a, const pair<int, int3>& b) {
+            return a.first > b.first;
+        }
+    };
 
-    priority_queue<pair<int3, int>> pq;
+    priority_queue<pair<int, int3>, vector<pair<int, int3>>, Compare> pq;
 
     for(int x = 0; x < mapWidth; x++) {
         for(int y = 0; y < mapHeight; y++) {
@@ -245,13 +323,13 @@ void ObjectPlacer::calculateShortestDistances(std::shared_ptr<Object> object) {
     int dx[8] = {0, 0, -1, 1, -1, -1, 1, 1};
     int dy[8] = {-1, 1, 0, 0, -1, 1, -1, 1};
 
-    pq.push({pos, 0});
+    pq.push({0, pos});
 
     objectsDistances[object][pos.y][pos.x] = 0;
 
     while(!pq.empty()) {
 
-        auto [currentPos, dist] = pq.top();
+        auto [dist, currentPos] = pq.top();
         pq.pop();
 
         if(dist > objectsDistances[object][currentPos.y][currentPos.x]) continue;
@@ -271,20 +349,11 @@ void ObjectPlacer::calculateShortestDistances(std::shared_ptr<Object> object) {
         
             if(newDist < objectsDistances[object][ny][nx]) {
                 objectsDistances[object][ny][nx] = newDist;
-                pq.push({int3(nx, ny, z), newDist});
+                pq.push({newDist, int3(nx, ny, z)});
             }
         }
 
     }
 
-    // std::cerr << "Distances for object " << object->getName() << "\n"; 
-    // for(int y = 0; y < mapHeight; y++) {
-    //     for(int x = 0; x < mapWidth; x++) {
-    //         int dist = objectsDistances[object][y][x];
-    //         if(dist == INT_MAX) dist = -1;
-    //         fprintf(stderr,"%05d ", dist);
-    //     }
-    //     std::cerr << "\n";
-    // }
 
 }
