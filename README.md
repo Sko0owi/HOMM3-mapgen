@@ -11,8 +11,17 @@ Template-Based Map Generator for Heroes of Might &amp; Magic III
 * sudo apt-get install lua5.4 liblua5.4-dev
 
 # Current demo testing
-0. Ensure that tou have lua5.4 istalled
-1. In testing/test.cpp modify TODO line to save map in desired location 
+0. Ensure that tou have lua5.4 installed
+1. Build local VCMI
+```
+mkdir build
+cd build
+cmake -S ../vcmi
+
+cmake --build . -j8
+```
+
+2. In testing/test.cpp modify TODO line to save map in desired location 
 ```
 cd testing/
 make test
