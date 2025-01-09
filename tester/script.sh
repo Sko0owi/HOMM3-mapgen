@@ -26,6 +26,15 @@ test_map() {
             wait $pid
             echo "Client with PID $pid finished"
         done
+
+        for ((i=1; i<=instances; i++)); do
+            instanceID=$((i))
+            local log_file="log_${testID}_${instanceID}"
+            local log_location="/home/skowi/INŻYNIERKA/another-HOMM3-mapgen/tester/$log_file"
+
+            tail -1000 "$log_location/VCMI_Client_log.txt" > "$log_location/last_lines.txt"
+        done
+
     done
 
     echo "All clients finished"
