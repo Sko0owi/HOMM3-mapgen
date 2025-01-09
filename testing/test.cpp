@@ -116,21 +116,29 @@ void generateLuaScript(const json& config) {
     }   
     AddBorderObstacles(luaFile, map);
 
+    AddObstacle(luaFile, "Monolith One Way Entrance0", 14, 13, 0);
+    AddObstacle(luaFile, "Monolith One Way Exit0", 18, 13, 0);
+
+    AddObstacle(luaFile, "Monolith One Way Entrance1", 14, 15, 0);
+    AddObstacle(luaFile, "Monolith One Way Exit1", 18, 15, 0);
+
+    AddObstacle(luaFile, "Monolith One Way Entrance2", 14, 17, 0);
+    AddObstacle(luaFile, "Monolith One Way Exit2", 18, 17, 0);
+
     AddObstacle(luaFile, "Monolith One Way Entrance3", 14, 19, 0);
     AddObstacle(luaFile, "Monolith One Way Exit3", 18, 19, 0);
-
+    
     AddObstacle(luaFile, "Monolith One Way Entrance4", 14, 21, 0);
     AddObstacle(luaFile, "Monolith One Way Exit4", 18, 21, 0);
 
     AddObstacle(luaFile, "Monolith One Way Entrance5", 14, 23, 0);
     AddObstacle(luaFile, "Monolith One Way Exit5", 18, 23, 0);
 
-    AddObstacle(luaFile, "Monolith One Way Entrance6", 14, 25, 0);
     AddObstacle(luaFile, "Monolith One Way Exit6", 18, 25, 0);
+    AddObstacle(luaFile, "Monolith One Way Entrance6", 14, 25, 0);
 
     AddObstacle(luaFile, "Monolith One Way Entrance7", 14, 27, 0);
     AddObstacle(luaFile, "Monolith One Way Exit7", 18, 27, 0);
-
 
     AddRoads(luaFile, map);
     
