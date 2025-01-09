@@ -85,7 +85,7 @@ void generateLuaScript(const json& config) {
         map.print();
     
     AddTerrain(luaFile);
-    AddTerrainTiles(luaFile, map);
+    // AddTerrainTiles(luaFile, map);
     
     auto zones = map.getZones();
     for (auto& zone : zones) {
@@ -95,26 +95,26 @@ void generateLuaScript(const json& config) {
                 int playerId = town->getOwner();
                 if (addedPlayers.find(playerId) == addedPlayers.end()){
                     addedPlayers.insert(playerId);
-                    AddPlayer(luaFile, playerId);
+                    // AddPlayer(luaFile, playerId);
                 }
             }
         }
 
         for(auto& object : zone.second->getObjects()){
             if (auto town = std::dynamic_pointer_cast<Town>(object)) {
-                AddTown(luaFile, *town);
+                // AddTown(luaFile, *town);
             }
 
             if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
-                AddMine(luaFile, *mine);
+                // AddMine(luaFile, *mine);
             }
         }
 
         
 
-        AddHero(luaFile, zone.second);
+        // AddHero(luaFile, zone.second);
     }   
-    AddBorderObstacles(luaFile, map);
+    // AddBorderObstacles(luaFile, map);
 
     AddObstacle(luaFile, "Monolith One Way Entrance0", 14, 13, 0);
     AddObstacle(luaFile, "Monolith One Way Exit0", 18, 13, 0);
@@ -140,7 +140,7 @@ void generateLuaScript(const json& config) {
     AddObstacle(luaFile, "Monolith One Way Entrance7", 14, 27, 0);
     AddObstacle(luaFile, "Monolith One Way Exit7", 18, 27, 0);
 
-    AddRoads(luaFile, map);
+    // AddRoads(luaFile, map);
     
     if (config.value("debug", false)){
         for(auto e : towns){
@@ -148,7 +148,7 @@ void generateLuaScript(const json& config) {
         }
     }
 
-    placeGateCreatures(luaFile, map);
+    // placeGateCreatures(luaFile, map);
 
     string homeDir = getenv("HOME");
     cerr << "Home dir: " << homeDir << endl;
