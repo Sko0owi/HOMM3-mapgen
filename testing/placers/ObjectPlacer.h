@@ -40,6 +40,8 @@ public:
 
     bool canPlaceObject(int3 pos, int3 size);
 
+    std::vector<std::vector<int>> getObjectsMap();
+
 private:
 
     int mapWidth;

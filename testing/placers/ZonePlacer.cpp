@@ -35,7 +35,6 @@ void ZonePlacer::generateZones() {
         map.getZones()[zoneI.first]->setSize(zoneI.second->getSize());
     }
 
-
     placeOnGrid();
     placeZones();
 

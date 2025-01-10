@@ -160,7 +160,7 @@
     {
       "zoneA": 1,
       "zoneB": 6,
-      "type": "wide",
+      "type": "monolith",
       "tier": 2
     },
     {
@@ -172,7 +172,7 @@
     {
       "zoneA": 4,
       "zoneB": 3,
-      "type": "wide",
+      "type": "narrow",
       "tier": 2
     },
     {
@@ -184,7 +184,7 @@
     {
       "zoneA": 2,
       "zoneB": 5,
-      "type": "wide",
+      "type": "narrow",
       "tier": 2
     },
     {
@@ -196,7 +196,7 @@
     {
       "zoneA": 4,
       "zoneB": 1,
-      "type": "wide",
+      "type": "narrow",
       "tier": 2
     },
     {
@@ -208,7 +208,7 @@
     {
       "zoneA": 2,
       "zoneB": 7,
-      "type": "wide",
+      "type": "narrow",
       "tier": 2
     }
   ]

@@ -646,3 +646,7 @@ void ObjectPlacer::calculateShortestDistances(std::shared_ptr<Object> &object)
         }
     }
 }
+
+std::vector<std::vector<int>> ObjectPlacer::getObjectsMap(){
+    return objectsMap;
+}

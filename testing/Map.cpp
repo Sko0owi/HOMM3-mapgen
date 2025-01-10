@@ -31,7 +31,7 @@ pair<int,int> decodeMapSize(std::string MapSize) {
     return {-1,-1};
 }
 
-void Map::generateMap(TemplateInfo &temp) {
+std::shared_ptr<ObjectPlacer> Map::generateMap(TemplateInfo &temp) {
 
     std::string MapSize = temp.getMapSize();
 
@@ -47,29 +47,37 @@ void Map::generateMap(TemplateInfo &temp) {
     }
 
     class ZonePlacer zonePlacer(*this, temp, rng);
-
     zonePlacer.generateZones();
 
-    class BorderPlacer borderPlacer(*this, temp);
-    borderPlacer.generateBorders();
+    class BorderPlacer borderPlacer(*this, temp, rng);
+    borderPlacer.generateBorders();    
     setConnectedPairs(borderPlacer.getConnectedPairs());
-
-
+    setMapObjects(borderPlacer.getMapObjects());
     RoadPlacer roadPlacer(*this, temp);
     roadPlacer.createShotestPathsToConnected(connectedPairs);
 
 
-    class ObjectPlacer objectPlacer(*this, temp, rng);
+    auto objectPlacer = std::make_shared<ObjectPlacer>(*this, temp, rng);
 
-    objectPlacer.placeObjects();
+    objectPlacer->placeObjects();
+
+    return objectPlacer;
 }
 
-void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool, int>> connectedPairs){
+void Map::setConnectedPairs(ConnectedPoints connectedPairs){
     this->connectedPairs = connectedPairs;
 }
 
-vector<std::tuple<int, int, int, int, bool, int>> Map::getConnectedPairs(){
+ConnectedPoints Map::getConnectedPairs(){
     return connectedPairs;
+}
+
+void Map::setMapObjects(MapObjects mapObjects){
+    this->mapObjects = mapObjects;
+}
+
+MapObjects Map::getMapObjects(){
+    return mapObjects;
 }
 
 MapZones & Map::getZones() {

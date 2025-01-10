@@ -5,12 +5,21 @@
 #include "../template_info/TemplateInfo.h"
 #include "../template_info/ZoneInfo.h"
 #include "../template_info/ConnectionInfo.h"
+#include "../global/Random.h"
+#include"../types/int3.h"
+#include "../game_info/Object.h"
 
+TemplateInfo emptyTemplateInfo;
 
-BorderPlacer::BorderPlacer(Map & map, TemplateInfo & temp) : map(map), temp(temp){
+BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), temp(temp), rng(rng)
+{
     mapWidth = 0;
     mapHeight = 0;
+    monolithCount = 0;
 }
+
+BorderPlacer::BorderPlacer(Map & map, RNG *rng) 
+    : BorderPlacer(map, emptyTemplateInfo, rng) {}
 
 void BorderPlacer::generateBorders() {
     mapWidth = map.getWidth();
@@ -91,6 +100,21 @@ int BorderPlacer::getTier(int ZoneA, int ZoneB){
         }
     }
     return 0;
+}
+
+std::string BorderPlacer::getType(int ZoneA, int ZoneB){
+    auto zonesI = temp.getZonesI();
+
+    for(auto e : zonesI){
+        for(auto c : e.second->getConnections()){
+            if ((c.getZoneA() == ZoneA && c.getZoneB() == ZoneB) ||
+                (c.getZoneA() == ZoneB && c.getZoneB() == ZoneA))
+            {
+                return c.getType();
+            }
+        }
+    }
+    return "narrow";
 }
 
 bool BorderPlacer::isMapBorder(int x, int y){
@@ -179,8 +203,27 @@ void BorderPlacer::findOuter(int X, int Y, int *outerX1, int *outerY1, int *oute
     }
 }
 
-std::vector<std::tuple<int, int, int, int, bool, int>> BorderPlacer::getConnectedPairs(){
+ConnectedPoints BorderPlacer::getConnectedPairs(){
     return connectedPairs;
+}
+
+MapObjects BorderPlacer::getMapObjects(){
+    return mapObjects;
+}
+
+std::vector<std::pair<int, int>> BorderPlacer::getZoneTiles(int zoneId){
+    std::vector<std::pair<int, int>> tiles;
+    for (int x = 0; x < mapWidth; x++)
+    {
+        for (int y = 0; y < mapHeight; y++){
+            auto TilePtr = map.getTile(x, y);
+
+            if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsExtension() && !TilePtr->getIsRoad()){
+                tiles.emplace_back(x, y);
+            }
+        }
+    }
+    return tiles;
 }
 
 void BorderPlacer::connectZones() {
@@ -205,6 +248,7 @@ void BorderPlacer::connectZones() {
                 int X = zone1.second->getPosition().x;
                 int Y = zone1.second->getPosition().y;
                 int tier = getTier(zone1Id, zone2Id);
+                std::string type = getType(zone1Id, zone2Id);
 
                 int outerX1 = -1, outerY1 = -1, outerX2 = -1, outerY2 = -1;
                 findOuter(X, Y, &outerX1, &outerY1, &outerX2, &outerY2, zone1Id, zone2Id);
@@ -213,49 +257,110 @@ void BorderPlacer::connectZones() {
                 // castle -> bool does have castle
                 // tier -> tier of road
 
-                connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false, tier); // Add points of connection
+                if(outerX1 == -1 || outerX2 == -1 || type == "monolith"){ // Didn't find connection or it is monolith type -> add Monoliths
+                    std::vector<std::pair<int, int>> zone1Tiles = getZoneTiles(zone1Id);
+                    std::vector<std::pair<int, int>> zone2Tiles = getZoneTiles(zone2Id);
 
-                // map.getTile((outerX1), (outerY1))->setIsGate(true);
+                    int rand = rng->nextInt(0, zone1Tiles.size() - 1), rand2;
+                    auto [outerXX1, outerYY1] = zone1Tiles[rand];
 
-                int XX1 = zone1.second->getPosition().x;
-                int YY1 = zone1.second->getPosition().y;
+                    outerX1 = outerXX1;
+                    outerY1 = outerYY1;
 
-                connectedPairs.emplace_back(outerX1, outerY1, XX1, YY1, true, tier); // Castle1 -> Connect1
-                
-                int XX2 = zone2.second->getPosition().x;
-                int YY2 = zone2.second->getPosition().y;
-                connectedPairs.emplace_back(XX2, YY2, outerX2, outerY2, true, tier); // Castle2 -> Connect2
+                    Object entrance(int3 (outerX1, outerY1, 0), "Monolith One Way Entrance" + std::to_string(monolithCount));
+                    mapObjects.emplace_back(entrance);
+                    
+                    //Now we need to create connection in other direction as well
+                    do{
+                        rand2 = rng->nextInt(0, zone1Tiles.size() - 1);
+                    } while (rand == rand2);
+                    
+                    auto [outerXXX1, outerYYY1] = zone1Tiles[rand2];
 
-                
-                if(debug){
-                    std::cerr << "X= " << X << " Y= " << Y << " OX1= " << outerX1 << " OY1= " << outerY1 << " OX2= " << outerX2 << " OY2= " << outerY2 << "\n";
-                    for (int y = 0; y < mapHeight; y++)
-                    {
-                        for (int x = 0; x < mapWidth; x++) {
-                            auto TilePtr = map.getTile(x, y);
+                    //First exit 
+                    rand = rng->nextInt(0, zone2Tiles.size() - 1);
+                    auto [outerXX2, outerYY2] = zone2Tiles[rand];
+
+                    outerX2 = outerXX2;
+                    outerY2 = outerYY2;
 
                     
-                            if((x == outerX1 && y == outerY1) || (x == outerX2 && y == outerY2)) {
-                                std::cerr << "X ";
-                            } else if((x == XX1 && y == YY1) || (x == XX2 && y == YY2)) {
-                                std::cerr << "Y ";
-                            }else if(!TilePtr->getIsGate() && TilePtr->getIsBorder()){
-                                std::cerr << "E ";
+                    Object exit(int3 (outerX2, outerY2, 0), "Monolith One Way Exit" + std::to_string(monolithCount));
+                    mapObjects.emplace_back(exit);
+
+                    //Now we need to create connection in other direction as well
+                    do{
+                        rand2 = rng->nextInt(0, zone2Tiles.size() - 1);
+                    } while (rand == rand2);
+                    
+                    auto [outerXXX2, outerYYY2] = zone2Tiles[rand2];
+                    Object entrance2(int3 (outerXXX2, outerYYY2, 0), "Monolith One Way Entrance" + std::to_string(monolithCount + 1));
+                    mapObjects.emplace_back(entrance2);
+                    
+                    int XX2 = zone2.second->getPosition().x;
+                    int YY2 = zone2.second->getPosition().y;
+
+                    // connectedPairs.emplace_back(outerXXX2, outerYYY2, XX2, YY2, true, tier); // Castle2 -> Connect2
+
+                    //Second exit
+                    Object exit2(int3 (outerXXX1, outerYYY1, 0), "Monolith One Way Exit" + std::to_string(monolithCount + 1));
+                    mapObjects.emplace_back(exit2);
+                    
+                    int XX1 = zone1.second->getPosition().x;
+                    int YY1 = zone1.second->getPosition().y;
+
+                    // connectedPairs.emplace_back(outerXXX1, outerYYY1, XX1, YY1, true, tier); // Castle1 -> Connect1
+                    
+                    monolithCount += 2;
+                    monolithCount %= 8;
+                }
+                else
+                {
+                    connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false, tier); // Add points of connection
+
+                    // map.getTile((outerX1), (outerY1))->setIsGate(true);
+
+                    int XX1 = zone1.second->getPosition().x;
+                    int YY1 = zone1.second->getPosition().y;
+
+
+                    connectedPairs.emplace_back(outerX1, outerY1, XX1, YY1, true, tier); // Castle1 -> Connect1
+                    
+                    int XX2 = zone2.second->getPosition().x;
+                    int YY2 = zone2.second->getPosition().y;
+                    connectedPairs.emplace_back(XX2, YY2, outerX2, outerY2, true, tier); // Castle2 -> Connect2
+
+                
+                    if(debug){
+                        std::cerr << "X= " << X << " Y= " << Y << " OX1= " << outerX1 << " OY1= " << outerY1 << " OX2= " << outerX2 << " OY2= " << outerY2 << "\n";
+                        for (int y = 0; y < mapHeight; y++)
+                        {
+                            for (int x = 0; x < mapWidth; x++) {
+                                auto TilePtr = map.getTile(x, y);
+
+                        
+                                if((x == outerX1 && y == outerY1) || (x == outerX2 && y == outerY2)) {
+                                    std::cerr << "X ";
+                                } else if((x == XX1 && y == YY1) || (x == XX2 && y == YY2)) {
+                                    std::cerr << "Y ";
+                                }else if(!TilePtr->getIsGate() && TilePtr->getIsBorder()){
+                                    std::cerr << "E ";
+                                }
+                                else
+                                {
+                                    std::cerr << ". ";
+                                }
                             }
-                            else
-                            {
-                                std::cerr << ". ";
-                            }
+                            std::cerr << "\n";
                         }
-                        std::cerr << "\n";
-                    }
-                    
-                    for(auto myTuple : getConnectedPairs()){
-                        std::cerr << "(" 
-                            << std::get<0>(myTuple) << ", "
-                            << std::get<1>(myTuple) << ", "
-                            << std::get<2>(myTuple) << ", "
-                            << std::get<3>(myTuple) << ")\n";
+                        
+                        for(auto myTuple : getConnectedPairs()){
+                            std::cerr << "(" 
+                                << std::get<0>(myTuple) << ", "
+                                << std::get<1>(myTuple) << ", "
+                                << std::get<2>(myTuple) << ", "
+                                << std::get<3>(myTuple) << ")\n";
+                        }
                     }
                 }
             }

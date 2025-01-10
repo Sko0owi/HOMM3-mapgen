@@ -190,25 +190,25 @@ void RoadPlacer::clearSquares(){
 bool RoadPlacer::gateSquare(int x, int y){
     auto Tile1 = map.getTile(x + 1, y), Tile2 = map.getTile(x - 1, y);
     if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
-        std::cerr << x << " " << y << " 1\n";
+        // std::cerr << x << " " << y << " 1\n";
         return true;
     }
 
     Tile1 = map.getTile(x, y + 1), Tile2 = map.getTile(x, y - 1);
     if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
-        std::cerr << x << " " << y << " 2\n";
+        // std::cerr << x << " " << y << " 2\n";
         return true;
     }
 
     Tile1 = map.getTile(x + 1, y + 1), Tile2 = map.getTile(x - 1, y - 1);
     if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
-        std::cerr << x << " " << y << " 3\n";
+        // std::cerr << x << " " << y << " 3\n";
         return true;
     }
 
     Tile1 = map.getTile(x + 1, y - 1), Tile2 = map.getTile(x - 1, y + 1);
     if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
-        std::cerr << x << " " << y << " 4\n";
+        // std::cerr << x << " " << y << " 4\n";
         return true;
     }
 
