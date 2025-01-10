@@ -10,6 +10,11 @@
 #include "./game_info/Terrain.h"
 #include "./game_info/Town.h"
 #include "./game_info/Mine.h"
+#include "../placers/ObjectPlacer.h"
+#include "../global/Random.h"
+#include "../placers/BorderPlacer.h"
+
+
 
 using json = nlohmann::json;
 
@@ -60,9 +65,9 @@ void AddMine(std::ofstream& luaFile, Mine mine){
     luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 }
 
-void AddRoads(std::ofstream& luaFile, Map& map){
+void AddRoads(std::ofstream& luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
     luaFile << "-- Place 1 way monoliths\n";
-    AddMapObjects(luaFile, map);
+    AddMapObjects(luaFile, map, objectPlacer, rng);
     
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
@@ -215,21 +220,44 @@ void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z){
     luaFile << "instance:sign('" << text << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
 }
 
-void AddMapObjects(std::ofstream &luaFile, Map& map){
+std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer){
+    std::vector<std::pair<int, int>> tiles;
+    auto objectsMap = objectPlacer->getObjectsMap();
+    
+    for (int x = 1; x < map.getWidth(); x++)
+    {
+        for (int y = 1; y < map.getWidth(); y++){
+            auto TilePtr = map.getTile(x, y);
+
+            if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsExtension() && !TilePtr->getIsRoad() && objectsMap[y][x] == 0){
+                tiles.emplace_back(x, y);
+            }
+        }
+    }
+    
+    return tiles;
+}
+
+void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
     MapObjects mapObjects = map.getMapObjects();
+    auto objectsMap = objectPlacer->getObjectsMap();
+
     for (auto object : mapObjects)
     {
         std::string obstacle = object.getName();
         auto pos = object.getPosition();
 
-        // auto TilePtr = map.getTile(pos.x, pos.y);
-        // if(TilePtr->getIsBorder() || TilePtr->getIsExtension() || TilePtr->getIsRoad()){
-        //     std::vector<std::pair<int, int>> zone1Tiles = getZoneTiles(TilePtr->getZoneId());
-        //     int rand = rng->nextInt(0, zone1Tiles.size() - 1);
-        //     auto [outerXX1, outerYY1] = zone1Tiles[rand];
+        auto TilePtr = map.getTile(pos.x, pos.y);
+        int outerXX1 = pos.x, outerYY1 = pos.y;
 
-        //     pos = int3(outerXX1, outerYY1, 0);
-        // }
+        if (TilePtr->getIsBorder() || TilePtr->getIsExtension() || TilePtr->getIsRoad() || objectsMap[pos.y][pos.x] > 0)
+        {
+            std::vector<std::pair<int, int>> zone1Tiles = getValidTiles(TilePtr->getZoneId(), map, objectPlacer);            
+            int rand = rng->nextInt(0, zone1Tiles.size() - 1);
+            std::tie(outerXX1, outerYY1) = zone1Tiles[rand];
+            pos = int3(outerXX1, outerYY1, 0);
+
+        }
         luaFile << "instance:obstacle('" << obstacle << "', {x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << "})\n";
     }
 }

@@ -78,7 +78,7 @@ void generateLuaScript(const json& config) {
     rng.setSeed(12);
 
     Map map(&rng);
-    map.generateMap(templateInfo);
+    auto objectPlacer = map.generateMap(templateInfo);
 
     std::cerr << "Map generated\n";
     if (config.value("debug", false))
@@ -89,7 +89,6 @@ void generateLuaScript(const json& config) {
     
     auto zones = map.getZones();
     for (auto& zone : zones) {
-
         for(auto& object : zone.second->getObjects()){
             if (auto town = std::dynamic_pointer_cast<Town>(object)) {
                 int playerId = town->getOwner();
@@ -114,7 +113,7 @@ void generateLuaScript(const json& config) {
     }   
     AddBorderObstacles(luaFile, map);
 
-    AddRoads(luaFile, map);
+    AddRoads(luaFile, map, objectPlacer, &rng);
     
     if (config.value("debug", false)){
         for(auto e : towns){

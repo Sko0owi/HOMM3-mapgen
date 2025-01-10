@@ -9,12 +9,17 @@
 #include"../types/int3.h"
 #include "../game_info/Object.h"
 
+TemplateInfo emptyTemplateInfo;
 
-BorderPlacer::BorderPlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), temp(temp), rng(rng){
+BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), temp(temp), rng(rng)
+{
     mapWidth = 0;
     mapHeight = 0;
     monolithCount = 0;
 }
+
+BorderPlacer::BorderPlacer(Map & map, RNG *rng) 
+    : BorderPlacer(map, emptyTemplateInfo, rng) {}
 
 void BorderPlacer::generateBorders() {
     mapWidth = map.getWidth();
@@ -295,7 +300,7 @@ void BorderPlacer::connectZones() {
                     int XX2 = zone2.second->getPosition().x;
                     int YY2 = zone2.second->getPosition().y;
 
-                    connectedPairs.emplace_back(outerXXX2, outerYYY2, XX2, YY2, true, tier); // Castle2 -> Connect2
+                    // connectedPairs.emplace_back(outerXXX2, outerYYY2, XX2, YY2, true, tier); // Castle2 -> Connect2
 
                     //Second exit
                     Object exit2(int3 (outerXXX1, outerYYY1, 0), "Monolith One Way Exit" + std::to_string(monolithCount + 1));
@@ -304,7 +309,7 @@ void BorderPlacer::connectZones() {
                     int XX1 = zone1.second->getPosition().x;
                     int YY1 = zone1.second->getPosition().y;
 
-                    connectedPairs.emplace_back(outerXXX1, outerYYY1, XX1, YY1, true, tier); // Castle1 -> Connect1
+                    // connectedPairs.emplace_back(outerXXX1, outerYYY1, XX1, YY1, true, tier); // Castle1 -> Connect1
                     
                     monolithCount += 2;
                     monolithCount %= 8;
@@ -312,50 +317,50 @@ void BorderPlacer::connectZones() {
                 else
                 {
                     connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false, tier); // Add points of connection
-                }
 
-                // map.getTile((outerX1), (outerY1))->setIsGate(true);
+                    // map.getTile((outerX1), (outerY1))->setIsGate(true);
 
-                int XX1 = zone1.second->getPosition().x;
-                int YY1 = zone1.second->getPosition().y;
+                    int XX1 = zone1.second->getPosition().x;
+                    int YY1 = zone1.second->getPosition().y;
 
 
-                connectedPairs.emplace_back(outerX1, outerY1, XX1, YY1, true, tier); // Castle1 -> Connect1
+                    connectedPairs.emplace_back(outerX1, outerY1, XX1, YY1, true, tier); // Castle1 -> Connect1
+                    
+                    int XX2 = zone2.second->getPosition().x;
+                    int YY2 = zone2.second->getPosition().y;
+                    connectedPairs.emplace_back(XX2, YY2, outerX2, outerY2, true, tier); // Castle2 -> Connect2
+
                 
-                int XX2 = zone2.second->getPosition().x;
-                int YY2 = zone2.second->getPosition().y;
-                connectedPairs.emplace_back(XX2, YY2, outerX2, outerY2, true, tier); // Castle2 -> Connect2
+                    if(debug){
+                        std::cerr << "X= " << X << " Y= " << Y << " OX1= " << outerX1 << " OY1= " << outerY1 << " OX2= " << outerX2 << " OY2= " << outerY2 << "\n";
+                        for (int y = 0; y < mapHeight; y++)
+                        {
+                            for (int x = 0; x < mapWidth; x++) {
+                                auto TilePtr = map.getTile(x, y);
 
-            
-                if(debug){
-                    std::cerr << "X= " << X << " Y= " << Y << " OX1= " << outerX1 << " OY1= " << outerY1 << " OX2= " << outerX2 << " OY2= " << outerY2 << "\n";
-                    for (int y = 0; y < mapHeight; y++)
-                    {
-                        for (int x = 0; x < mapWidth; x++) {
-                            auto TilePtr = map.getTile(x, y);
-
-                    
-                            if((x == outerX1 && y == outerY1) || (x == outerX2 && y == outerY2)) {
-                                std::cerr << "X ";
-                            } else if((x == XX1 && y == YY1) || (x == XX2 && y == YY2)) {
-                                std::cerr << "Y ";
-                            }else if(!TilePtr->getIsGate() && TilePtr->getIsBorder()){
-                                std::cerr << "E ";
+                        
+                                if((x == outerX1 && y == outerY1) || (x == outerX2 && y == outerY2)) {
+                                    std::cerr << "X ";
+                                } else if((x == XX1 && y == YY1) || (x == XX2 && y == YY2)) {
+                                    std::cerr << "Y ";
+                                }else if(!TilePtr->getIsGate() && TilePtr->getIsBorder()){
+                                    std::cerr << "E ";
+                                }
+                                else
+                                {
+                                    std::cerr << ". ";
+                                }
                             }
-                            else
-                            {
-                                std::cerr << ". ";
-                            }
+                            std::cerr << "\n";
                         }
-                        std::cerr << "\n";
-                    }
-                    
-                    for(auto myTuple : getConnectedPairs()){
-                        std::cerr << "(" 
-                            << std::get<0>(myTuple) << ", "
-                            << std::get<1>(myTuple) << ", "
-                            << std::get<2>(myTuple) << ", "
-                            << std::get<3>(myTuple) << ")\n";
+                        
+                        for(auto myTuple : getConnectedPairs()){
+                            std::cerr << "(" 
+                                << std::get<0>(myTuple) << ", "
+                                << std::get<1>(myTuple) << ", "
+                                << std::get<2>(myTuple) << ", "
+                                << std::get<3>(myTuple) << ")\n";
+                        }
                     }
                 }
             }

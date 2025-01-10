@@ -31,7 +31,7 @@ pair<int,int> decodeMapSize(std::string MapSize) {
     return {-1,-1};
 }
 
-void Map::generateMap(TemplateInfo &temp) {
+std::shared_ptr<ObjectPlacer> Map::generateMap(TemplateInfo &temp) {
 
     std::string MapSize = temp.getMapSize();
 
@@ -57,9 +57,11 @@ void Map::generateMap(TemplateInfo &temp) {
     roadPlacer.createShotestPathsToConnected(connectedPairs);
 
 
-    class ObjectPlacer objectPlacer(*this, temp, rng);
+    auto objectPlacer = std::make_shared<ObjectPlacer>(*this, temp, rng);
 
-    objectPlacer.placeObjects();
+    objectPlacer->placeObjects();
+
+    return objectPlacer;
 }
 
 void Map::setConnectedPairs(ConnectedPoints connectedPairs){

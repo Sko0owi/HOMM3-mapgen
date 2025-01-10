@@ -12,6 +12,8 @@ using MapObjects = std::vector<Object>;
 class BorderPlacer {
 public: 
     BorderPlacer(Map & map, TemplateInfo & temp, RNG *rng);
+    BorderPlacer(Map & map, RNG *rng);
+
 
     void generateBorders();
 

@@ -159,49 +159,49 @@
     {
       "zoneA": 2,
       "zoneB": 6,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 1
     },
     {
       "zoneA": 4,
       "zoneB": 3,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 2
     },
     {
       "zoneA": 1,
       "zoneB": 5,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 3
     },
     {
       "zoneA": 2,
       "zoneB": 5,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 2
     },
     {
       "zoneA": 3,
       "zoneB": 5,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 1
     },
     {
       "zoneA": 4,
       "zoneB": 1,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 2
     },
     {
       "zoneA": 3,
       "zoneB": 7,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 3
     },
     {
       "zoneA": 2,
       "zoneB": 7,
-      "type": "monolith",
+      "type": "narrow",
       "tier": 2
     }
   ]
