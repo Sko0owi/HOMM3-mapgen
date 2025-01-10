@@ -4,20 +4,23 @@
 std::string treasureTypeToString(TreasureType treasureType) {
     switch (treasureType) {
         case TreasureType::RESOURCE_GOLD:
-            return "Gold";
+            return "RESOURCE_GOLD";
         case TreasureType::RESOURCE_CRYSTAL:
-            return "Crystal";
+            return "RESOURCE_CRYSTAL";
         case TreasureType::RESOURCE_GEMS:
-            return "Gems";
+            return "RESOURCE_GEMS";
         case TreasureType::RESOURCE_MERCURY:
-            return "Mercury";
+            return "RESOURCE_MERCURY";
         case TreasureType::RESOURCE_ORE:
-            return "Ore";
+            return "RESOURCE_ORE";
         case TreasureType::RESOURCE_SULFUR:
-            return "Sulfur";
+            return "RESOURCE_SULFUR";
         case TreasureType::RESOURCE_WOOD:
-            return "Wood";
+            return "RESOURCE_WOOD";
+        default:
+            return "RESOURCE_GOLD";
     }
+    return "RESOURCE_GOLD";
 }
 
 TreasureType stringtoTreasureType(std::string treasureType) {
@@ -36,6 +39,7 @@ TreasureType stringtoTreasureType(std::string treasureType) {
     } else if (treasureType == "Wood") {
         return TreasureType::RESOURCE_WOOD;
     }
+    return TreasureType::RESOURCE_GOLD;
 }
 
 int3 getTreasureSize(TreasureType TreasureType) {
@@ -48,5 +52,8 @@ int3 getTreasureSize(TreasureType TreasureType) {
         case TreasureType::RESOURCE_SULFUR:
         case TreasureType::RESOURCE_WOOD:
             return int3(1, 1, 1);
+        default:
+            return int3(-1,-1,-1);
     }
+    return int3(1,1,1);
 }

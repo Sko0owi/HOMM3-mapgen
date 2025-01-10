@@ -4,15 +4,26 @@
 
 class int3;
 
-enum class TreasureType {
-    RESOURCE_GOLD, 
+enum TreasureType {
+    LOW_TIER_TAB,
+
+    RESOURCE_WOOD,
+    RESOURCE_ORE,
+
+    MID_TIER_TAB,
+
+    RESOURCE_SULFUR,
     RESOURCE_CRYSTAL,
     RESOURCE_GEMS,
     RESOURCE_MERCURY,
-    RESOURCE_ORE,
-    RESOURCE_SULFUR,
-    RESOURCE_WOOD,
+
+    HIGH_TIER_TAB,
+
+    RESOURCE_GOLD, 
+    
+    END_TIER_TAB
 };
+
 
 std::string treasureTypeToString(TreasureType treasureType);
 

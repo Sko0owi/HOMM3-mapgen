@@ -10,6 +10,12 @@ Treasure::Treasure(TreasureType treasureType) : Object() {
     owner = -1;
 }
 
+Treasure::Treasure(TreasureType treasureType, int value) : Object() {
+    this->treasureType = treasureType;
+    this->value = value;
+    owner = -1;
+}
+
 Treasure::Treasure(TreasureType treasureType, int owner, int3 pos, std::string name) : Object(pos, name) {
     this->treasureType = treasureType;
     this->owner = owner;
@@ -21,6 +27,14 @@ void Treasure::setTreasureType(TreasureType treasureType) {
 
 void Treasure::setOwner(int owner) {
     this->owner = owner;
+}
+
+void Treasure::setValue(int value) {
+    this->value = value;
+}
+
+int Treasure::getValue() const {
+    return value;
 }
 
 int Treasure::getOwner() const {

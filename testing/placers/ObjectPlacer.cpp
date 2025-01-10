@@ -6,10 +6,12 @@
 #include "../template_info/ConnectionInfo.h"
 #include "./template_info/MineInfo.h"
 #include "./template_info/TownInfo.h"
+#include "./template_info/TreasuresInfo.h"
 #include "./types/int3.h"
 #include "./global/Random.h"
 #include "./game_info/Town.h"
 #include "./game_info/Zone.h"
+#include "./game_info/Treasure.h"
 #include "./game_info/Mine.h"
 #include "./game_info/Tile.h"
 #include "./game_info/Object.h"
@@ -55,9 +57,20 @@ ObjectPlacer::ObjectPlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map),
 void ObjectPlacer::placeObjects() {
     std::cerr << "Placing objects\n";
 
+    for(int x = 0; x < mapWidth; x++) {
+        for(int y = 0; y < mapHeight; y++) {
+            auto TilePtr = map.getTile(x, y);
+            auto TileZone = TilePtr->getZoneId();
+
+            zoneTiles[map.getZones()[TileZone]].push_back({{x,y}, TilePtr});
+        }
+    }
+
     placeTowns();
 
     placeMines();
+
+    placeTreasures();
 
     for(int y = 0; y < mapHeight; y++) {
         for(int x = 0; x < mapWidth; x++) {
@@ -66,6 +79,98 @@ void ObjectPlacer::placeObjects() {
         std::cerr << "\n";
     }
     
+}
+
+std::vector<Treasure> possibleTreasures[3];
+void ObjectPlacer::preparePossibleTreasures() {
+
+    for(TreasureType j = TreasureType(TreasureType::LOW_TIER_TAB + 1) ; j < TreasureType(TreasureType::MID_TIER_TAB); j = TreasureType(j + 1)) {
+        possibleTreasures[0].push_back(Treasure(j, 1));
+    }
+
+    for(TreasureType j = TreasureType(TreasureType::MID_TIER_TAB + 1) ; j < TreasureType(TreasureType::HIGH_TIER_TAB); j = TreasureType(j + 1)) {
+        possibleTreasures[1].push_back(Treasure(j, 1));
+    }
+
+    for(TreasureType j = TreasureType(TreasureType::HIGH_TIER_TAB + 1) ; j < TreasureType(TreasureType::END_TIER_TAB); j = TreasureType(j + 1)) {
+        possibleTreasures[2].push_back(Treasure(j, 1));
+    }
+    
+}
+
+void ObjectPlacer::placeTreasures() {
+    std::cerr << "Placing Treasures\n";
+
+    preparePossibleTreasures();
+
+    for(int i = 0; i < 3; i++) {
+        std::cerr << "Debug for Tier: " << i << "\n";
+        for(auto& treasure : possibleTreasures[i]) {
+            std::cerr << treasureTypeToString(treasure.getTreasureType()) << " " << treasure.getValue() << "\n";
+        }
+    }
+
+
+    auto zones = map.getZones();
+
+    for(auto& zone : zones) {
+
+
+        auto zoneId = zone.first;
+        auto zonePtr = zone.second;
+
+
+        TreasuresInfo treasuresInfo;
+
+        vector<int3> possiblePositions; 
+
+        int3 testSize = int3(4,3,1);
+
+        for(auto &tiles : zoneTiles[zonePtr]) {
+            auto [pos,tile] = tiles;
+            auto [x,y] = pos;
+
+            if(canPlaceObject(int3(x,y,0), testSize)) {
+                possiblePositions.push_back(int3(x,y,0));
+            }
+        }
+
+        if(possiblePositions.empty()) {
+            std::cerr << "No possible placement\n";
+            return ;
+        }
+
+        int rand = rng->nextInt(0, possiblePositions.size() - 1);
+        auto pos = possiblePositions[rand];
+
+        int x = pos.x;
+        int y = pos.y;
+
+        for(int x_ = max(0, x - testSize.x ); x_ <= min(x + 1, mapWidth - 1) ; x_++) {
+            for(int y_ = max(0, y - testSize.y ); y_ <= min(y + 1, mapHeight - 1); y_++) {
+
+                objectsMap[y_][x_] = 4;
+
+                if(x_ == x - testSize.x || x_ == x + 1 || y_ == y - testSize.y || y_ == y + 1) {
+                    objectsMap[y_][x_] = 1;
+                } else {
+
+                    int rand = rng->nextInt(0, possibleTreasures[0].size() - 1);
+                    Treasure treasure = possibleTreasures[0][rand];
+
+                    treasure.setPosition(int3(x_,y_,0));
+                    treasure.setValue(10);
+                    
+                    auto treasurePointer = std::make_shared<Treasure>(treasure);
+
+                    zonePtr->addObject(treasurePointer);
+                    objects[zonePtr].push_back(treasurePointer);
+
+                }
+            }
+        }
+
+    }
 }
 
 void ObjectPlacer::placeTowns() {
@@ -132,7 +237,7 @@ bool ObjectPlacer::canPlaceObject(int3 pos, int3 size) {
     return true;
 }
 
-bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, std::map<std::shared_ptr<Zone>, std::vector<pair<pair<int,int>,std::shared_ptr<Tile>>>> &zoneTiles, bool firstBasicMine, bool deterministic) {
+bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, bool firstBasicMine, bool deterministic) {
 
     int3 mineSize = getMineSize(mineI.getMineType());
 
@@ -213,17 +318,6 @@ void ObjectPlacer::placeMines() {
 
     auto zones = map.getZones();
 
-    std::map<std::shared_ptr<Zone>, std::vector<pair<pair<int,int>,std::shared_ptr<Tile>>>> zoneTiles;
-
-    for(int x = 0; x < mapWidth; x++) {
-        for(int y = 0; y < mapHeight; y++) {
-            auto TilePtr = map.getTile(x, y);
-            auto TileZone = TilePtr->getZoneId();
-
-            zoneTiles[map.getZones()[TileZone]].push_back({{x,y}, TilePtr});
-        }
-    }
-
     for(auto& zone : zones) {
         auto zoneId = zone.first;
         auto zonePtr = zone.second;
@@ -248,7 +342,7 @@ void ObjectPlacer::placeMines() {
 
         for(auto& mineI : zoneI->getMines()) {
             if(mineI.getMineType() == MineType::MINE_SAWMILL || mineI.getMineType() == MineType::MINE_ORE_PIT) {
-                placeMine(mineI, centerPtr, zonePtr, zoneTiles, true);
+                placeMine(mineI, centerPtr, zonePtr, true);
                 zoneI->setMaxMinesCount(zoneI->getMaxMinesCount() - 1);
                 mineI.setMinCount(mineI.getMinCount() - 1);
             }
@@ -256,7 +350,7 @@ void ObjectPlacer::placeMines() {
 
         for(auto& mineI : zoneI->getMines()) {
             for(int i = 0; i < mineI.getMinCount(); i++) {
-                placeMine(mineI, centerPtr, zonePtr, zoneTiles);
+                placeMine(mineI, centerPtr, zonePtr);
                 zoneI->setMaxMinesCount(zoneI->getMaxMinesCount() - 1);
             }
         }
@@ -273,7 +367,7 @@ void ObjectPlacer::placeMines() {
             recalculateDistances();
 
             int rand = rng->nextInt(0, minesToPlace.size() - 1);
-            if(placeMine(minesToPlace[rand], centerPtr, zonePtr, zoneTiles, false, true) == false) {
+            if(placeMine(minesToPlace[rand], centerPtr, zonePtr, false, true) == false) {
                 std::cerr << "No possible placement\n";
                 break;
             }    

@@ -7,6 +7,7 @@ class Map;
 class TemplateInfo;
 class RNG;
 class int3;
+class TreasuresInfo;
 class MineInfo;
 class Tile;
 class Zone;
@@ -22,7 +23,11 @@ public:
 
     void placeMines();
 
-    bool placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, std::map<std::shared_ptr<Zone>, std::vector<std::pair<std::pair<int,int>,std::shared_ptr<Tile>>>> &zoneTiles, bool firstBasicMine = false, bool deterministic = false);
+    void placeTreasures();
+
+    void preparePossibleTreasures();
+
+    bool placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, bool firstBasicMine = false, bool deterministic = false);
 
     void recalculateDistances();
 
@@ -42,6 +47,8 @@ private:
     std::vector<std::vector<int>> objectsMap;
 
     std::map<std::shared_ptr<Zone>, std::vector<std::shared_ptr<Object>>> objects;
+
+    std::map<std::shared_ptr<Zone>, std::vector<std::pair<std::pair<int,int>,std::shared_ptr<Tile>>>> zoneTiles;
 
 
     struct ObjectPtrCompare {

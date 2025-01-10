@@ -23,12 +23,15 @@ SOURCES = $(SRC_DIR)/test.cpp \
 		  $(TEMPLATE_INFO_DIR)/ZoneInfo.cpp \
 		  $(TEMPLATE_INFO_DIR)/MineInfo.cpp \
 		  $(TEMPLATE_INFO_DIR)/TownInfo.cpp \
+		  $(TEMPLATE_INFO_DIR)/TreasuresInfo.cpp \
           $(TEMPLATE_INFO_DIR)/TemplateInfo.cpp \
           $(SRC_DIR)/Map.cpp \
 		  $(GAME_INFO_DIR)/Faction.cpp \
 		  $(GAME_INFO_DIR)/Terrain.cpp \
 		  $(GAME_INFO_DIR)/MineType.cpp \
 		  $(GAME_INFO_DIR)/Mine.cpp \
+		  $(GAME_INFO_DIR)/Treasure.cpp \
+		  $(GAME_INFO_DIR)/TreasureType.cpp \
 		  $(GAME_INFO_DIR)/Object.cpp \
           $(GAME_INFO_DIR)/Zone.cpp  \
           $(GAME_INFO_DIR)/Tile.cpp  \

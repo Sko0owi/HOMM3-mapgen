@@ -4,6 +4,7 @@
 #include "./game_info/Tile.h"
 #include "./game_info/Town.h"
 #include "./game_info/Mine.h"
+#include "./game_info/Treasure.h"
 #include "./template_info/TemplateInfo.h"
 #include "./placers/RoadPlacer.h"
 #include "./Map.h"
@@ -107,6 +108,11 @@ void generateLuaScript(const json& config) {
 
             if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
                 AddMine(luaFile, *mine);
+            }
+
+            if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
+                std::cerr << "WE ARE GONNA BE RICH!\n";
+                AddResource(luaFile, *treasure);
             }
         }
 

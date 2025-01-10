@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mapPath="Maps/Battle of the Sexes.h3m"
+mapPath="Maps/test.h3m"
 # Liczba instancji do uruchomienia (domyślnie 3 jeśli nie podano argumentu)
 instances=${1:-2}
 

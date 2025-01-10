@@ -9,6 +9,7 @@
 #include "./Zone.h"
 #include "./game_info/Terrain.h"
 #include "./game_info/Town.h"
+#include "./game_info/Treasure.h"
 #include "./game_info/Mine.h"
 
 using json = nlohmann::json;
@@ -177,8 +178,16 @@ void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int
 // @tparam      integer     y                position on y axis of resource.
 // @tparam      integer     z                position on z axis of resource.
 // @tparam      integer     quantity         quantity of resource.
-void AddResource(std::ofstream& luaFile, std::string resource, int x, int y, int z, int quantity){
-    luaFile << "instance:resource(homm3lua.RESOURCE_" << resource << ", {x=" << x << ", y=" << y << ", z=" << z << "}, " << quantity << ")\n";  
+void AddResource(std::ofstream& luaFile, Treasure treasure){
+    std::string treasureType = treasureTypeToString(treasure.getTreasureType());
+
+    int x = treasure.getPosition().x;
+    int y = treasure.getPosition().y;
+    int z = treasure.getPosition().z;
+
+    int quantity = treasure.getValue();
+
+    luaFile << "instance:resource(homm3lua." << treasureType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, " << quantity << ")\n";  
 }
 
 // @function    AddArtifact
