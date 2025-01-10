@@ -185,7 +185,7 @@ void AddResource(std::ofstream& luaFile, Treasure treasure){
     int y = treasure.getPosition().y;
     int z = treasure.getPosition().z;
 
-    int quantity = treasure.getValue();
+    int quantity = treasure.getQuantity();
 
     luaFile << "instance:resource(homm3lua." << treasureType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, " << quantity << ")\n";  
 }

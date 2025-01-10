@@ -3,13 +3,11 @@
 #include "./ConnectionInfo.h"
 #include "./TownInfo.h"
 #include "./MineInfo.h"
+#include "./TreasuresInfo.h"
 #include "../game_info/Terrain.h"
 
-ZoneInfo::ZoneInfo(bool debug) {
-    id = 0;
-    size = 0;
-    hero = "";
-    debug = debug;
+ZoneInfo::ZoneInfo(bool debug)
+    : debug(debug), id(0), size(0), hero(""), maxMinesCount(0) {
 }
 
 void ZoneInfo::addConnection(const json& connectionConfig) {
@@ -70,6 +68,15 @@ void ZoneInfo::setMaxMinesCount(i32 maxMinesCount) {
     this->maxMinesCount = maxMinesCount;
 }
 
+void ZoneInfo::setTreasuresInfo(TreasuresInfo treasureInfo) {
+    this->treasureInfo = treasureInfo;
+}
+
+TreasuresInfo& ZoneInfo::getTreasuresInfo() {
+    return treasureInfo;
+}
+
+
 i32 ZoneInfo::getId() {
     return id;
 }
@@ -104,6 +111,17 @@ int decodeSize(std::string size) {
     return 0;
 }
 
+
+ZoneRichness decodeRichness(std::string richness) {
+    if (richness == "Low")
+        return ZoneRichness::Low;
+    if (richness == "Normal")
+        return ZoneRichness::Normal;
+    if (richness == "High")
+        return ZoneRichness::Rich;
+    return ZoneRichness::Normal;
+}
+
 void ZoneInfo::deserializeZone(const json& config) {
     
     i32 id = TemplateInfo::getOrError<int>(config, "id");
@@ -111,6 +129,11 @@ void ZoneInfo::deserializeZone(const json& config) {
     std::string hero = TemplateInfo::getOrError<std::string>(config, "hero");
     
     std::string terrain = config.value("terrain", "GRASS");
+
+    std::string zoneRichness = config.value("richness", "Normal");
+    TreasuresInfo treasuresInfo(decodeRichness(zoneRichness));
+
+    std::cerr << "Zone richness: " << zoneRichness << "\n";
 
     i32 town_count = TemplateInfo::getOrError<int>(config, "number_of_towns");
     for (int i = 0; i < town_count; i++) {
@@ -139,6 +162,7 @@ void ZoneInfo::deserializeZone(const json& config) {
         addMine(mineI);
     }
 
+    setTreasuresInfo(treasuresInfo);
     setId(id);
     setSize(decodeSize(size));
     setHero(hero);

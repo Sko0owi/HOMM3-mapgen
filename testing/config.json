@@ -10,6 +10,7 @@
       "hero": "HERO_CHRISTIAN",
       "terrain": "GRASS",
       "number_of_towns": 1, 
+      "richness" : "Low",
       "towns" : [
         {
           "faction" : "TOWN_STRONGHOLD",
@@ -39,6 +40,7 @@
       "hero": "HERO_JENOVA",
       "terrain": "SNOW",
       "number_of_towns": 1, 
+      "richness" : "Low",
       "towns" : [
         {
           "faction" : "TOWN_INFERNO",
@@ -92,6 +94,7 @@
       "id": 3,
       "hero": "HERO_JENOVA",
       "terrain": "LAVA",
+      "richness" : "Low",
       "number_of_towns": 1, 
       "towns" : [
         {
@@ -121,6 +124,7 @@
       "id": 4,
       "hero": "HERO_JENOVA",
       "terrain": "SWAMP",
+      "richness" : "Low",
       "number_of_towns": 0, 
       "number_of_mines": 0
     },
@@ -129,6 +133,7 @@
       "id": 5,
       "hero": "HERO_JENOVA",
       "terrain" : "DESERT",
+      "richness" : "High",
       "number_of_towns": 0, 
       "number_of_mines": 0
     },
@@ -137,6 +142,7 @@
       "id": 7,
       "hero": "HERO_JENOVA",
       "terrain" : "SUBTERRANEAN",
+      "richness" : "Low",
       "number_of_towns": 0, 
       "number_of_mines": 0
     },
@@ -145,6 +151,7 @@
       "id": 6,
       "hero": "HERO_CHRISTIAN",
       "terrain": "SAND",
+      "richness" : "High",
       "number_of_towns": 0, 
       "number_of_mines": 0
     }

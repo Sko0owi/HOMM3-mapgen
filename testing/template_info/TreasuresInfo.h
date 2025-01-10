@@ -1,3 +1,6 @@
+#pragma once
+
+#include <string>
 
 enum class ZoneRichness {
     Low,

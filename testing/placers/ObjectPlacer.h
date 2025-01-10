@@ -29,6 +29,9 @@ public:
 
     void preparePossibleTreasures();
 
+    void preparePossibleBlockSizes();
+
+
     bool placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, bool firstBasicMine = false, bool deterministic = false);
 
     void recalculateDistances();
@@ -47,6 +50,8 @@ private:
     RNG *rng;
 
     std::vector<std::vector<int>> objectsMap;
+    
+    std::vector<int3> possibleBlockSizes;
 
     std::map<std::shared_ptr<Zone>, std::vector<std::shared_ptr<Object>>> objects;
 

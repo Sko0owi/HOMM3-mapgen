@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./global/Global.h"
+#include "./TreasuresInfo.h"
 #include <nlohmann/json.hpp> 
 
 enum class Terrain;
@@ -22,6 +23,9 @@ public:
     std::vector<TownInfo>& getTowns();
     std::vector<MineInfo>& getMines();
 
+    void setTreasuresInfo(TreasuresInfo treasureInfo);
+    TreasuresInfo& getTreasuresInfo();
+
     void setId(i32 id);
     void setSize(i32 size);
     void setHero(std::string hero);
@@ -42,6 +46,9 @@ private:
     Terrain terrain;
 
     i32 maxMinesCount;
+
+    TreasuresInfo treasureInfo;
+
     std::vector<TownInfo> towns;
     std::vector<MineInfo> mines;
     std::vector<ConnectionInfo> connections;

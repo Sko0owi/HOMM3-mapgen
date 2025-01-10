@@ -1,5 +1,6 @@
 #include "./Treasure.h"
 
+
 Treasure::Treasure() : Object() {
     treasureType = TreasureType::RESOURCE_GOLD;
     owner = -1;
@@ -10,9 +11,9 @@ Treasure::Treasure(TreasureType treasureType) : Object() {
     owner = -1;
 }
 
-Treasure::Treasure(TreasureType treasureType, int value) : Object() {
+Treasure::Treasure(TreasureType treasureType, int quantity) : Object(int3(0,0,0), "Treasure") {
     this->treasureType = treasureType;
-    this->value = value;
+    this->quantity = quantity;
     owner = -1;
 }
 
@@ -29,12 +30,12 @@ void Treasure::setOwner(int owner) {
     this->owner = owner;
 }
 
-void Treasure::setValue(int value) {
-    this->value = value;
+void Treasure::setQuantity(int quantity) {
+    this->quantity = quantity;
 }
 
-int Treasure::getValue() const {
-    return value;
+int Treasure::getQuantity() const {
+    return quantity;
 }
 
 int Treasure::getOwner() const {

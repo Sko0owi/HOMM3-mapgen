@@ -4,6 +4,7 @@
 #include "./TownInfo.h"
 #include "./ConnectionInfo.h"
 #include "./ZoneInfo.h"
+#include "./TreasuresInfo.h"
 
 TemplateInfo::TemplateInfo() {
     name = "";
@@ -64,7 +65,7 @@ void TemplateInfo::deserialize(const json& config) {
     
     const auto& zonesConfig = getOrError<json>(config, "zones");
     for (const auto &zoneConfig : zonesConfig)
-    {   
+    {      
         auto zone = std::make_shared<ZoneInfo>(config.value("debug", false));
         zone->deserializeZone(zoneConfig);
         zonesI[zone->getId()] = zone;
