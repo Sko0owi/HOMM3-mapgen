@@ -1,6 +1,7 @@
 #ifndef LUA_HELPERS_HPP
 #define LUA_HELPERS_HPP
 
+#include<bits/stdc++.h>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -34,6 +35,6 @@ void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int
 void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z);
 void AddRoads(std::ofstream &luaFile, Map &map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng);
 void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng);
-std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map &map, std::shared_ptr<ObjectPlacer> objectPlacer);
+std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map &map, std::shared_ptr<ObjectPlacer> objectPlacer, Object object);
 
 #endif

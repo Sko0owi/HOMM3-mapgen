@@ -126,6 +126,7 @@ void generateLuaScript(const json& config) {
 
         AddHero(luaFile, zone.second);
     }   
+
     AddBorderObstacles(luaFile, map);
 
     AddRoads(luaFile, map, objectPlacer, &rng);
@@ -135,6 +136,10 @@ void generateLuaScript(const json& config) {
             std::cerr << e.first << " " << e.second << "\n";
         }
     }
+
+    // for (int i = 0; i < 8; i++){
+    //     AddObstacle(luaFile, "Monolith One Way Entrance" + std::to_string(i), 10, 2 * i, 0);
+    // }
 
     placeGateCreatures(luaFile, map);
 

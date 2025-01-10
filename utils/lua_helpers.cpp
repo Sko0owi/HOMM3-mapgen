@@ -235,17 +235,34 @@ void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z){
     luaFile << "instance:sign('" << text << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
 }
 
-std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer){
+std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, Object object){
     std::vector<std::pair<int, int>> tiles;
     auto objectsMap = objectPlacer->getObjectsMap();
-    
+
+
     for (int x = 1; x < map.getWidth(); x++)
     {
         for (int y = 1; y < map.getWidth(); y++){
             auto TilePtr = map.getTile(x, y);
 
             if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsExtension() && !TilePtr->getIsRoad() && objectsMap[y][x] == 0){
-                tiles.emplace_back(x, y);
+                bool canPlace = true;
+                for (int x_ = max(0, x - object.getSizeOfObject().x); x_ <= min(x + 1, map.getWidth() - 1); x_++)
+                {
+                    for (int y_ = max(0, y - object.getSizeOfObject().y); y_ <= min(y + 1, map.getHeight() - 1); y_++)
+                    {
+                        if (x_ == x - object.getSizeOfObject().x || x_ == x + 1 || y_ == y - object.getSizeOfObject().y || y_ == y + 1)
+                        {
+                            if(objectsMap[y_][x_] == 1){ //We want to keep at least 1 tile separation
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if(canPlace)
+                    tiles.emplace_back(x, y);
             }
         }
     }
@@ -253,6 +270,11 @@ std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared
     return tiles;
 }
 
+// @function    AddMapObjects
+// @tparam      ofstream        luaFile         file where we save lua script parts. 
+// @tparam      Map             map             object of map class with finised setup.
+// @tparam      ObjectPlacer    objectPlacer    object with resources and buildings.
+// @tparam      RNG             rng             rng object.
 void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
     MapObjects mapObjects = map.getMapObjects();
     auto objectsMap = objectPlacer->getObjectsMap();
@@ -267,12 +289,29 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
 
         if (TilePtr->getIsBorder() || TilePtr->getIsExtension() || TilePtr->getIsRoad() || objectsMap[pos.y][pos.x] > 0)
         {
-            std::vector<std::pair<int, int>> zone1Tiles = getValidTiles(TilePtr->getZoneId(), map, objectPlacer);            
+            std::vector<std::pair<int, int>> zone1Tiles = getValidTiles(TilePtr->getZoneId(), map, objectPlacer, object);
             int rand = rng->nextInt(0, zone1Tiles.size() - 1);
             std::tie(outerXX1, outerYY1) = zone1Tiles[rand];
             pos = int3(outerXX1, outerYY1, 0);
 
         }
+
+        int x = pos.x;
+        int y = pos.y;
+
+        for (int x_ = max(0, x - object.getSizeOfObject().x); x_ <= min(x + 1, map.getWidth() - 1); x_++)
+        {
+            for (int y_ = max(0, y - object.getSizeOfObject().y); y_ <= min(y + 1, map.getHeight() - 1); y_++)
+            {
+
+                objectsMap[y_][x_] = 3;
+                if (x_ == x - object.getSizeOfObject().x || x_ == x + 1 || y_ == y - object.getSizeOfObject().y || y_ == y + 1)
+                {
+                    objectsMap[y_][x_] = 1;
+                }
+            }
+        }
+
         luaFile << "instance:obstacle('" << obstacle << "', {x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << "})\n";
     }
 }
