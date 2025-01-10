@@ -6,7 +6,7 @@
 #include "../template_info/ZoneInfo.h"
 #include "../template_info/ConnectionInfo.h"
 #include "./Map.h"
-#include "./Zone.h"
+#include "./game_info/Zone.h"
 #include "./game_info/Terrain.h"
 #include "./game_info/Town.h"
 #include "./game_info/Treasure.h"
@@ -196,8 +196,14 @@ void AddResource(std::ofstream& luaFile, Treasure treasure){
 // @tparam      integer     x                position on x axis of artifact.
 // @tparam      integer     y                position on y axis of artifact.
 // @tparam      integer     z                position on z axis of artifact.
-void AddArtifact(std::ofstream& luaFile, std::string artifact, int x, int y, int z){
-    luaFile << "instance:artifact(homm3lua.ARTIFACT_" << artifact << ", {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
+void AddArtifact(std::ofstream& luaFile, Treasure treasure){
+    std::string treasureType = treasureTypeToString(treasure.getTreasureType());
+
+    int x = treasure.getPosition().x;
+    int y = treasure.getPosition().y;
+    int z = treasure.getPosition().z;
+
+    luaFile << "instance:artifact(homm3lua." << treasureType << ", {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
 }
 
 // @function    AddObstacle

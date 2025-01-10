@@ -3,6 +3,18 @@
 #include "./TreasureType.h"
 #include "./Object.h"
 
+std::vector<int3> possibleBlockSizes;
+
+void preparePossibleBlockSizes() {
+
+    possibleBlockSizes.push_back(int3(4, 3, 1));
+    possibleBlockSizes.push_back(int3(3, 3, 1));
+    possibleBlockSizes.push_back(int3(2, 2, 1));
+    possibleBlockSizes.push_back(int3(2, 3, 1));
+    possibleBlockSizes.push_back(int3(3, 2, 1));
+    possibleBlockSizes.push_back(int3(1, 1, 1));
+
+}
 
 class Treasure : public Object {
 public:

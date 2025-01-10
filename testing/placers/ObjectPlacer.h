@@ -25,6 +25,8 @@ public:
 
     void placeTreasures();
 
+    void placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, TreasuresInfo treasuresInfo);
+
     void preparePossibleTreasures();
 
     bool placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, bool firstBasicMine = false, bool deterministic = false);

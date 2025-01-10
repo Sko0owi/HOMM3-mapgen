@@ -1,9 +1,12 @@
 #include "./TreasuresInfo.h"
 
 TreasuresInfo::TreasuresInfo() {
+    richness = ZoneRichness::Normal;
 }
 
 TreasuresInfo::TreasuresInfo(ZoneRichness richness) {
+    this->richness = richness;
+
     switch(richness) {
         case ZoneRichness::Low:
             frequency[0] = 60;
@@ -33,4 +36,8 @@ int TreasuresInfo::getValueMax(ZoneRichness richness) const {
 
 int TreasuresInfo::getFrequency(ZoneRichness richness) const {
     return frequency[static_cast<int>(richness)];
+}
+
+ZoneRichness TreasuresInfo::getRichness() const {
+    return richness;
 }
