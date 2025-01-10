@@ -3,6 +3,7 @@
 
 #include<bits/stdc++.h>
 #include "../global/Global.h"
+#include "../game_info/Object.h"
 
 class Tile;
 class Zone;
@@ -11,7 +12,11 @@ class RNG;
 class Town;
 
 using MapZones = std::map<i32, std::shared_ptr<Zone>>;
-class Map {
+using MapObjects = std::vector<Object>;
+using ConnectedPoints = std::vector<std::tuple<int, int, int, int, bool, int>>;
+
+class Map
+{
 public:
     Map(RNG *rng);
     Map(i32 width, i32 height);
@@ -29,8 +34,11 @@ public:
 
     std::shared_ptr<Tile> getTile(i32 x, i32 y);
 
-    void setConnectedPairs(vector<std::tuple<int, int, int, int, bool, int>> connectedPairs);
-    vector<std::tuple<int, int, int, int, bool, int>>  getConnectedPairs();
+    void setConnectedPairs(ConnectedPoints connectedPairs);
+    ConnectedPoints  getConnectedPairs();
+
+    void setMapObjects(MapObjects mapObjects);
+    MapObjects  getMapObjects();
 
 private:
     i32 width;
@@ -39,7 +47,9 @@ private:
     
 
     std::map<i32, map<i32, std::shared_ptr<Tile>>> Tiles;
-    vector<std::tuple<int, int, int, int, bool, int>> connectedPairs;
+    ConnectedPoints connectedPairs;
+    
+    MapObjects mapObjects;
 
     RNG *rng;
 };

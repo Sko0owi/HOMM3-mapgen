@@ -75,7 +75,7 @@ void generateLuaScript(const json& config) {
 
     RNG rng;
 
-    rng.setSeed(12345);
+    rng.setSeed(12);
 
     Map map(&rng);
     map.generateMap(templateInfo);
@@ -114,11 +114,6 @@ void generateLuaScript(const json& config) {
     }   
     AddBorderObstacles(luaFile, map);
 
-    for (int i = 0; i <= 8; i++){
-        AddObstacle(luaFile, "Monolith One Way Entrance" + to_string(i%8), 10, 13 + 2*i, 0);
-        AddObstacle(luaFile, "Monolith One Way Exit" + to_string(i%8), 14, 13 + 2*i, 0);
-    }
-    
     AddRoads(luaFile, map);
     
     if (config.value("debug", false)){

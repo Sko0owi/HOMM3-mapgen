@@ -61,8 +61,12 @@ void AddMine(std::ofstream& luaFile, Mine mine){
 }
 
 void AddRoads(std::ofstream& luaFile, Map& map){
+    luaFile << "-- Place 1 way monoliths\n";
+    AddMapObjects(luaFile, map);
+    
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
+
 
     for (int x = 0; x < map.getWidth(); x++){
         for (int y = 0; y < map.getHeight(); y++){
@@ -209,4 +213,23 @@ void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int
 // @tparam      integer     z                position on z axis of sign.
 void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z){
     luaFile << "instance:sign('" << text << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
+}
+
+void AddMapObjects(std::ofstream &luaFile, Map& map){
+    MapObjects mapObjects = map.getMapObjects();
+    for (auto object : mapObjects)
+    {
+        std::string obstacle = object.getName();
+        auto pos = object.getPosition();
+
+        // auto TilePtr = map.getTile(pos.x, pos.y);
+        // if(TilePtr->getIsBorder() || TilePtr->getIsExtension() || TilePtr->getIsRoad()){
+        //     std::vector<std::pair<int, int>> zone1Tiles = getZoneTiles(TilePtr->getZoneId());
+        //     int rand = rng->nextInt(0, zone1Tiles.size() - 1);
+        //     auto [outerXX1, outerYY1] = zone1Tiles[rand];
+
+        //     pos = int3(outerXX1, outerYY1, 0);
+        // }
+        luaFile << "instance:obstacle('" << obstacle << "', {x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << "})\n";
+    }
 }

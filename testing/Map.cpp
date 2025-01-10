@@ -47,14 +47,12 @@ void Map::generateMap(TemplateInfo &temp) {
     }
 
     class ZonePlacer zonePlacer(*this, temp, rng);
-
     zonePlacer.generateZones();
 
-    class BorderPlacer borderPlacer(*this, temp);
-    borderPlacer.generateBorders();
+    class BorderPlacer borderPlacer(*this, temp, rng);
+    borderPlacer.generateBorders();    
     setConnectedPairs(borderPlacer.getConnectedPairs());
-
-
+    setMapObjects(borderPlacer.getMapObjects());
     RoadPlacer roadPlacer(*this, temp);
     roadPlacer.createShotestPathsToConnected(connectedPairs);
 
@@ -64,12 +62,20 @@ void Map::generateMap(TemplateInfo &temp) {
     objectPlacer.placeObjects();
 }
 
-void Map::setConnectedPairs(std::vector<std::tuple<int, int, int, int, bool, int>> connectedPairs){
+void Map::setConnectedPairs(ConnectedPoints connectedPairs){
     this->connectedPairs = connectedPairs;
 }
 
-vector<std::tuple<int, int, int, int, bool, int>> Map::getConnectedPairs(){
+ConnectedPoints Map::getConnectedPairs(){
     return connectedPairs;
+}
+
+void Map::setMapObjects(MapObjects mapObjects){
+    this->mapObjects = mapObjects;
+}
+
+MapObjects Map::getMapObjects(){
+    return mapObjects;
 }
 
 MapZones & Map::getZones() {

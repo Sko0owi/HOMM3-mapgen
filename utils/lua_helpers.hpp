@@ -6,6 +6,9 @@
 #include <string>
 #include <nlohmann/json.hpp> 
 #include </usr/include/lua/lua.hpp>
+#include "../game_info/Object.h"
+
+using MapObjects = std::vector<Object>;
 
 class Map;
 class Zone;
@@ -26,5 +29,6 @@ void AddArtifact(std::ofstream& luaFile, std::string artifact, int x, int y, int
 void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int z);
 void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z);
 void AddRoads(std::ofstream &luaFile, Map &map);
+void AddMapObjects(std::ofstream &luaFile, Map& map);
 
 #endif
