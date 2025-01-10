@@ -110,12 +110,15 @@ void generateLuaScript(const json& config) {
             }
         }
 
-        
-
         AddHero(luaFile, zone.second);
     }   
     AddBorderObstacles(luaFile, map);
 
+    for (int i = 0; i <= 8; i++){
+        AddObstacle(luaFile, "Monolith One Way Entrance" + to_string(i%8), 10, 13 + 2*i, 0);
+        AddObstacle(luaFile, "Monolith One Way Exit" + to_string(i%8), 14, 13 + 2*i, 0);
+    }
+    
     AddRoads(luaFile, map);
     
     if (config.value("debug", false)){
