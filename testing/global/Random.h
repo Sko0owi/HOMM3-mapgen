@@ -15,7 +15,8 @@ public:
     bool nextBool();
     bool nextBool(float probability);
     void setSeed(int seed);
-    int getSeed();  
+    int getSeed();
+    std::string randomCreature(double lvl);
 private:
     std::random_device rd;
     std::mt19937 gen;

@@ -11,9 +11,12 @@
 #include "./game_info/Zone.h"
 #include "./global/Random.h"
 
+#include "./CreaturesConstants.h"
+
+
 using json = nlohmann::json;
 
-void placeGateCreatures(std::ofstream& luaFile, Map& map){
+void placeGateCreatures(std::ofstream& luaFile, Map& map, RNG *rng){
     std::cerr << "Place creatures blocking gates\n";
 
     for (int y = 0; y < map.getHeight(); y++) {
@@ -21,7 +24,7 @@ void placeGateCreatures(std::ofstream& luaFile, Map& map){
             auto TilePtr = map.getTile(x, y);
 
             if(TilePtr && TilePtr->getIsGate()){
-                AddCreature(luaFile, "ARCHANGEL", x, y , 0, 100, "AGGRESSIVE", true, true);
+                AddCreature(luaFile, rng->randomCreature(7), x, y , 0, 100, "AGGRESSIVE", true, true);
             }
         }
     }
@@ -141,20 +144,20 @@ void generateLuaScript(const json& config) {
     //     AddObstacle(luaFile, "Monolith One Way Entrance" + std::to_string(i), 10, 2 * i, 0);
     // }
 
-    AddObstacle(luaFile, "Arena", 12, 2, 0);
-    AddObstacle(luaFile, "Faerie Ring_Dirt", 12, 4, 0);
-    AddObstacle(luaFile, "Fountain of Fortune", 12, 6, 0);
-    AddObstacle(luaFile, "Fountain of Youth", 12, 8, 0);
-    AddObstacle(luaFile, "Idol of Fortune", 12, 10, 0);
-    AddObstacle(luaFile, "Learning Stone", 12, 12, 0);
-    AddObstacle(luaFile, "Library of Enlightenment", 12, 14, 0);
-    AddObstacle(luaFile, "Marletto Tower", 12, 16, 0);
-    AddObstacle(luaFile, "Mercenary Camp", 12, 18, 0);
-    AddObstacle(luaFile, "Oasis", 12, 18, 0);
-    AddObstacle(luaFile, "Rally Flag", 12, 20, 0);
-    AddObstacle(luaFile, "School of Magic", 12, 24, 0);
+    // AddObstacle(luaFile, "Arena", 12, 2, 0);
+    // AddObstacle(luaFile, "Faerie Ring_Dirt", 12, 4, 0);
+    // AddObstacle(luaFile, "Fountain of Fortune", 12, 6, 0);
+    // AddObstacle(luaFile, "Fountain of Youth", 12, 8, 0);
+    // AddObstacle(luaFile, "Idol of Fortune", 12, 10, 0);
+    // AddObstacle(luaFile, "Learning Stone", 12, 12, 0);
+    // AddObstacle(luaFile, "Library of Enlightenment", 12, 14, 0);
+    // AddObstacle(luaFile, "Marletto Tower", 12, 16, 0);
+    // AddObstacle(luaFile, "Mercenary Camp", 12, 18, 0);
+    // AddObstacle(luaFile, "Oasis", 12, 18, 0);
+    // AddObstacle(luaFile, "Rally Flag", 12, 20, 0);
+    // AddObstacle(luaFile, "School of Magic", 12, 24, 0);
 
-    placeGateCreatures(luaFile, map);
+    placeGateCreatures(luaFile, map, &rng);
 
     string homeDir = getenv("HOME");
     cerr << "Home dir: " << homeDir << endl;

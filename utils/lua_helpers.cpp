@@ -296,6 +296,7 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
     for (auto object : mapObjects)
     {
         std::string obstacle = object.getName();
+        std::cerr << "NAME " << obstacle << "\n";
         auto pos = object.getPosition();
 
         auto TilePtr = map.getTile(pos.x, pos.y);
@@ -334,6 +335,10 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
         int YY1 = zone1->getPosition().y;
 
         connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 3)); // Castle1 -> Connect1
+        if (obstacle.find("Entrance") != std::string::npos){ // We placed Entrance to monolith
+            TilePtr = map.getTile(pos.x, pos.y+1);
+            TilePtr->setIsGate(true);
+        }
     }
     roadPlacer.createShotestPathsToConnected(connectedPairs);
 }
