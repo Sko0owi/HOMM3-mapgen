@@ -445,12 +445,13 @@ void ObjectPlacer::placeTowns()
 }
 
 bool ObjectPlacer::canPlaceObject(int3 pos, int3 size)
-{
+{   
+    
 
     int x = pos.x;
     int y = pos.y;
 
-    if (y == mapHeight - 1)
+    if (y == mapHeight - 1 || y == mapHeight - 2)
         return false;
 
     if (x - size.x + 1 < 0 || y - size.y + 1 < 0)
@@ -500,7 +501,7 @@ bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, 
     {
 
         int maxMin = 0;
-        auto bestPos = int3(0, 0, 0);
+        auto bestPos = int3(-1, -1, 0);
         for (auto &tiles : zoneTiles[zonePtr])
         {
             auto [pos, tile] = tiles;
@@ -522,7 +523,8 @@ bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, 
                 bestPos = int3(x, y, 0);
             }
         }
-        possiblePositions.push_back(bestPos);
+        if(bestPos.x != -1)
+            possiblePositions.push_back(bestPos);
     }
 
     if (possiblePositions.empty())

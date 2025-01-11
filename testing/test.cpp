@@ -77,6 +77,7 @@ void generateLuaScript(const json& config) {
             if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
                 AddMine(luaFile, *mine, map);
             }
+            
 
             if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
                 string treasureType = treasureTypeToString(treasure->getTreasureType());
@@ -87,10 +88,12 @@ void generateLuaScript(const json& config) {
                 } else if (treasureType.find("RESOURCE") != string::npos) {
                     AddResource(luaFile, *treasure);
                 } else {
+                    if(treasureType == "Fountain of Youth") continue;
                     AddBuildingTreasure(luaFile, *treasure);
                 }
             }
         }
+
 
 
         // std::string ehh = "ammo cart;";
@@ -99,32 +102,18 @@ void generateLuaScript(const json& config) {
         AddHero(luaFile, zone.second);
     }
 
+    std::cerr << "BorderObstacle\n";
     AddBorderObstacles(luaFile, map);
 
+    std::cerr << "AddRoads\n";
     AddRoads(luaFile, map, objectPlacer, &rng);
 
+    std::cerr << "debugTowns\n";
     if (config.value("debug", false)){
         for(auto e : towns){
             std::cerr << e.first << " " << e.second << "\n";
         }
     }
-
-    // for (int i = 0; i < 8; i++){
-    //     AddObstacle(luaFile, "Monolith One Way Entrance" + std::to_string(i), 10, 2 * i, 0);
-    // }
-
-    // AddObstacle(luaFile, "Arena", 12, 2, 0);
-    // AddObstacle(luaFile, "Faerie Ring_Dirt", 12, 4, 0);
-    // AddObstacle(luaFile, "Fountain of Fortune", 12, 6, 0);
-    // AddObstacle(luaFile, "Fountain of Youth", 12, 8, 0);
-    // AddObstacle(luaFile, "Idol of Fortune", 12, 10, 0);
-    // AddObstacle(luaFile, "Learning Stone", 12, 12, 0);
-    // AddObstacle(luaFile, "Library of Enlightenment", 12, 14, 0);
-    // AddObstacle(luaFile, "Marletto Tower", 12, 16, 0);
-    // AddObstacle(luaFile, "Mercenary Camp", 12, 18, 0);
-    // AddObstacle(luaFile, "Oasis", 12, 18, 0);
-    // AddObstacle(luaFile, "Rally Flag", 12, 20, 0);
-    // AddObstacle(luaFile, "School of Magic", 12, 24, 0);
 
     class GuardPlacer guardPlacer(luaFile, map, templateInfo, &rng);
     guardPlacer.placeGuards();
