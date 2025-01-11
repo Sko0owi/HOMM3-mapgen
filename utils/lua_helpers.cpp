@@ -68,7 +68,7 @@ void AddMine(std::ofstream& luaFile, Mine mine, Map &map){
     luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 
     auto TilePtr = map.getTile(x-1, y+1);
-    TilePtr->setIsGate(true);
+    TilePtr->setIsGuard(true);
 }
 
 void AddRoads(std::ofstream& luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
@@ -340,7 +340,7 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
         connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 3)); // Castle1 -> Connect1
         if (obstacle.find("Entrance") != std::string::npos){ // We placed Entrance to monolith
             TilePtr = map.getTile(pos.x, pos.y+1);
-            TilePtr->setIsGate(true);
+            TilePtr->setIsGuard(true);
         }
     }
     roadPlacer.createShotestPathsToConnected(connectedPairs);

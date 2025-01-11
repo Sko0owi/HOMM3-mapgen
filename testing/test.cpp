@@ -7,6 +7,7 @@
 #include "./game_info/Treasure.h"
 #include "./template_info/TemplateInfo.h"
 #include "./placers/RoadPlacer.h"
+#include "./placers/GuardPlacer.h"
 #include "./Map.h"
 #include "./game_info/Zone.h"
 #include "./global/Random.h"
@@ -15,41 +16,6 @@
 
 
 using json = nlohmann::json;
-
-void placeGateCreatures(std::ofstream& luaFile, Map& map, RNG *rng){
-    std::cerr << "Place creatures blocking gates\n";
-
-    for (int y = 0; y < map.getHeight(); y++) {
-        for (int x = 0; x < map.getWidth(); x++) {
-            auto TilePtr = map.getTile(x, y);
-
-            if(TilePtr && TilePtr->getIsGate()){
-                AddCreature(luaFile, rng->randomCreature(7), x, y , 0, 100, "AGGRESSIVE", true, true);
-            }
-        }
-    }
-
-    for (int y = 0; y < map.getHeight(); y++) {
-        for (int x = 0; x < map.getWidth(); x++) {
-            auto TilePtr = map.getTile(x, y);
-
-            if(TilePtr->getIsGate()){
-                std::cerr << "G ";  
-            } 
-            else if(TilePtr->getIsRoad()){    std::cerr << TilePtr->getTier() << " ";} 
-            else if(TilePtr->getIsExtension()){
-                std::cerr << "E ";
-            } 
-            else if(TilePtr->getIsBorder()){
-                std::cerr << "B ";
-            } 
-            else {
-                std::cerr << ". ";
-            }
-        }
-        std::cerr << "\n";
-    }
-}
 
 void generateLuaScript(const json& config) {
     std::ofstream luaFile("generated_script.lua");
@@ -133,7 +99,7 @@ void generateLuaScript(const json& config) {
     AddBorderObstacles(luaFile, map);
 
     AddRoads(luaFile, map, objectPlacer, &rng);
-    
+
     if (config.value("debug", false)){
         for(auto e : towns){
             std::cerr << e.first << " " << e.second << "\n";
@@ -157,7 +123,8 @@ void generateLuaScript(const json& config) {
     // AddObstacle(luaFile, "Rally Flag", 12, 20, 0);
     // AddObstacle(luaFile, "School of Magic", 12, 24, 0);
 
-    placeGateCreatures(luaFile, map, &rng);
+    class GuardPlacer guardPlacer(luaFile, map, templateInfo, &rng);
+    guardPlacer.placeGuards();
 
     string homeDir = getenv("HOME");
     cerr << "Home dir: " << homeDir << endl;

@@ -39,6 +39,13 @@ double RNG::nextDouble(double min, double max) {
     return dis(gen);
 }
 
+double RNG::nextDoubleRounded(double min, double max) {
+        std::uniform_real_distribution<> dis(min, max);
+
+        double value = dis(gen);
+        return std::round(value * 2.0) / 2.0;
+    }
+
 bool RNG::nextBool() {
     std::bernoulli_distribution dis;
     return dis(gen);

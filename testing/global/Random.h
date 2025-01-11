@@ -12,6 +12,7 @@ public:
     float nextFloat(float min, float max);
     double nextDouble();
     double nextDouble(double min, double max);
+    double nextDoubleRounded(double min, double max);
     bool nextBool();
     bool nextBool(float probability);
     void setSeed(int seed);
