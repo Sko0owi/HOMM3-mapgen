@@ -95,7 +95,32 @@ std::string treasureTypeToString(TreasureType treasureType) {
             return "ARTIFACT_DRAGON_SCALE_SHIELD";
         case TreasureType::ARTIFACT_ANGEL_FEATHER_ARROWS:
             return "ARTIFACT_ANGEL_FEATHER_ARROWS";
-    
+
+        case TreasureType::BUILDING_ARENA:
+            return "Arena";
+        case TreasureType::BUILDING_FEARIE_RING_DIRT:
+            return "Faerie Ring_Dirt";
+        case TreasureType::BUILDING_FOUNTAIN_OF_FORTUNE:
+            return "Fountain of Fortune";
+        case TreasureType::BUILDING_FOUNTAIN_OF_YOUTH:
+            return "Fountain of Youth";
+        case TreasureType::BUILDING_IDOL_OF_FORTUNE:
+            return "Idol of Fortune";
+        case TreasureType::BUILDING_LEARNING_STONE:
+            return "Learning Stone";
+        case TreasureType::BUILDING_LIBRARY_OF_ENLIGHTENMENT:
+            return "Library of Enlightenment";
+        case TreasureType::BUILDING_MARLETTO_TOWER:
+            return "Marletto Tower";
+        case TreasureType::BUILDING_MERCENARY_CAMP:
+            return "Mercenary Camp";
+        case TreasureType::BUILDING_OASIS:
+            return "Oasis";
+        case TreasureType::BUILDING_RALLY_FLAG:
+            return "Rally Flag";
+        case TreasureType::BUILDING_SCHOOL_OF_MAGIC:
+            return "School of Magic";
+
         default:
             return "RESOURCE_GOLD";
     
