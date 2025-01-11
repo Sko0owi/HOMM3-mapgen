@@ -174,10 +174,8 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
 
                 treasure.setPosition(int3(x_, y_, 0));
 
-                if(treasure.getTreasureType() == TreasureType::RESOURCE_GOLD)
-                    treasure.setQuantity(rng->nextInt(500, 2000));
-                else 
-                    treasure.setQuantity(rng->nextInt(5,20));
+        
+                treasure.setQuantity(rng->nextInt(5,20));
 
                 auto treasurePointer = std::make_shared<Treasure>(treasure);
 
@@ -264,10 +262,7 @@ void ObjectPlacer::placeTreasures()
                     treasure.setTreasureType(treasureType);
                     treasure.setPosition(int3(x_, mine->getPosition().y + 1, 0));
 
-                    if(treasureType == TreasureType::RESOURCE_GOLD)
-                        treasure.setQuantity(rng->nextInt(500, 2000));
-                    else
-                        treasure.setQuantity(rng->nextInt(5, 20));
+                    treasure.setQuantity(rng->nextInt(5, 20));
 
                     auto treasurePointer = std::make_shared<Treasure>(treasure);
 
