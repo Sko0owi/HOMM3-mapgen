@@ -142,7 +142,7 @@ void ZoneInfo::deserializeZone(const json& config) {
     std::string zoneRichness = config.value("richness", "Normal");
     TreasuresInfo treasuresInfo(decodeRichness(zoneRichness));
 
-    std::cerr << "Zone richness: " << zoneRichness << "\n";
+    // std::cerr << "Zone richness: " << zoneRichness << "\n";
 
     i32 town_count = TemplateInfo::getOrError<int>(config, "number_of_towns");
     for (int i = 0; i < town_count; i++) {
@@ -158,7 +158,7 @@ void ZoneInfo::deserializeZone(const json& config) {
     }
 
     i32 maxMinesCount = config.value("max_number_of_mines", 0);
-    std::cerr << "Max mines count: " << maxMinesCount << "\n";
+    // std::cerr << "Max mines count: " << maxMinesCount << "\n";
     i32 mine_count =  TemplateInfo::getOrError<int>(config, "number_of_mines");
     for(int i = 0; i < mine_count; i++) {
     

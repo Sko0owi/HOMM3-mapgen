@@ -5,6 +5,7 @@
 #include "./placers/ZonePlacer.h"
 #include "./placers/ObjectPlacer.h"
 #include "./placers/RoadPlacer.h"
+#include "./placers/GuardPlacer.h"
 #include "./Faction.h"
 #include "./Tile.h"
 #include "./global/Random.h"
@@ -31,8 +32,7 @@ pair<int,int> decodeMapSize(std::string MapSize) {
     return {-1,-1};
 }
 
-std::shared_ptr<ObjectPlacer> Map::generateMap(TemplateInfo &temp) {
-
+void Map::generateMap(TemplateInfo &temp) {
     std::string MapSize = temp.getMapSize();
 
     pair<int,int> width_height = decodeMapSize(MapSize);
@@ -46,22 +46,26 @@ std::shared_ptr<ObjectPlacer> Map::generateMap(TemplateInfo &temp) {
         }
     }
 
-    class ZonePlacer zonePlacer(*this, temp, rng);
+    //Determine how zones will look like
+    ZonePlacer zonePlacer(*this, temp, rng);
     zonePlacer.generateZones();
 
-    class BorderPlacer borderPlacer(*this, temp, rng);
+    //Place towns, we already know their positions, so we can build around them
+    auto objectPlacer = std::make_shared<ObjectPlacer>(*this, temp, rng);
+    objectPlacer->placeZoneTowns();
+
+    //Determine zones' borders and connections between them
+    BorderPlacer borderPlacer(*this, temp, rng, objectPlacer);
     borderPlacer.generateBorders();    
     setConnectedPairs(borderPlacer.getConnectedPairs());
+    
+    //We can now place treasures and mines
+    objectPlacer->placeObjects();
+
+    // //We know where all objects are placed so we can find roads
     setMapObjects(borderPlacer.getMapObjects());
     RoadPlacer roadPlacer(*this, temp);
     roadPlacer.createShotestPathsToConnected(connectedPairs);
-
-
-    auto objectPlacer = std::make_shared<ObjectPlacer>(*this, temp, rng);
-
-    objectPlacer->placeObjects();
-
-    return objectPlacer;
 }
 
 void Map::setConnectedPairs(ConnectedPoints connectedPairs){

@@ -63,7 +63,7 @@ ObjectPlacer::ObjectPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), t
 
 void ObjectPlacer::placeObjects()
 {
-    std::cerr << "Placing objects\n";
+    std::cerr << "Placing mines and treasures\n";
 
     for (int x = 0; x < mapWidth; x++)
     {
@@ -76,20 +76,25 @@ void ObjectPlacer::placeObjects()
         }
     }
 
-    placeTowns();
-
     placeMines();
 
     placeTreasures();
 
-    for (int y = 0; y < mapHeight; y++)
+}
+
+void ObjectPlacer::placeZoneTowns()
+{
+    std::cerr << "Placing towns in zones\n";
+    for (int x = 0; x < mapWidth; x++)
     {
-        for (int x = 0; x < mapWidth; x++)
+        for (int y = 0; y < mapHeight; y++)
         {
-            std::cerr << objectsMap[y][x];
+            auto TilePtr = map.getTile(x, y);
+            auto TileZone = TilePtr->getZoneId();
+            zoneTiles[map.getZones()[TileZone]].push_back({{x, y}, TilePtr});
         }
-        std::cerr << "\n";
     }
+    placeTowns();
 }
 
 std::vector<Treasure> possibleTreasures[4];
@@ -140,7 +145,7 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
 
     if (possiblePositions.empty())
     {
-        std::cerr << "No possible placement\n";
+        std::cerr << "No possible placement for block of treasures\n";
         return;
     }
 
@@ -227,7 +232,7 @@ void ObjectPlacer::placeTreasureBuilding(std::shared_ptr<Zone> zonePtr, Treasure
 
     if (possiblePositions.empty())
     {
-        std::cerr << "No possible placement\n";
+        std::cerr << "No possible placement for treasure building\n";
         return;
     }
 
@@ -271,14 +276,14 @@ void ObjectPlacer::placeTreasures()
     preparePossibleBlockSizes();
 
 
-    for (int i = 0; i < 3; i++)
-    {
-        std::cerr << "Debug for Tier: " << i << "\n";
-        for (auto &treasure : possibleTreasures[i])
-        {
-            std::cerr << treasureTypeToString(treasure.getTreasureType()) << " " << treasure.getQuantity() << "\n";
-        }
-    }
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     std::cerr << "Debug for Tier: " << i << "\n";
+    //     for (auto &treasure : possibleTreasures[i])
+    //     {
+    //         std::cerr << treasureTypeToString(treasure.getTreasureType()) << " " << treasure.getQuantity() << "\n";
+    //     }
+    // }
 
 
     auto zones = map.getZones();
@@ -381,7 +386,7 @@ void ObjectPlacer::placeTreasures()
 
         int numOfBlocks = rng->nextInt(minBlocks, maxBlocks);
 
-        std::cerr << "Placing treasures in zone " << zoneId << " with " << numOfBlocks << " blocks\n";
+        // std::cerr << "Placing treasures in zone " << zoneId << " with " << numOfBlocks << " blocks\n";
 
         for (int i = 0; i < numOfBlocks; i++)
         {
@@ -529,7 +534,7 @@ bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, 
 
     if (possiblePositions.empty())
     {
-        std::cerr << "No possible placement\n";
+        std::cerr << "No possible placement for mine\n";
         return false;
     }
 
@@ -578,7 +583,7 @@ void ObjectPlacer::placeMines()
 
         auto zoneI = temp.getZonesI()[zoneId];
 
-        std::cerr << "Placing mines in zone " << zoneId << "\n";
+        // std::cerr << "Placing mines in zone " << zoneId << "\n";
 
         std::shared_ptr<Object> centerPtr = nullptr;
         for (auto &object : zone.second->getObjects())
@@ -630,7 +635,7 @@ void ObjectPlacer::placeMines()
             int rand = rng->nextInt(0, minesToPlace.size() - 1);
             if (placeMine(minesToPlace[rand], centerPtr, zonePtr, false, true) == false)
             {
-                std::cerr << "No possible placement\n";
+                std::cerr << "No possible placement for mines\n";
                 break;
             }
             minesToPlaceCount--;
@@ -643,7 +648,7 @@ void ObjectPlacer::placeMines()
 void ObjectPlacer::recalculateDistances()
 {
 
-    std::cerr << "STARTING RECALC\n";
+    // std::cerr << "STARTING RECALC\n";
     for (auto &zone : map.getZones())
     {
         auto zonePtr = zone.second;
@@ -729,3 +734,8 @@ void ObjectPlacer::calculateShortestDistances(std::shared_ptr<Object> &object)
 std::vector<std::vector<int>> ObjectPlacer::getObjectsMap(){
     return objectsMap;
 }
+
+void ObjectPlacer::setObjectsMap(std::vector<std::vector<int>> objectsMap){
+    this->objectsMap = objectsMap;
+}
+

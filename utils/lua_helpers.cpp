@@ -1,4 +1,4 @@
-#include "lua_helpers.hpp"
+#include "./lua_helpers.hpp"
 #include <sstream>
 
 #include "../game_info/Tile.h"
@@ -11,10 +11,8 @@
 #include "./game_info/Town.h"
 #include "./game_info/Treasure.h"
 #include "./game_info/Mine.h"
-#include "../placers/ObjectPlacer.h"
 #include "../global/Random.h"
-#include "../placers/BorderPlacer.h"
-#include "../placers/RoadPlacer.h"
+#include "../placers/GuardPlacer.h"
 
 
 
@@ -64,18 +62,21 @@ void AddMine(std::ofstream& luaFile, Mine mine, Map &map){
 
     std::string mineType = mineTypeToString(mine.getMineType());
 
-    std::cerr << x << " " << y << " " << z << " " << mineType << "\n";
+    // std::cerr << x << " " << y << " " << z << " " << mineType << "\n";
 
     std::string owner = owner_id <= 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
     luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 
-    auto TilePtr = map.getTile(x-1, y+1);
+    auto TilePtr = map.getTile(x-1, y+1); //todo fix mines placement or this line:DD
     TilePtr->setIsGuard(true);
 }
 
-void AddRoads(std::ofstream& luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
+// @function    AddMine
+// @tparam      ofstream    luaFile         file where we save lua script parts. 
+// @tparam      Map         map             object of map class with finised setup.
+void AddRoads(std::ofstream& luaFile, Map& map){
     luaFile << "-- Place 1 way monoliths\n";
-    AddMapObjects(luaFile, map, objectPlacer, rng);
+    AddMapObjects(luaFile, map);
     
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
@@ -84,9 +85,8 @@ void AddRoads(std::ofstream& luaFile, Map& map, std::shared_ptr<ObjectPlacer> ob
     for (int x = 0; x < map.getWidth(); x++){
         for (int y = 0; y < map.getHeight(); y++){
             auto TilePtr = map.getTile(x, y);
-            std::cerr << "X: " << x << "Y: " << y << "\n";
             if (TilePtr->getIsRoad()) {            
-                luaFile << "    if x == " << y << " and y == " << x << " then return nil, " << TilePtr->getTier() << " end\n";
+                luaFile << "    if x == " << x << " and y == " << y << " then return nil, " << TilePtr->getTier() << " end\n";
             }
         }
     }
@@ -142,7 +142,6 @@ void AddBorderObstacles(std::ofstream& luaFile, Map& map){
 
             std::string terrain;
 
-            std::cerr << "X: " << x << " Y: " << y << "aha\n";
             if ((tile->getIsBorder() || tile->getIsExtension()) && !tile->getIsRoad()) {
                 AddObstacle(luaFile, "Pine Trees", x, y, 0);
             }
@@ -191,11 +190,7 @@ void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int
 
 // @function    AddResource
 // @tparam      ofstream    luaFile          file where we save lua script parts. 
-// @tparam      string      mine             type of mine, See RESOURCE_*.
-// @tparam      integer     x                position on x axis of resource.
-// @tparam      integer     y                position on y axis of resource.
-// @tparam      integer     z                position on z axis of resource.
-// @tparam      integer     quantity         quantity of resource.
+// @tparam      Treasure    treasure         Treasure object to place.
 void AddResource(std::ofstream& luaFile, Treasure treasure){
     std::string treasureType = treasureTypeToString(treasure.getTreasureType());
 
@@ -234,6 +229,9 @@ void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int
     luaFile << "instance:obstacle('" << obstacle << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
 }
 
+// @function    AddBuildingTreasure
+// @tparam      ofstream    luaFile          file where we save lua script parts. 
+// @tparam      Treasure    treasure         Treasure object to place.
 void AddBuildingTreasure(std::ofstream& luaFile, Treasure treasure) {
     std::string treasureType = treasureTypeToString(treasure.getTreasureType());
 
@@ -255,112 +253,47 @@ void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z){
     luaFile << "instance:sign('" << text << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
 }
 
-std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, Object object){
-    std::vector<std::pair<int, int>> tiles;
-    auto objectsMap = objectPlacer->getObjectsMap();
-
-
-    for (int x = 1; x < map.getWidth(); x++)
-    {
-        for (int y = 1; y < map.getHeight() - 1; y++){
-            auto TilePtr = map.getTile(x, y);
-
-            if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsExtension() && !TilePtr->getIsRoad() && objectsMap[y][x] == 0){
-                bool canPlace = true;
-                for (int x_ = max(0, x - object.getSizeOfObject().x); x_ <= min(x + 1, map.getWidth() - 1); x_++)
-                {
-                    for (int y_ = max(0, y - object.getSizeOfObject().y); y_ <= min(y + 1, map.getHeight() - 1); y_++)
-                    {
-                        if (x_ == x - object.getSizeOfObject().x || x_ == x + 1 || y_ == y - object.getSizeOfObject().y || y_ == y + 1)
-                        {
-                            if(objectsMap[y_][x_] == 1){ //We want to keep at least 1 tile separation
-                                canPlace = false;
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                if(canPlace)
-                    tiles.emplace_back(x, y);
-            }
-        }
-    }
-    
-    return tiles;
-}
-
-std::shared_ptr<Zone> getZoneFromId(int zoneId, Map &map){
-    auto zones = map.getZones();
-    for (auto& zone : zones) {
-        if(zone.second->getId() == zoneId)
-            return zone.second;
-    }
-    return nullptr;
-}
-
 // @function    AddMapObjects
 // @tparam      ofstream        luaFile         file where we save lua script parts. 
 // @tparam      Map             map             object of map class with finised setup.
-// @tparam      ObjectPlacer    objectPlacer    object with resources and buildings.
-// @tparam      RNG             rng             rng object.
-void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
+void AddMapObjects(std::ofstream &luaFile, Map& map){
     MapObjects mapObjects = map.getMapObjects();
-    auto objectsMap = objectPlacer->getObjectsMap();
-    std::vector<std::tuple<int, int, int, int, bool, int>> connectedPairs;
-
-    RoadPlacer roadPlacer(map);
 
     for (auto object : mapObjects)
     {
         std::string obstacle = object.getName();
         auto pos = object.getPosition();
 
-        auto TilePtr = map.getTile(pos.x, pos.y);
-        int outerXX1 = pos.x, outerYY1 = pos.y;
-    
-        if (TilePtr->getIsBorder() || TilePtr->getIsExtension() || TilePtr->getIsRoad() || objectsMap[pos.y][pos.x] > 0)
-        {
-            std::vector<std::pair<int, int>> zone1Tiles = getValidTiles(TilePtr->getZoneId(), map, objectPlacer, object);
-
-            if(zone1Tiles.size() == 0){
-                std::cerr << "No valid tiles\n";
-                continue;
-            }
-            int rand = rng->nextInt(0, zone1Tiles.size() - 1);
-            std::tie(outerXX1, outerYY1) = zone1Tiles[rand];
-            pos = int3(outerXX1, outerYY1, 0);
-        }
-
-        int x = pos.x;
-        int y = pos.y;
-
-        for (int x_ = max(0, x - object.getSizeOfObject().x); x_ <= min(x + 1, map.getWidth() - 1); x_++)
-        {
-            for (int y_ = max(0, y - object.getSizeOfObject().y); y_ <= min(y + 1, map.getHeight() - 1); y_++)
-            {
-
-                objectsMap[y_][x_] = 3;
-                if (x_ == x - object.getSizeOfObject().x || x_ == x + 1 || y_ == y - object.getSizeOfObject().y || y_ == y + 1)
-                {
-                    objectsMap[y_][x_] = 1;
-                }
-            }
-        }
-
         luaFile << "instance:obstacle('" << obstacle << "', {x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << "})\n";
+    }
+}
 
-        //Logic to connect tp with zone
-        std::shared_ptr<Zone> zone1 = getZoneFromId(map.getTile(x, y)->getZoneId(), map);
+// @function    AddMapObjects
+// @tparam      ofstream        luaFile         file where we save lua script parts. 
+// @tparam      Map             map             object of map class with finised setup.
+// @tparam      TemplateInfo    templateInfo    object of TemplateInfo class.
+// @tparam      RNG             rng             object of RNG class.
+void AddGuards(std::ofstream &luaFile, Map &map, TemplateInfo &templateInfo, RNG *rng){
+    std::cerr << "Place guards\n";
 
-        int XX1 = zone1->getPosition().x;
-        int YY1 = zone1->getPosition().y;
+    class GuardPlacer guardPlacer(map, templateInfo, rng);
 
-        connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 3)); // Castle1 -> Connect1
-        if (obstacle.find("Entrance") != std::string::npos){ // We placed Entrance to monolith
-            TilePtr = map.getTile(pos.x, pos.y + 1); // todo fix + 1
-            TilePtr->setIsGuard(true);
+    for (int y = 0; y < map.getHeight(); y++)
+    {
+        for (int x = 0; x < map.getWidth(); x++)
+        {
+            auto TilePtr = map.getTile(x, y);
+
+            if (TilePtr && (TilePtr->getIsGate() || TilePtr->getIsGuard()))
+            {
+                std::string difficulty = guardPlacer.getZoneDifficulty(TilePtr->getZoneId());
+                Difficulty diff = guardPlacer.stringToDifficulty(difficulty);
+                auto [min_lvl, max_lvl] = TilePtr->getIsGuard() ? guardPlacer.getGuardLevel(diff) : guardPlacer.getBorderGuardLevel(diff);
+                double lvl = rng->nextDoubleRounded(min_lvl, max_lvl);
+
+                auto [min_quantity, max_quantity] = guardPlacer.getQuantityRange(diff);
+                AddCreature(luaFile, rng->randomCreature(lvl), x, y, 0, rng->nextInt(min_quantity, max_quantity), guardPlacer.getDisposition(diff), guardPlacer.neverFlies(diff), guardPlacer.doesNotGrow(diff));
+            }
         }
     }
-    roadPlacer.createShotestPathsToConnected(connectedPairs);
 }

@@ -1,4 +1,5 @@
 #include "./BorderPlacer.h"
+#include "./ObjectPlacer.h"
 #include "./Map.h"
 #include "./Zone.h"
 #include "./Tile.h"
@@ -11,15 +12,13 @@
 
 TemplateInfo emptyTemplateInfoBorder;
 
-BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), temp(temp), rng(rng)
+BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng, std::shared_ptr<ObjectPlacer> objectPlacer) : map(map), temp(temp), rng(rng), objectPlacer(objectPlacer)
 {
     mapWidth = 0;
     mapHeight = 0;
     monolithCount = 0;
 }
 
-BorderPlacer::BorderPlacer(Map & map, RNG *rng) 
-    : BorderPlacer(map, emptyTemplateInfoBorder, rng) {}
 
 void BorderPlacer::generateBorders() {
     mapWidth = map.getWidth();
@@ -226,6 +225,66 @@ std::vector<std::pair<int, int>> BorderPlacer::getZoneTiles(int zoneId){
     return tiles;
 }
 
+std::vector<std::pair<int, int>> BorderPlacer::getValidTiles(int zoneId, Object object){
+    std::vector<std::pair<int, int>> tiles;
+    auto objectsMap = objectPlacer->getObjectsMap();
+
+    for (int x = 1; x < map.getWidth(); x++)
+    {
+        for (int y = 1; y < map.getHeight() - 1; y++){
+            auto TilePtr = map.getTile(x, y);
+            if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsExtension() && !TilePtr->getIsRoad() && objectsMap[y][x] == 0){
+                bool canPlace = true;
+                for (int x_ = max(0, x - object.getSizeOfObject().x); x_ <= min(x + 1, map.getWidth() - 1); x_++)
+                {
+                    for (int y_ = max(0, y - object.getSizeOfObject().y); y_ <= min(y + 1, map.getHeight() - 1); y_++)
+                    {
+                        if (x_ == x - object.getSizeOfObject().x || x_ == x + 1 || y_ == y - object.getSizeOfObject().y || y_ == y + 1)
+                        {
+                            if(objectsMap[y_][x_] == 1){ //We want to keep at least 1 tile separation
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if(canPlace)
+                    tiles.emplace_back(x, y);
+            }
+        }
+    }
+
+    objectPlacer->setObjectsMap(objectsMap);
+    return tiles;
+}
+
+void BorderPlacer::placeMonolith(Object object){
+    auto objectsMap = objectPlacer->getObjectsMap();
+
+    int x = object.getPosition().x;
+    int y = object.getPosition().y;
+
+    int sx = object.getSizeOfObject().x;
+    int sy = object.getSizeOfObject().y;
+
+    for (int x_ = max(0, x - sx); x_ <= min(x + 1, mapWidth - 1); x_++)
+    {
+        for (int y_ = max(0, y - sy); y_ <= min(y + 1, mapHeight - 1); y_++)
+        {
+            
+            objectsMap[y_][x_] = 9;
+
+            if (x_ == x - sx || x_ == x + 1 || y_ == y - sy || y_ == y + 1)
+            {
+                objectsMap[y_][x_] = 1;
+            }
+        }
+    }
+
+    objectPlacer->setObjectsMap(objectsMap);
+}
+
 void BorderPlacer::connectZones() {
     std::cerr << "Finding zones conenction points\n";
     auto zones = map.getZones();
@@ -247,6 +306,8 @@ void BorderPlacer::connectZones() {
                 processedConnections.insert(connectionPair);
                 int X = zone1.second->getPosition().x;
                 int Y = zone1.second->getPosition().y;
+                int XX = zone2.second->getPosition().x;
+                int YY = zone2.second->getPosition().y;
                 int tier = getTier(zone1Id, zone2Id);
                 std::string type = getType(zone1Id, zone2Id);
 
@@ -258,57 +319,82 @@ void BorderPlacer::connectZones() {
                 // tier -> tier of road
 
                 if(outerX1 == -1 || outerX2 == -1 || type == "monolith"){ // Didn't find connection or it is monolith type -> add Monoliths
-                    std::vector<std::pair<int, int>> zone1Tiles = getZoneTiles(zone1Id);
-                    std::vector<std::pair<int, int>> zone2Tiles = getZoneTiles(zone2Id);
-
-                    int rand = rng->nextInt(0, zone1Tiles.size() - 1), rand2;
-                    auto [outerXX1, outerYY1] = zone1Tiles[rand];
-
-                    outerX1 = outerXX1;
-                    outerY1 = outerYY1;
-
-                    Object entrance(int3 (outerX1, outerY1, 0), "Monolith One Way Entrance" + std::to_string(monolithCount));
+                    //Create first entrance
+                    Object entrance(int3 (0, 0, 0), "Monolith One Way Entrance" + std::to_string(monolithCount));
                     int3 size = monolithCount > 3 ? int3(2, 2, 0) : int3(1, 2, 0);
                     entrance.setSizeOfObject(size);
+                    
+                    std::vector<std::pair<int, int>> zone1Tiles = getValidTiles(zone1Id, entrance);
+
+                    int rand = rng->nextInt(0, zone1Tiles.size() - 1);
+                    auto [outerXXX1, outerYYY1] = zone1Tiles[rand];
+
+                    outerX1 = outerXXX1;
+                    outerY1 = outerYYY1;
+
+                    entrance.setPosition(int3(outerX1, outerY1, 0)); // Fix position
+                    connectedPairs.emplace_back(X, Y, outerX1, outerY1, true, tier); //Castle1 -> Entrance1
+
+                    placeMonolith(entrance);
                     mapObjects.emplace_back(entrance);
 
-                    //Now we need to create connection in other direction as well
-                    do{
-                        rand2 = rng->nextInt(0, zone1Tiles.size() - 1);
-                    } while (rand == rand2);
-                    
-                    auto [outerXXX1, outerYYY1] = zone1Tiles[rand2];
-
-                    //First exit 
-                    rand = rng->nextInt(0, zone2Tiles.size() - 1);
-                    auto [outerXX2, outerYY2] = zone2Tiles[rand];
-
-                    outerX2 = outerXX2;
-                    outerY2 = outerYY2;
-
-                    
-                    Object exit(int3 (outerX2, outerY2, 0), "Monolith One Way Exit" + std::to_string(monolithCount));
+                    //Create first exit
+                    Object exit(int3 (0, 0, 0), "Monolith One Way Exit" + std::to_string(monolithCount));
                     size = monolithCount > 3 ? int3(2, 2, 0) : int3(1, 2, 0);
-                    exit.setSizeOfObject(size);
+                    exit.setSizeOfObject(size); 
+
+                    std::vector<std::pair<int, int>> zone2Tiles = getValidTiles(zone2Id, exit);
+                    
+                    rand = rng->nextInt(0, zone2Tiles.size() - 1);
+                    auto [outerXXX2, outerYYY2] = zone2Tiles[rand];
+
+                    outerX2 = outerXXX2;
+                    outerY2 = outerYYY2;
+
+                    exit.setPosition(int3(outerX2, outerY2, 0)); // Fix position
+                    connectedPairs.emplace_back(XX, YY, outerX2, outerY2, true, tier); //Castle2 -> Exit1
+
+                    placeMonolith(exit);
                     mapObjects.emplace_back(exit);
 
-                    //Now we need to create connection in other direction as well
-                    do{
-                        rand2 = rng->nextInt(0, zone2Tiles.size() - 1);
-                    } while (rand == rand2);
-                    
-                    auto [outerXXX2, outerYYY2] = zone2Tiles[rand2];
-                    Object entrance2(int3 (outerXXX2, outerYYY2, 0), "Monolith One Way Entrance" + std::to_string(monolithCount + 1));
+                    //Create second entrance
+                    Object entrance2(int3 (0, 0, 0), "Monolith One Way Entrance" + std::to_string(monolithCount + 1));
                     size = monolithCount > 2 ? int3(2, 2, 0) : int3(1, 2, 0);
                     entrance2.setSizeOfObject(size);
+                    
+                    zone2Tiles = getValidTiles(zone2Id, entrance2);
+
+                    rand = rng->nextInt(0, zone2Tiles.size() - 1);
+                    auto [outerXXXX2, outerYYYY2] = zone2Tiles[rand];
+
+                    int outerXX2 = outerXXXX2;
+                    int outerYY2 = outerYYYY2;
+
+                    entrance2.setPosition(int3(outerXX2, outerYY2, 0)); // Fix position
+                    connectedPairs.emplace_back(XX, YY, outerXX2, outerYY2, true, tier); //Castle2 -> Entrance2
+
+                    placeMonolith(entrance2);
                     mapObjects.emplace_back(entrance2);
 
-                    //Second exit
-                    Object exit2(int3 (outerXXX1, outerYYY1, 0), "Monolith One Way Exit" + std::to_string(monolithCount + 1));
+                    //Create second exit
+                    Object exit2(int3 (0, 0, 0), "Monolith One Way Exit" + std::to_string(monolithCount + 1));
                     size = monolithCount > 2 ? int3(2, 2, 0) : int3(1, 2, 0);
                     exit2.setSizeOfObject(size);
-                    mapObjects.emplace_back(exit2);
                     
+                    zone1Tiles = getValidTiles(zone1Id, exit2);
+
+                    rand = rng->nextInt(0, zone1Tiles.size() - 1);
+                    auto [outerXXXX1, outerYYYY1] = zone1Tiles[rand];
+
+                    int outerXX1 = outerXXXX1;
+                    int outerYY1 = outerYYYY1;
+
+                    exit2.setPosition(int3(outerXX1, outerYY1, 0)); // Fix position
+                    connectedPairs.emplace_back(X, Y, outerXX1, outerYY1, true, tier); //Castle1 -> Exit2
+
+                    placeMonolith(exit2);
+                    mapObjects.emplace_back(exit2);
+
                     monolithCount += 2;
                     monolithCount %= 8;
                 }
@@ -362,7 +448,6 @@ void BorderPlacer::connectZones() {
             }
         }
     }
-
 }
 
 bool BorderPlacer::isWide(int ZoneA, int ZoneB){
@@ -442,8 +527,4 @@ void BorderPlacer::determineZoneBorders() {
             }
         }
     }
-}
-
-bool BorderPlacer::roadInRange(int range){
-    return true;
 }

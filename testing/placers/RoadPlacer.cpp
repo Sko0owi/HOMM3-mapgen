@@ -254,5 +254,3 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
 
     clearSquares();
 }
-
-

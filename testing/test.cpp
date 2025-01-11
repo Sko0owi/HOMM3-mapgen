@@ -48,7 +48,7 @@ void generateLuaScript(const json& config) {
     rng.setSeed(12);
 
     Map map(&rng);
-    auto objectPlacer = map.generateMap(templateInfo);
+    map.generateMap(templateInfo);
 
     std::cerr << "Map generated\n";
     if (config.value("debug", false))
@@ -81,7 +81,7 @@ void generateLuaScript(const json& config) {
 
             if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
                 string treasureType = treasureTypeToString(treasure->getTreasureType());
-                std::cerr << "treasureType: " << treasureType << "\n";
+                // std::cerr << "treasureType: " << treasureType << "\n";
 
                 if(treasureType.find("ARTIFACT") != string::npos) {
                     AddArtifact(luaFile, *treasure);
@@ -93,17 +93,12 @@ void generateLuaScript(const json& config) {
             }
         }
 
-
-
-        // std::string ehh = "ammo cart;";
-        // AddArtifact(luaFile, Treasure(TreasureType::ARTIFACT_LADYBIRD_OF_LUCK, 0, zone.second->getPosition(), ehh));
-
         AddHero(luaFile, zone.second);
     }
 
     AddBorderObstacles(luaFile, map);
 
-    AddRoads(luaFile, map, objectPlacer, &rng);
+    AddRoads(luaFile, map);
 
     if (config.value("debug", false)){
         for(auto e : towns){
@@ -111,8 +106,7 @@ void generateLuaScript(const json& config) {
         }
     }
 
-    class GuardPlacer guardPlacer(luaFile, map, templateInfo, &rng);
-    guardPlacer.placeGuards();
+    AddGuards(luaFile, map, templateInfo, &rng);
 
     string homeDir = getenv("HOME");
     cerr << "Home dir: " << homeDir << endl;

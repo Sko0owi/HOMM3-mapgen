@@ -5,6 +5,7 @@
 class Map;
 class TemplateInfo;
 class RNG;
+class ObjectPlacer;
 
 enum class Difficulty {
     Beginner,
@@ -18,8 +19,7 @@ enum class Difficulty {
 
 class GuardPlacer {
 public:
-    GuardPlacer(std::ofstream &luaFile, Map &map, TemplateInfo &temp, RNG *rng);
-    void placeGuards();
+    GuardPlacer(Map &map, TemplateInfo &temp, RNG *rng);
 
     std::string getZoneDifficulty(int zoneId);
     std::pair<int, int> getQuantityRange(Difficulty diff);
@@ -30,9 +30,9 @@ public:
     std::string getDisposition(Difficulty diff);
 
     static Difficulty stringToDifficulty(const std::string &difficulty);
+    void placeGuards(std::shared_ptr<ObjectPlacer> objectPlacer);
 
 private:
-    std::ofstream &luaFile;
     Map &map;
     TemplateInfo &temp;
     RNG *rng;
