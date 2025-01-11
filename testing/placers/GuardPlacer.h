@@ -32,11 +32,12 @@ public:
     void placeGuards();
 
     std::string getZoneDifficulty(int zoneId);
-    std::pair<int, int> getQuantityRange(const std::string &difficulty);
-    bool doesNotGrow(const std::string &difficulty);
-    bool neverFlies(const std::string &difficulty);
-    std::pair<double, double> getGuardLevel(const std::string &difficulty);
-    std::pair<double, double> getBorderGuardLevel(const std::string &difficulty);
+    std::pair<int, int> getQuantityRange(Difficulty diff);
+    bool doesNotGrow(Difficulty diff);
+    bool neverFlies(Difficulty diff);
+    std::pair<double, double> getGuardLevel(Difficulty diff);
+    std::pair<double, double> getBorderGuardLevel(Difficulty diff);
+    std::string getDisposition(Difficulty diff);
 
 private:
     std::ofstream &luaFile;

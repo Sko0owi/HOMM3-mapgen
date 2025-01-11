@@ -11,11 +11,7 @@ GuardPlacer::GuardPlacer(std::ofstream &luaFile, Map &map, TemplateInfo &temp, R
     : luaFile(luaFile), map(map), temp(temp), rng(rng) {}
 
 void GuardPlacer::placeGuards(){
-    std::cerr << "Place creatures blocking gates\n";
-
-    for (int i = 0; i < 7; i++){
-        getZoneDifficulty(i);
-    }
+    std::cerr << "Place creatures\n";
 
     for (int y = 0; y < map.getHeight(); y++)
     {
@@ -26,11 +22,12 @@ void GuardPlacer::placeGuards(){
             if (TilePtr && (TilePtr->getIsGate() || TilePtr->getIsGuard()))
             {
                 std::string difficulty = getZoneDifficulty(TilePtr->getZoneId());
-                auto [min_lvl, max_lvl] = TilePtr->getIsGuard() ? getGuardLevel(difficulty) : getBorderGuardLevel(difficulty);
+                Difficulty diff = stringToDifficulty(difficulty);
+                auto [min_lvl, max_lvl] = TilePtr->getIsGuard() ? getGuardLevel(diff) : getBorderGuardLevel(diff);
                 double lvl = rng->nextDoubleRounded(min_lvl, max_lvl);
 
-                auto [min_quantity, max_quantity] = getQuantityRange(difficulty);
-                AddCreature(luaFile, rng->randomCreature(lvl), x, y, 0, rng->nextInt(min_quantity, max_quantity), "AGGRESSIVE", neverFlies(difficulty), doesNotGrow(difficulty));
+                auto [min_quantity, max_quantity] = getQuantityRange(diff);
+                AddCreature(luaFile, rng->randomCreature(lvl), x, y, 0, rng->nextInt(min_quantity, max_quantity), getDisposition(diff), neverFlies(diff), doesNotGrow(diff));
             }
         }
     }
@@ -66,9 +63,7 @@ std::string GuardPlacer::getZoneDifficulty(int zoneId){
     return "Normal";
 }
 
-std::pair<int, int> GuardPlacer::getQuantityRange(const std::string &difficulty) {
-    Difficulty diff = stringToDifficulty(difficulty);
-
+std::pair<int, int> GuardPlacer::getQuantityRange(Difficulty diff) {
     switch (diff) {
         case Difficulty::Beginner:
             return {10, 20};
@@ -83,12 +78,11 @@ std::pair<int, int> GuardPlacer::getQuantityRange(const std::string &difficulty)
         case Difficulty::Impossible:
             return {100, 200};
         default:
-            throw std::invalid_argument("Invalid difficulty level: " + difficulty);
+            throw std::invalid_argument("Invalid difficulty level");
     }
 }
 
-bool GuardPlacer::doesNotGrow(const std::string &difficulty) {
-    Difficulty diff = stringToDifficulty(difficulty);
+bool GuardPlacer::doesNotGrow(Difficulty diff) {
     switch (diff) {
         case Difficulty::Beginner:
         case Difficulty::Easy:
@@ -99,12 +93,11 @@ bool GuardPlacer::doesNotGrow(const std::string &difficulty) {
         case Difficulty::Impossible:
             return false; 
         default:
-            throw std::invalid_argument("Invalid difficulty level: " + difficulty);
+            throw std::invalid_argument("Invalid difficulty level" );
     }
 }
 
-bool GuardPlacer::neverFlies(const std::string &difficulty) {
-    Difficulty diff = stringToDifficulty(difficulty);
+bool GuardPlacer::neverFlies(Difficulty diff) {
     switch (diff) {
         case Difficulty::Beginner:
         case Difficulty::Easy:
@@ -115,13 +108,11 @@ bool GuardPlacer::neverFlies(const std::string &difficulty) {
         case Difficulty::Impossible:
             return true; 
         default:
-            throw std::invalid_argument("Invalid difficulty level: " + difficulty);
+            throw std::invalid_argument("Invalid difficulty level" );
     }
 }
 
-std::pair<double, double> GuardPlacer::getGuardLevel(const std::string &difficulty) {
-    Difficulty diff = stringToDifficulty(difficulty);
-
+std::pair<double, double> GuardPlacer::getGuardLevel(Difficulty diff) {
     switch (diff) {
         case Difficulty::Beginner:
             return {1.0, 2.0};
@@ -136,13 +127,11 @@ std::pair<double, double> GuardPlacer::getGuardLevel(const std::string &difficul
         case Difficulty::Impossible:
             return {5.0, 7.5};
         default:
-            throw std::invalid_argument("Invalid difficulty level: " + difficulty);
+            throw std::invalid_argument("Invalid difficulty level" );
     }
 }
 
-std::pair<double, double> GuardPlacer::getBorderGuardLevel(const std::string &difficulty) {
-    Difficulty diff = stringToDifficulty(difficulty);
-
+std::pair<double, double> GuardPlacer::getBorderGuardLevel(Difficulty diff) {
     switch (diff) {
         case Difficulty::Beginner:
             return {4.0, 5.0}; 
@@ -157,6 +146,23 @@ std::pair<double, double> GuardPlacer::getBorderGuardLevel(const std::string &di
         case Difficulty::Impossible:
             return {6.5, 7.5};
         default:
-            throw std::invalid_argument("Invalid difficulty level: " + difficulty);
+            throw std::invalid_argument("Invalid difficulty level" );
+    }
+}
+
+std::string GuardPlacer::getDisposition(Difficulty diff) {
+    switch (diff) {
+        case Difficulty::Beginner:
+            return "COMPLIANT";   // Will always join the hero
+        case Difficulty::Easy:
+            return "FRIENDLY";    // Likely to join the hero
+        case Difficulty::Normal:
+            return "AGGRESSIVE";  // May join the hero
+        case Difficulty::Hard:
+            return "HOSTILE";     // Unlikely to join the hero
+        case Difficulty::Expert:
+            return "SAVAGE";      // Will never join the hero
+        default:
+            throw std::invalid_argument("Invalid difficulty level");
     }
 }

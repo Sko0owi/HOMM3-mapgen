@@ -299,7 +299,6 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
     for (auto object : mapObjects)
     {
         std::string obstacle = object.getName();
-        std::cerr << "NAME " << obstacle << "\n";
         auto pos = object.getPosition();
 
         auto TilePtr = map.getTile(pos.x, pos.y);
