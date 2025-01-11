@@ -11,6 +11,7 @@ class TemplateInfo;
 class RNG;
 class Town;
 class ObjectPlacer;
+class GuardPlacer;
 
 using MapZones = std::map<i32, std::shared_ptr<Zone>>;
 using MapObjects = std::vector<Object>;
@@ -22,7 +23,7 @@ public:
     Map(RNG *rng);
     Map(i32 width, i32 height);
     ~Map();
-    std::shared_ptr<ObjectPlacer> generateMap(TemplateInfo &temp);
+    void generateMap(TemplateInfo &temp);
     void print();
     
     MapZones & getZones();

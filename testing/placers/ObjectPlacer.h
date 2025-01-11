@@ -19,6 +19,8 @@ public:
 
     void placeObjects();
 
+    void placeZoneTowns();
+
     void placeTowns();
 
     void placeMines();
@@ -33,7 +35,6 @@ public:
 
     void preparePossibleBlockSizes();
 
-
     bool placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, std::shared_ptr<Zone> zonePtr, bool firstBasicMine = false, bool deterministic = false);
 
     void recalculateDistances();
@@ -43,6 +44,7 @@ public:
     bool canPlaceObject(int3 pos, int3 size);
 
     std::vector<std::vector<int>> getObjectsMap();
+    void setObjectsMap(std::vector<std::vector<int>> objectsMap);
 
 private:
 

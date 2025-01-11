@@ -5,15 +5,15 @@ class Map;
 class TemplateInfo;
 class RNG;
 class Object;
+class Zone;
+class ObjectPlacer;
 
 using ConnectedPoints = std::vector<std::tuple<int, int, int, int, bool, int>>;
 using MapObjects = std::vector<Object>;
 
 class BorderPlacer {
 public: 
-    BorderPlacer(Map & map, TemplateInfo & temp, RNG *rng);
-    BorderPlacer(Map & map, RNG *rng);
-
+    BorderPlacer(Map & map, TemplateInfo & temp, RNG *rng, std::shared_ptr<ObjectPlacer> objectPlacer);
 
     void generateBorders();
 
@@ -30,16 +30,18 @@ public:
     void createExtenstion();
     void removeExtension();
 
-    bool roadInRange(int range = 1);
     void fixBorders();
 
     ConnectedPoints getConnectedPairs();
+    std::set<std::pair<int, int>> getMonolithConnections(); 
     void setWideConnections();
 
     void setMapObjects(MapObjects mapObjects);
     MapObjects  getMapObjects();
 
-    std::vector<std::pair<int, int>> getZoneTiles(int zoneId);
+    std::vector<std::pair<int, int>> getValidTiles(int zoneId, Object object);
+
+    void placeMonolith(Object object);
 
 private:
     int mapWidth;
@@ -55,6 +57,8 @@ private:
     RNG *rng;
 
     std::set<std::pair<int, int>> wideConnections;
+    std::set<std::pair<int, int>> monolithConnections;
+    std::shared_ptr<ObjectPlacer> objectPlacer;
 
     ConnectedPoints connectedPairs;
     MapObjects mapObjects;

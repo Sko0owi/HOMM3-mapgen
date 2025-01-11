@@ -16,10 +16,9 @@ class Zone;
 class Town;
 class Treasure;
 class Mine;
-class ObjectPlacer;
-class BorderPlacer;
-class RoadPlacer;
+class GuardPlacer;
 class RNG;
+class TemplateInfo;
 
 void AddPlayer(std::ofstream& luaFile, int playerId);
 void AddTown(std::ofstream &luaFile, Town town, bool is_main = true);
@@ -35,8 +34,8 @@ void AddArtifact(std::ofstream& luaFile, Treasure treasure);
 void AddBuildingTreasure(std::ofstream& luaFile, Treasure treasure);
 void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int z);
 void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z);
-void AddRoads(std::ofstream &luaFile, Map &map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng);
-void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng);
-std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map &map, std::shared_ptr<ObjectPlacer> objectPlacer, Object object);
+void AddRoads(std::ofstream &luaFile, Map &map);
+void AddMapObjects(std::ofstream &luaFile, Map& map);
+void AddGuards(std::ofstream &luaFile, Map &map, TemplateInfo &templateInfo, RNG *rng);
 
 #endif

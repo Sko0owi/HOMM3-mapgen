@@ -1,57 +1,17 @@
 #include "./GuardPlacer.h"
+#include "./ObjectPlacer.h"
 #include "../template_info/TemplateInfo.h"
 #include "../template_info/ZoneInfo.h"
 #include "../template_info/ConnectionInfo.h"
 #include "./Map.h"
 #include "./Tile.h"
 #include "../global/Random.h"
-#include "../utils/lua_helpers.hpp"
 
-GuardPlacer::GuardPlacer(std::ofstream &luaFile, Map &map, TemplateInfo &temp, RNG *rng) 
-    : luaFile(luaFile), map(map), temp(temp), rng(rng) {}
+GuardPlacer::GuardPlacer(Map &map, TemplateInfo &temp, RNG *rng) 
+    : map(map), temp(temp), rng(rng) {}
 
-void GuardPlacer::placeGuards(){
-    std::cerr << "Place creatures\n";
-
-    for (int y = 0; y < map.getHeight(); y++)
-    {
-        for (int x = 0; x < map.getWidth(); x++)
-        {
-            auto TilePtr = map.getTile(x, y);
-
-            if (TilePtr && (TilePtr->getIsGate() || TilePtr->getIsGuard()))
-            {
-                std::string difficulty = getZoneDifficulty(TilePtr->getZoneId());
-                Difficulty diff = stringToDifficulty(difficulty);
-                auto [min_lvl, max_lvl] = TilePtr->getIsGuard() ? getGuardLevel(diff) : getBorderGuardLevel(diff);
-                double lvl = rng->nextDoubleRounded(min_lvl, max_lvl);
-
-                auto [min_quantity, max_quantity] = getQuantityRange(diff);
-                AddCreature(luaFile, rng->randomCreature(lvl), x, y, 0, rng->nextInt(min_quantity, max_quantity), getDisposition(diff), neverFlies(diff), doesNotGrow(diff));
-            }
-        }
-    }
-
-    for (int y = 0; y < map.getHeight(); y++) {
-        for (int x = 0; x < map.getWidth(); x++) {
-            auto TilePtr = map.getTile(x, y);
-
-            if(TilePtr->getIsGate()){
-                std::cerr << "G ";  
-            } 
-            else if(TilePtr->getIsRoad()){    std::cerr << TilePtr->getTier() << " ";} 
-            else if(TilePtr->getIsExtension()){
-                std::cerr << "E ";
-            } 
-            else if(TilePtr->getIsBorder()){
-                std::cerr << "B ";
-            } 
-            else {
-                std::cerr << ". ";
-            }
-        }
-        std::cerr << "\n";
-    }
+void GuardPlacer::placeGuards(std::shared_ptr<ObjectPlacer> objectPlacer){
+    
 }
 
 std::string GuardPlacer::getZoneDifficulty(int zoneId){

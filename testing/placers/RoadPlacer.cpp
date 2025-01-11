@@ -2,19 +2,16 @@
 #include "../template_info/TemplateInfo.h"
 #include "../template_info/ZoneInfo.h"
 #include "../template_info/ConnectionInfo.h"
+#include "./ObjectPlacer.h"
 #include "./Map.h"
 #include "./Tile.h"
 
-TemplateInfo emptyTemplateInfoRoad;
-
-RoadPlacer::RoadPlacer(Map &map, TemplateInfo &temp) : map(map), temp(temp) {};
-
-RoadPlacer::RoadPlacer(Map & map) 
-    : RoadPlacer(map, emptyTemplateInfoRoad) {}
+RoadPlacer::RoadPlacer(Map &map, TemplateInfo &temp, std::shared_ptr<ObjectPlacer> objectPlacer) : map(map), temp(temp), objectPlacer(objectPlacer) {};
 
 std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, int x2, int y2) {
     std::vector<std::pair<int, int>> path;
-
+    auto objectsMap = objectPlacer->getObjectsMap();
+    
     if (x1 == x2 && y1 == y2) {
         path.emplace_back(x1, y1);
         return path;
@@ -43,11 +40,9 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
             int nx = cx + dx[i];
             int ny = cy + dy[i];
 
-            if (nx < 0 || nx >= mapWidth || ny < 0 || ny >= mapHeight) continue;
-
             auto TilePtr = map.getTile(nx, ny);
 
-            if (TilePtr && (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny)))) {
+            if (TilePtr && (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny))) && objectsMap[nx][ny] <= 3) {
                 int newDistance = distance[cy][cx] + 1; 
 
                 if (newDistance < distance[ny][nx]) {
@@ -226,6 +221,19 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
     
     fixBorders();
 
+    std::cerr << "ROAD PLACER POV\n";
+    auto objectsMap = objectPlacer->getObjectsMap();
+    for (int x = 0; x < map.getWidth(); x++){
+        for (int y = 0; y < map.getHeight(); y++){
+            // if(objectsMap[x][y] >= 1)
+                std::cerr << objectsMap[x][y] << " ";
+            // else
+            //     std::cerr << ". ";
+        }
+        std::cerr << "\n";
+    }
+    std::cerr << "\n\n";
+
     for(auto e : connectedPairs){
         auto [x1, y1, x2, y2, castle, tier] = e;
         auto path = generateSimplePath(x1, y1, x2, y2);
@@ -251,8 +259,22 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
             }
         }
     }
+    
+    for (int x = 0; x < map.getWidth(); x++){
+        for (int y = 0; y < map.getHeight(); y++){
+            auto TilePtr = map.getTile(y, x);
+
+            if(TilePtr->getIsBorder()){
+                std::cerr << "E ";
+            } else if(TilePtr->getIsRoad()){
+                std::cerr << "R ";
+            }
+            else
+                std::cerr << ". ";
+        }
+        std::cerr << "\n";
+    }
+    std::cerr << "\n";
 
     clearSquares();
 }
-
-
