@@ -40,7 +40,7 @@ void BorderPlacer::createExtenstion(){
 
                 auto NeighborTilePtr = map.getTile(nx, ny);
 
-                if(!TilePtr->getIsBorder() && NeighborTilePtr && NeighborTilePtr->getIsBorder()){
+                if(!TilePtr->getIsBorder() && NeighborTilePtr && NeighborTilePtr->getIsBorder() && NeighborTilePtr->getIsGuard()){
                     TilePtr->setIsExtension(true);
                 }
             }
@@ -250,11 +250,8 @@ void BorderPlacer::placeMonolith(Object object){
     int y = object.getPosition().y;
 
     int sx = object.getSizeOfObject().x;
-    int sy = object.getSizeOfObject().y;
 
-    std::cerr << "PLACING " << object.getName() << " " << x << " " << y << " " << sx << " " << sy << "\n";
-    
-    objectsMap[y][x] = 7;
+    objectsMap[y][x] = 3;
     
     if(sx > 1){
         objectsMap[y][x+1] = 7;
@@ -313,6 +310,9 @@ void BorderPlacer::connectZones() {
 
                     entrance.setPosition(int3(outerX1, outerY1, 0)); // Fix position
                     connectedPairs.emplace_back(X, Y, outerX1, outerY1, true, rng->nextInt(1,3)); //Castle1 -> Entrance1
+                    map.getTile(outerX1, outerY1+1)->setIsGuard(true);
+                    map.getTile(outerX1, outerY1+1)->setIsExtension(false);
+                    map.getTile(outerX1, outerY1+1)->setIsBorder(false);
 
                     placeMonolith(entrance);
                     mapObjects.emplace_back(entrance);
@@ -351,6 +351,11 @@ void BorderPlacer::connectZones() {
 
                     entrance2.setPosition(int3(outerXX2, outerYY2, 0)); // Fix position
                     connectedPairs.emplace_back(XX, YY, outerXX2, outerYY2, true, rng->nextInt(1,3)); //Castle2 -> Entrance2
+                    map.getTile(outerXX2, outerYY2+1)->setIsGuard(true);
+                    map.getTile(outerXX2, outerYY2+1)->setIsExtension(false);
+                    map.getTile(outerXX2, outerYY2+1)->setIsBorder(false);
+
+
 
                     placeMonolith(entrance2);
                     mapObjects.emplace_back(entrance2);

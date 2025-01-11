@@ -55,15 +55,9 @@ void generateLuaScript(const json& config) {
         map.print();
     
     AddTerrain(luaFile);
-    // AddTerrainTiles(luaFile, map);
-
-    for (int i = 0; i < 8; i++){
-        luaFile << "instance:obstacle('" << "Monolith One Way Entrance" + std::to_string(i) << "', {x=" << 2 << ", y=" << 2 + 2*i << ", z=" << 0 << "})\n";
-        luaFile << "instance:obstacle('" << "Monolith One Way Exit" + std::to_string(i) << "', {x=" << 5 << ", y=" << 2 + 2*i << ", z=" << 0 << "})\n";
-
-    }
-
-        auto zones = map.getZones();
+    AddTerrainTiles(luaFile, map);
+    
+    auto zones = map.getZones();
     for (auto& zone : zones) {
         for(auto& object : zone.second->getObjects()){
             if (auto town = std::dynamic_pointer_cast<Town>(object)) {
@@ -75,36 +69,36 @@ void generateLuaScript(const json& config) {
             }
         }
 
-        // for(auto& object : zone.second->getObjects()){
-        //     if (auto town = std::dynamic_pointer_cast<Town>(object)) {
-        //         AddTown(luaFile, *town);
-        //     }
+        for(auto& object : zone.second->getObjects()){
+            if (auto town = std::dynamic_pointer_cast<Town>(object)) {
+                AddTown(luaFile, *town);
+            }
 
-        //     if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
-        //         AddMine(luaFile, *mine, map);
-        //     }
+            if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
+                AddMine(luaFile, *mine, map);
+            }
             
 
-        //     if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
-        //         string treasureType = treasureTypeToString(treasure->getTreasureType());
-        //         // std::cerr << "treasureType: " << treasureType << "\n";
+            if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
+                string treasureType = treasureTypeToString(treasure->getTreasureType());
+                // std::cerr << "treasureType: " << treasureType << "\n";
 
-        //         // if(treasureType.find("ARTIFACT") != string::npos) {
-        //         //     AddArtifact(luaFile, *treasure);
-        //         // } else if (treasureType.find("RESOURCE") != string::npos) {
-        //         //     AddResource(luaFile, *treasure);
-        //         // } else {
-        //         //     AddBuildingTreasure(luaFile, *treasure);
-        //         // }
-        //     }
-        // }
+                if(treasureType.find("ARTIFACT") != string::npos) {
+                    AddArtifact(luaFile, *treasure);
+                } else if (treasureType.find("RESOURCE") != string::npos) {
+                    AddResource(luaFile, *treasure);
+                } else {
+                    AddBuildingTreasure(luaFile, *treasure);
+                }
+            }
+        }
 
         AddHero(luaFile, zone.second);
     }
 
-    // AddBorderObstacles(luaFile, map);
+    AddBorderObstacles(luaFile, map);
 
-    // AddRoads(luaFile, map);
+    AddRoads(luaFile, map);
 
     if (config.value("debug", false)){
         for(auto e : towns){
@@ -112,7 +106,7 @@ void generateLuaScript(const json& config) {
         }
     }
 
-    // AddGuards(luaFile, map, templateInfo, &rng);
+    AddGuards(luaFile, map, templateInfo, &rng);
 
     string homeDir = getenv("HOME");
     cerr << "Home dir: " << homeDir << endl;

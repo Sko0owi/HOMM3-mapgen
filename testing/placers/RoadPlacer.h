@@ -26,5 +26,5 @@ private:
 
 
     static constexpr int dx[] = {0, -1, 1, 0, -1, -1, 1, 1};
-    static constexpr int dy[] = {1, 0, 0, -1, -1, 1, -1, 1};
+    static constexpr int dy[] = {-1, 0, 0, 1, -1, 1, -1, 1};
 };

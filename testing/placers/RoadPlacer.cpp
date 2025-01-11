@@ -42,7 +42,7 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
 
             auto TilePtr = map.getTile(nx, ny);
 
-            if (TilePtr && (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny))) && objectsMap[nx][ny] <= 1) {
+            if (TilePtr && (!TilePtr->getIsGate() || (TilePtr->getIsGate() && map.isMiddle(nx, ny))) && objectsMap[nx][ny] <= 3) {
                 int newDistance = distance[cy][cx] + 1; 
 
                 if (newDistance < distance[ny][nx]) {
@@ -225,10 +225,10 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
     auto objectsMap = objectPlacer->getObjectsMap();
     for (int x = 0; x < map.getWidth(); x++){
         for (int y = 0; y < map.getHeight(); y++){
-            if(objectsMap[x][y] > 1)
+            // if(objectsMap[x][y] >= 1)
                 std::cerr << objectsMap[x][y] << " ";
-            else
-                std::cerr << ". ";
+            // else
+            //     std::cerr << ". ";
         }
         std::cerr << "\n";
     }

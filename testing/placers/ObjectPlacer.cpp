@@ -160,7 +160,7 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
         for (int y_ = max(0, y - blockSize.y); y_ <= min(y + 1, mapHeight - 1); y_++)
         {
 
-            objectsMap[y_][x_] = 4;
+            objectsMap[y_][x_] = 5;
 
             if (x_ == x - blockSize.x || x_ == x + 1 || y_ == y - blockSize.y || y_ == y + 1)
             {
@@ -552,7 +552,7 @@ bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, 
         for (int y_ = max(0, y - mine.getSizeOfObject().y); y_ <= min(y + 1, mapHeight - 1); y_++)
         {
 
-            objectsMap[y_][x_] = 3;
+            objectsMap[y_][x_] = 4;
             if (x_ == x - mine.getSizeOfObject().x || x_ == x + 1 || y_ == y - mine.getSizeOfObject().y || y_ == y + 1)
             {
                 objectsMap[y_][x_] = 1;
