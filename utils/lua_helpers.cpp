@@ -14,6 +14,8 @@
 #include "../placers/ObjectPlacer.h"
 #include "../global/Random.h"
 #include "../placers/BorderPlacer.h"
+#include "../placers/RoadPlacer.h"
+
 
 
 
@@ -270,6 +272,15 @@ std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared
     return tiles;
 }
 
+std::shared_ptr<Zone> getZoneFromId(int zoneId, Map &map){
+    auto zones = map.getZones();
+    for (auto& zone : zones) {
+        if(zone.second->getId() == zoneId)
+            return zone.second;
+    }
+    return nullptr;
+}
+
 // @function    AddMapObjects
 // @tparam      ofstream        luaFile         file where we save lua script parts. 
 // @tparam      Map             map             object of map class with finised setup.
@@ -278,6 +289,9 @@ std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared
 void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
     MapObjects mapObjects = map.getMapObjects();
     auto objectsMap = objectPlacer->getObjectsMap();
+    std::vector<std::tuple<int, int, int, int, bool, int>> connectedPairs;
+
+    RoadPlacer roadPlacer(map);
 
     for (auto object : mapObjects)
     {
@@ -293,7 +307,6 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
             int rand = rng->nextInt(0, zone1Tiles.size() - 1);
             std::tie(outerXX1, outerYY1) = zone1Tiles[rand];
             pos = int3(outerXX1, outerYY1, 0);
-
         }
 
         int x = pos.x;
@@ -313,5 +326,14 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
         }
 
         luaFile << "instance:obstacle('" << obstacle << "', {x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << "})\n";
+
+        //Logic to connect tp with zone
+        std::shared_ptr<Zone> zone1 = getZoneFromId(map.getTile(x, y)->getZoneId(), map);
+
+        int XX1 = zone1->getPosition().x;
+        int YY1 = zone1->getPosition().y;
+
+        connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 2)); // Castle1 -> Connect1
     }
+    roadPlacer.createShotestPathsToConnected(connectedPairs);
 }

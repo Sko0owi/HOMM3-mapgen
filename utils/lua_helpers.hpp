@@ -17,8 +17,9 @@ class Town;
 class Treasure;
 class Mine;
 class ObjectPlacer;
-class RNG;
 class BorderPlacer;
+class RoadPlacer;
+class RNG;
 
 void AddPlayer(std::ofstream& luaFile, int playerId);
 void AddTown(std::ofstream &luaFile, Town town, bool is_main = true);

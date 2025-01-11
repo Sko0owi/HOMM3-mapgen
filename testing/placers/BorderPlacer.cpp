@@ -9,7 +9,7 @@
 #include"../types/int3.h"
 #include "../game_info/Object.h"
 
-TemplateInfo emptyTemplateInfo;
+TemplateInfo emptyTemplateInfoBorder;
 
 BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), temp(temp), rng(rng)
 {
@@ -19,7 +19,7 @@ BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), t
 }
 
 BorderPlacer::BorderPlacer(Map & map, RNG *rng) 
-    : BorderPlacer(map, emptyTemplateInfo, rng) {}
+    : BorderPlacer(map, emptyTemplateInfoBorder, rng) {}
 
 void BorderPlacer::generateBorders() {
     mapWidth = map.getWidth();
