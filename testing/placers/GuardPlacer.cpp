@@ -162,6 +162,8 @@ std::string GuardPlacer::getDisposition(Difficulty diff) {
             return "HOSTILE";     // Unlikely to join the hero
         case Difficulty::Expert:
             return "SAVAGE";      // Will never join the hero
+        case Difficulty::Impossible:
+            return "SAVAGE";
         default:
             throw std::invalid_argument("Invalid difficulty level");
     }
