@@ -109,7 +109,7 @@ void generateLuaScript(const json& config) {
             }
 
             if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
-                AddMine(luaFile, *mine);
+                AddMine(luaFile, *mine, map);
             }
 
             if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
