@@ -27,6 +27,8 @@ public:
 
     void placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, TreasuresInfo treasuresInfo);
 
+    void placeTreasureBuilding(std::shared_ptr<Zone> zonePtr, TreasuresInfo treasuresInfo);
+
     void preparePossibleTreasures();
 
     void preparePossibleBlockSizes();

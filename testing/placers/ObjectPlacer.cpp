@@ -92,7 +92,7 @@ void ObjectPlacer::placeObjects()
     }
 }
 
-std::vector<Treasure> possibleTreasures[3];
+std::vector<Treasure> possibleTreasures[4];
 void ObjectPlacer::preparePossibleTreasures()
 {
 
@@ -110,6 +110,13 @@ void ObjectPlacer::preparePossibleTreasures()
     {
         possibleTreasures[2].push_back(Treasure(j, 1));
     }
+
+    for (TreasureType j = TreasureType(TreasureType::BUILDING_TIER_TAB + 1); j < TreasureType(TreasureType::LOW_TIER_TAB); j = TreasureType(j + 1))
+    {
+        possibleTreasures[3].push_back(Treasure(j, 1));
+    }
+    
+
 }
 
 
@@ -197,6 +204,63 @@ void ObjectPlacer::preparePossibleBlockSizes()
     possibleBlockSizes.push_back(int3(1, 1, 1));
 
 }
+
+void ObjectPlacer::placeTreasureBuilding(std::shared_ptr<Zone> zonePtr, TreasuresInfo treasuresInfo) {
+
+    int rndTreausre = rng->nextInt(0, possibleTreasures[3].size());
+    Treasure buildingToPlace = possibleTreasures[3][rndTreausre];
+    
+    int3 buildingSize = getTreasureSize(buildingToPlace.getTreasureType());
+
+    vector<int3> possiblePositions;
+
+    for (auto &tiles : zoneTiles[zonePtr])
+    {
+        auto [pos, tile] = tiles;
+        auto [x, y] = pos;
+
+        if (canPlaceObject(int3(x, y, 0), buildingSize))
+        {
+            possiblePositions.push_back(int3(x, y, 0));
+        }
+    }
+
+    if (possiblePositions.empty())
+    {
+        std::cerr << "No possible placement\n";
+        return;
+    }
+
+    int rand = rng->nextInt(0, possiblePositions.size() - 1);
+    auto pos = possiblePositions[rand];
+
+    int x = pos.x;
+    int y = pos.y;
+
+    for (int x_ = max(0, x - buildingSize.x); x_ <= min(x + 1, mapWidth - 1); x_++)
+    {
+        for (int y_ = max(0, y - buildingSize.y); y_ <= min(y + 1, mapHeight - 1); y_++)
+        {
+
+            objectsMap[y_][x_] = 9;
+
+            if (x_ == x - buildingSize.x || x_ == x + 1 || y_ == y - buildingSize.y || y_ == y + 1)
+            {
+                objectsMap[y_][x_] = 1;
+            }
+        }
+    }
+
+    buildingToPlace.setPosition(int3(x,y,0));
+    buildingToPlace.setSizeOfObject(buildingSize);
+    buildingToPlace.setName("BUILDING TREASURE");
+
+    auto treasurePointer = std::make_shared<Treasure>(buildingToPlace);
+
+    zonePtr->addObject(treasurePointer);
+    objects[zonePtr].push_back(treasurePointer);
+}
+
 
 void ObjectPlacer::placeTreasures()
 {
@@ -288,19 +352,30 @@ void ObjectPlacer::placeTreasures()
 
         int minBlocks, maxBlocks;
 
+        int minBuildings, maxBuildings;
+
         switch (richness)
         {
         case ZoneRichness::Low:
             minBlocks = 1;
             maxBlocks = 3;
+            
+            minBuildings = 0;
+            maxBuildings = 1;
             break;
         case ZoneRichness::Normal:
             minBlocks = 2;
             maxBlocks = 4;
+
+            minBuildings = 1;
+            maxBuildings = 3;
             break;
         case ZoneRichness::Rich:
             minBlocks = 3;
             maxBlocks = 5;
+
+            minBuildings = 2;
+            maxBuildings = 5;
             break;
         }
 
@@ -312,7 +387,14 @@ void ObjectPlacer::placeTreasures()
         {
             placeBlockOfTreasures(zonePtr, treasuresInfo);
         }
+
+        int numOfBuildings = rng->nextInt(minBuildings, maxBuildings);
+        for(int i = 0; i < numOfBuildings; i++) {
+            placeTreasureBuilding(zonePtr, treasuresInfo);
+        }
+    
     }
+
 }
 
 void ObjectPlacer::placeTowns()

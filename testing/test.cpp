@@ -79,12 +79,15 @@ void generateLuaScript(const json& config) {
             }
 
             if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
-                std::cerr << "WE ARE GONNA BE RICH!\n";
                 string treasureType = treasureTypeToString(treasure->getTreasureType());
-                if(treasureType[0] == 'A'){
+                std::cerr << "treasureType: " << treasureType << "\n";
+
+                if(treasureType.find("ARTIFACT") != string::npos) {
                     AddArtifact(luaFile, *treasure);
-                } else {
+                } else if (treasureType.find("RESOURCE") != string::npos) {
                     AddResource(luaFile, *treasure);
+                } else {
+                    AddBuildingTreasure(luaFile, *treasure);
                 }
             }
         }
@@ -94,7 +97,7 @@ void generateLuaScript(const json& config) {
         // AddArtifact(luaFile, Treasure(TreasureType::ARTIFACT_LADYBIRD_OF_LUCK, 0, zone.second->getPosition(), ehh));
 
         AddHero(luaFile, zone.second);
-    }   
+    }
 
     AddBorderObstacles(luaFile, map);
 

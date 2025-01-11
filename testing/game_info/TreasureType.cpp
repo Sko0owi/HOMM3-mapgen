@@ -182,6 +182,24 @@ TreasureType stringToTreasureType(const std::string treasureType) {
 
 int3 getTreasureSize(TreasureType TreasureType) {
     switch(TreasureType) {
+        case TreasureType::BUILDING_ARENA:
+            return int3(3, 2, 1);
+        case TreasureType::BUILDING_FEARIE_RING_DIRT:
+            return int3(2, 1, 1);
+        case TreasureType::BUILDING_FOUNTAIN_OF_FORTUNE:
+            return int3(1, 1, 1);
+        case TreasureType::BUILDING_FOUNTAIN_OF_YOUTH:
+            return int3(2, 2, 1);
+        case TreasureType::BUILDING_LIBRARY_OF_ENLIGHTENMENT:
+            return int3(4, 2, 1);
+        case TreasureType::BUILDING_MARLETTO_TOWER:
+            return int3(2, 1, 1);
+        case TreasureType::BUILDING_MERCENARY_CAMP:
+            return int3(3, 1, 1);
+        case TreasureType::BUILDING_OASIS:
+            return int3(2, 2, 1);
+        case TreasureType::BUILDING_RALLY_FLAG:
+            return int3(2, 1, 1);
         case TreasureType::RESOURCE_GOLD:
             return int3(1, 1, 1);
         default:

@@ -32,6 +32,7 @@ void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int
 void AddMine(std::ofstream& luaFile, Mine mine, Map &map);
 void AddResource(std::ofstream& luaFile, Treasure treasure);
 void AddArtifact(std::ofstream& luaFile, Treasure treasure);
+void AddBuildingTreasure(std::ofstream& luaFile, Treasure treasure);
 void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int z);
 void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z);
 void AddRoads(std::ofstream &luaFile, Map &map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng);

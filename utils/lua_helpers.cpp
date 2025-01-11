@@ -72,8 +72,11 @@ void AddMine(std::ofstream& luaFile, Mine mine, Map &map){
 }
 
 void AddRoads(std::ofstream& luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
+    std::cerr << "aha\n";
     luaFile << "-- Place 1 way monoliths\n";
     AddMapObjects(luaFile, map, objectPlacer, rng);
+
+    std::cerr << "co jest kurna\n";
     
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
@@ -230,6 +233,17 @@ void AddObstacle(std::ofstream& luaFile, std::string obstacle, int x, int y, int
     luaFile << "instance:obstacle('" << obstacle << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
 }
 
+void AddBuildingTreasure(std::ofstream& luaFile, Treasure treasure) {
+    std::string treasureType = treasureTypeToString(treasure.getTreasureType());
+
+    int x = treasure.getPosition().x;
+    int y = treasure.getPosition().y;
+    int z = treasure.getPosition().z;
+
+    luaFile << "instance:obstacle('" << treasureType << "', {x=" << x << ", y=" << y << ", z=" << z << "})\n";  
+
+}
+
 // @function    AddSign
 // @tparam      ofstream    luaFile          file where we save lua script parts. 
 // @tparam      string      text             text on sign.
@@ -247,7 +261,7 @@ std::vector<std::pair<int, int>> getValidTiles(int zoneId, Map& map, std::shared
 
     for (int x = 1; x < map.getWidth(); x++)
     {
-        for (int y = 1; y < map.getWidth(); y++){
+        for (int y = 1; y < map.getHeight() - 1; y++){
             auto TilePtr = map.getTile(x, y);
 
             if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsExtension() && !TilePtr->getIsRoad() && objectsMap[y][x] == 0){
@@ -338,7 +352,7 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
 
         connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 3)); // Castle1 -> Connect1
         if (obstacle.find("Entrance") != std::string::npos){ // We placed Entrance to monolith
-            TilePtr = map.getTile(pos.x, pos.y+1);
+            TilePtr = map.getTile(pos.x, pos.y + 1); // todo fix + 1
             TilePtr->setIsGuard(true);
         }
     }
