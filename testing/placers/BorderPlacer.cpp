@@ -9,7 +9,7 @@
 #include"../types/int3.h"
 #include "../game_info/Object.h"
 
-TemplateInfo emptyTemplateInfo;
+TemplateInfo emptyTemplateInfoBorder;
 
 BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), temp(temp), rng(rng)
 {
@@ -19,7 +19,7 @@ BorderPlacer::BorderPlacer(Map &map, TemplateInfo &temp, RNG *rng) : map(map), t
 }
 
 BorderPlacer::BorderPlacer(Map & map, RNG *rng) 
-    : BorderPlacer(map, emptyTemplateInfo, rng) {}
+    : BorderPlacer(map, emptyTemplateInfoBorder, rng) {}
 
 void BorderPlacer::generateBorders() {
     mapWidth = map.getWidth();
@@ -268,8 +268,10 @@ void BorderPlacer::connectZones() {
                     outerY1 = outerYY1;
 
                     Object entrance(int3 (outerX1, outerY1, 0), "Monolith One Way Entrance" + std::to_string(monolithCount));
+                    int3 size = monolithCount > 3 ? int3(2, 2, 0) : int3(1, 2, 0);
+                    entrance.setSizeOfObject(size);
                     mapObjects.emplace_back(entrance);
-                    
+
                     //Now we need to create connection in other direction as well
                     do{
                         rand2 = rng->nextInt(0, zone1Tiles.size() - 1);
@@ -286,6 +288,8 @@ void BorderPlacer::connectZones() {
 
                     
                     Object exit(int3 (outerX2, outerY2, 0), "Monolith One Way Exit" + std::to_string(monolithCount));
+                    size = monolithCount > 3 ? int3(2, 2, 0) : int3(1, 2, 0);
+                    exit.setSizeOfObject(size);
                     mapObjects.emplace_back(exit);
 
                     //Now we need to create connection in other direction as well
@@ -295,19 +299,23 @@ void BorderPlacer::connectZones() {
                     
                     auto [outerXXX2, outerYYY2] = zone2Tiles[rand2];
                     Object entrance2(int3 (outerXXX2, outerYYY2, 0), "Monolith One Way Entrance" + std::to_string(monolithCount + 1));
+                    size = monolithCount > 2 ? int3(2, 2, 0) : int3(1, 2, 0);
+                    entrance2.setSizeOfObject(size);
                     mapObjects.emplace_back(entrance2);
                     
-                    int XX2 = zone2.second->getPosition().x;
-                    int YY2 = zone2.second->getPosition().y;
+                    // int XX2 = zone2.second->getPosition().x;
+                    // int YY2 = zone2.second->getPosition().y;
 
                     // connectedPairs.emplace_back(outerXXX2, outerYYY2, XX2, YY2, true, tier); // Castle2 -> Connect2
 
                     //Second exit
                     Object exit2(int3 (outerXXX1, outerYYY1, 0), "Monolith One Way Exit" + std::to_string(monolithCount + 1));
+                    size = monolithCount > 2 ? int3(2, 2, 0) : int3(1, 2, 0);
+                    exit2.setSizeOfObject(size);
                     mapObjects.emplace_back(exit2);
                     
-                    int XX1 = zone1.second->getPosition().x;
-                    int YY1 = zone1.second->getPosition().y;
+                    // int XX1 = zone1.second->getPosition().x;
+                    // int YY1 = zone1.second->getPosition().y;
 
                     // connectedPairs.emplace_back(outerXXX1, outerYYY1, XX1, YY1, true, tier); // Castle1 -> Connect1
                     

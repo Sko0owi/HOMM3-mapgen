@@ -9,7 +9,8 @@ class TemplateInfo;
 class RoadPlacer {
 public:
     RoadPlacer(Map & map, TemplateInfo & temp);
-    
+    RoadPlacer(Map &map);
+
     std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int y2);
     void createShotestPathsToConnected(std::vector<std::tuple<int, int, int, int, bool, int>> &connectedPairs);
     

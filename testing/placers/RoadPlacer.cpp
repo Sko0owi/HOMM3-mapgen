@@ -5,7 +5,12 @@
 #include "./Map.h"
 #include "./Tile.h"
 
+TemplateInfo emptyTemplateInfoRoad;
+
 RoadPlacer::RoadPlacer(Map &map, TemplateInfo &temp) : map(map), temp(temp) {};
+
+RoadPlacer::RoadPlacer(Map & map) 
+    : RoadPlacer(map, emptyTemplateInfoRoad) {}
 
 std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, int x2, int y2) {
     std::vector<std::pair<int, int>> path;
