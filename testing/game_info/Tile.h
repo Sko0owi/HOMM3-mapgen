@@ -16,6 +16,9 @@ public:
     void setIsGate(bool isGate);
     bool getIsGate();
 
+    void setIsGuard(bool isGuard);
+    bool getIsGuard();
+
     void setNeighbourZones(int zoneId);
     std::set<int> getNeighbourZones();
 
@@ -34,6 +37,7 @@ private:
     
     bool isBorder;
     bool isGate;
+    bool isGuard;
     bool isRoad;
     bool isExtension;
 

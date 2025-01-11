@@ -39,6 +39,7 @@ SOURCES = $(SRC_DIR)/test.cpp \
           $(PLACERS_DIR)/ZonePlacer.cpp \
           $(PLACERS_DIR)/ObjectPlacer.cpp \
 		  $(PLACERS_DIR)/BorderPlacer.cpp \
+		  $(PLACERS_DIR)/GuardPlacer.cpp \
 		  $(PLACERS_DIR)/RoadPlacer.cpp \
 		  $(GLOBAL_DIR)/Random.cpp \
 		  $(GLOBAL_DIR)/PenroseTiling.cpp \

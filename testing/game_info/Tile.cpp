@@ -8,6 +8,7 @@ Tile::Tile() {
     isGate = false;
     isRoad = false;
     isExtension = false;
+    isGuard = false;
 }
 
 void Tile::setZoneId(int zoneId) {
@@ -48,6 +49,14 @@ void Tile::setIsExtension(bool isExtension) {
 
 bool Tile::getIsExtension() {
     return isExtension;
+}
+
+void Tile::setIsGuard(bool isGuard) {
+    this->isGuard = isGuard;
+}
+
+bool Tile::getIsGuard() {
+    return isGuard;
 }
 
 void Tile::setNeighbourZones(int zoneId){

@@ -302,11 +302,6 @@ void BorderPlacer::connectZones() {
                     size = monolithCount > 2 ? int3(2, 2, 0) : int3(1, 2, 0);
                     entrance2.setSizeOfObject(size);
                     mapObjects.emplace_back(entrance2);
-                    
-                    // int XX2 = zone2.second->getPosition().x;
-                    // int YY2 = zone2.second->getPosition().y;
-
-                    // connectedPairs.emplace_back(outerXXX2, outerYYY2, XX2, YY2, true, tier); // Castle2 -> Connect2
 
                     //Second exit
                     Object exit2(int3 (outerXXX1, outerYYY1, 0), "Monolith One Way Exit" + std::to_string(monolithCount + 1));
@@ -314,19 +309,12 @@ void BorderPlacer::connectZones() {
                     exit2.setSizeOfObject(size);
                     mapObjects.emplace_back(exit2);
                     
-                    // int XX1 = zone1.second->getPosition().x;
-                    // int YY1 = zone1.second->getPosition().y;
-
-                    // connectedPairs.emplace_back(outerXXX1, outerYYY1, XX1, YY1, true, tier); // Castle1 -> Connect1
-                    
                     monolithCount += 2;
                     monolithCount %= 8;
                 }
                 else
                 {
                     connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false, tier); // Add points of connection
-
-                    // map.getTile((outerX1), (outerY1))->setIsGate(true);
 
                     int XX1 = zone1.second->getPosition().x;
                     int YY1 = zone1.second->getPosition().y;

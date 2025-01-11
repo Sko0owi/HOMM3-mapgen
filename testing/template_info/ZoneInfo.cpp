@@ -24,7 +24,6 @@ void ZoneInfo::addConnection(const json& connectionConfig) {
     zoneConnection.setTier(tier);
     zoneConnection.setType(type);
 
-
     connections.push_back(zoneConnection);
 }
 
@@ -72,6 +71,10 @@ void ZoneInfo::setTreasuresInfo(TreasuresInfo treasureInfo) {
     this->treasureInfo = treasureInfo;
 }
 
+void ZoneInfo::setDifficulty(std::string difficulty){
+    this->difficulty = difficulty;
+}
+
 TreasuresInfo& ZoneInfo::getTreasuresInfo() {
     return treasureInfo;
 }
@@ -87,6 +90,10 @@ i32 ZoneInfo::getSize() {
 
 std::string ZoneInfo::getHero() {
     return hero;
+}
+
+std::string ZoneInfo::getDifficulty() {
+    return difficulty;
 }
 
 Terrain ZoneInfo::getTerrain() {
@@ -127,6 +134,8 @@ void ZoneInfo::deserializeZone(const json& config) {
     i32 id = TemplateInfo::getOrError<int>(config, "id");
     std::string size = TemplateInfo::getOrError<std::string>(config, "size");
     std::string hero = TemplateInfo::getOrError<std::string>(config, "hero");
+    std::string difficulty = TemplateInfo::getOrError<std::string>(config, "difficulty");
+
     
     std::string terrain = config.value("terrain", "GRASS");
 
@@ -168,6 +177,7 @@ void ZoneInfo::deserializeZone(const json& config) {
     setHero(hero);
     setTerrain(stringToTerrain(terrain));
     setMaxMinesCount(maxMinesCount);
+    setDifficulty(difficulty);
 }
 
 void ZoneInfo::printZone() {

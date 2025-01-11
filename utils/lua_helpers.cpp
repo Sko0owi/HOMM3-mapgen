@@ -54,7 +54,7 @@ void AddTown(std::ofstream &luaFile, Town town, bool is_main){
 // @tparam      integer     y                position on y axis of mine.
 // @tparam      integer     z                position on z axis of mine.
 // @tparam      integer     owner_id         owner of mine, by default -1, which means neutral.
-void AddMine(std::ofstream& luaFile, Mine mine){
+void AddMine(std::ofstream& luaFile, Mine mine, Map &map){
     // std::string mine = mine.getName();
     i32 x = mine.getPosition().x;
     i32 y = mine.getPosition().y;
@@ -66,6 +66,9 @@ void AddMine(std::ofstream& luaFile, Mine mine){
 
     std::string owner = owner_id <= 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
     luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
+
+    auto TilePtr = map.getTile(x-1, y+1);
+    TilePtr->setIsGuard(true);
 }
 
 void AddRoads(std::ofstream& luaFile, Map& map, std::shared_ptr<ObjectPlacer> objectPlacer, RNG *rng){
@@ -334,6 +337,10 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
         int YY1 = zone1->getPosition().y;
 
         connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 3)); // Castle1 -> Connect1
+        if (obstacle.find("Entrance") != std::string::npos){ // We placed Entrance to monolith
+            TilePtr = map.getTile(pos.x, pos.y+1);
+            TilePtr->setIsGuard(true);
+        }
     }
     roadPlacer.createShotestPathsToConnected(connectedPairs);
 }
