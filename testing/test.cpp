@@ -88,7 +88,6 @@ void generateLuaScript(const json& config) {
                 } else if (treasureType.find("RESOURCE") != string::npos) {
                     AddResource(luaFile, *treasure);
                 } else {
-                    if(treasureType == "Fountain of Youth") continue;
                     AddBuildingTreasure(luaFile, *treasure);
                 }
             }
@@ -102,13 +101,10 @@ void generateLuaScript(const json& config) {
         AddHero(luaFile, zone.second);
     }
 
-    std::cerr << "BorderObstacle\n";
     AddBorderObstacles(luaFile, map);
 
-    std::cerr << "AddRoads\n";
     AddRoads(luaFile, map, objectPlacer, &rng);
 
-    std::cerr << "debugTowns\n";
     if (config.value("debug", false)){
         for(auto e : towns){
             std::cerr << e.first << " " << e.second << "\n";

@@ -318,19 +318,19 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
 
         auto TilePtr = map.getTile(pos.x, pos.y);
         int outerXX1 = pos.x, outerYY1 = pos.y;
-
-        std::cerr << "elo\n";
-        std::cerr << "posx " << pos.x << " " << pos.y << "\n";
-
+    
         if (TilePtr->getIsBorder() || TilePtr->getIsExtension() || TilePtr->getIsRoad() || objectsMap[pos.y][pos.x] > 0)
         {
             std::vector<std::pair<int, int>> zone1Tiles = getValidTiles(TilePtr->getZoneId(), map, objectPlacer, object);
+
+            if(zone1Tiles.size() == 0){
+                std::cerr << "No valid tiles\n";
+                continue;
+            }
             int rand = rng->nextInt(0, zone1Tiles.size() - 1);
             std::tie(outerXX1, outerYY1) = zone1Tiles[rand];
             pos = int3(outerXX1, outerYY1, 0);
         }
-
-        std::cerr << "dupa\n";
 
         int x = pos.x;
         int y = pos.y;
@@ -347,8 +347,6 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
                 }
             }
         }
-
-        std::cerr << "Xss: " << x << "Yss: " << y << "\n";
 
         luaFile << "instance:obstacle('" << obstacle << "', {x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << "})\n";
 
