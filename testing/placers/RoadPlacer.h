@@ -4,12 +4,11 @@
 
 class Map;
 class TemplateInfo;
-
+class ObjectPlacer;
 
 class RoadPlacer {
 public:
-    RoadPlacer(Map & map, TemplateInfo & temp);
-    RoadPlacer(Map &map);
+    RoadPlacer(Map & map, TemplateInfo & temp, std::shared_ptr<ObjectPlacer> objectPlacer);
 
     std::vector<std::pair<int, int>> generateSimplePath(int x1, int y1, int x2, int y2);
     void createShotestPathsToConnected(std::vector<std::tuple<int, int, int, int, bool, int>> &connectedPairs);
@@ -23,6 +22,8 @@ private:
 
     Map & map;
     TemplateInfo & temp;
+    std::shared_ptr<ObjectPlacer> objectPlacer;
+
 
     static constexpr int dx[] = {0, -1, 1, 0, -1, -1, 1, 1};
     static constexpr int dy[] = {1, 0, 0, -1, -1, 1, -1, 1};

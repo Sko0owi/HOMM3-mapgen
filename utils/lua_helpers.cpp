@@ -14,21 +14,18 @@
 #include "../global/Random.h"
 #include "../placers/GuardPlacer.h"
 
-
-
-
 using json = nlohmann::json;
 
 // @function    AddPlayer
 // @tparam      ofstream    luaFile     file where we save lua script parts. 
-// @tparam      integer         playerId    player ID.
+// @tparam      integer     playerId    player ID.
 void AddPlayer(std::ofstream& luaFile, int playerId) {
     luaFile << "instance:player(homm3lua.PLAYER_" << playerId << ")\n";
 }
 
 // @function    AddTown
-// @tparam      ofstream    luaFile     file where we save lua script parts. 
-// @tparam      json        zone        zone description from json, like player id, town xyz position.
+// @tparam      ofstream    luaFile     file where we save lua script parts.
+// @tparam      Town        town        completed town object. 
 // @tparam      boolean     is_main     tells if is main town.
 void AddTown(std::ofstream &luaFile, Town town, bool is_main){
     
@@ -44,14 +41,10 @@ void AddTown(std::ofstream &luaFile, Town town, bool is_main){
             << ", " << is_main << ")\n";
 }
 
-
 // @function    AddMine
-// @tparam      ofstream    luaFile          file where we save lua script parts. 
-// @tparam      string      mine             type of mine, See MINE_*.
-// @tparam      integer     x                position on x axis of mine.
-// @tparam      integer     y                position on y axis of mine.
-// @tparam      integer     z                position on z axis of mine.
-// @tparam      integer     owner_id         owner of mine, by default -1, which means neutral.
+// @tparam      ofstream    luaFile     file where we save lua script parts. 
+// @tparam      Mine        mine        completed mine object. 
+// @tparam      Map         map        object of map class with finised setup. 
 void AddMine(std::ofstream& luaFile, Mine mine, Map &map){
     // std::string mine = mine.getName();
     i32 x = mine.getPosition().x;
@@ -71,7 +64,7 @@ void AddMine(std::ofstream& luaFile, Mine mine, Map &map){
     TilePtr->setIsGuard(true);
 }
 
-// @function    AddMine
+// @function    AddRoads
 // @tparam      ofstream    luaFile         file where we save lua script parts. 
 // @tparam      Map         map             object of map class with finised setup.
 void AddRoads(std::ofstream& luaFile, Map& map){
@@ -96,8 +89,8 @@ void AddRoads(std::ofstream& luaFile, Map& map){
 }
 
 // @function    AddHero
-// @tparam      ofstream    luaFile     file where we save lua script parts. 
-// @tparam      json        zone        zone description from json, like player id, hero xyz position.
+// @tparam      ofstream                     luaFile     file where we save lua script parts. 
+// @tparam      std::shared_ptr<Zone>        zone        shared pointer to Zone object.
 void AddHero(std::ofstream& luaFile, std::shared_ptr<Zone>& zone) {
     std::string hero = "HERO_CHRISTIAN";
     i32 Id = 1;
@@ -205,10 +198,7 @@ void AddResource(std::ofstream& luaFile, Treasure treasure){
 
 // @function    AddArtifact
 // @tparam      ofstream    luaFile          file where we save lua script parts. 
-// @tparam      string      artifact         type of mine, See ARTIFACT_*.
-// @tparam      integer     x                position on x axis of artifact.
-// @tparam      integer     y                position on y axis of artifact.
-// @tparam      integer     z                position on z axis of artifact.
+// @tparam      Treasure    treasure         Treasure object to place.
 void AddArtifact(std::ofstream& luaFile, Treasure treasure){
     std::string treasureType = treasureTypeToString(treasure.getTreasureType());
 
@@ -268,7 +258,7 @@ void AddMapObjects(std::ofstream &luaFile, Map& map){
     }
 }
 
-// @function    AddMapObjects
+// @function    AddGuards
 // @tparam      ofstream        luaFile         file where we save lua script parts. 
 // @tparam      Map             map             object of map class with finised setup.
 // @tparam      TemplateInfo    templateInfo    object of TemplateInfo class.

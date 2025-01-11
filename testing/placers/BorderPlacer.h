@@ -15,7 +15,6 @@ class BorderPlacer {
 public: 
     BorderPlacer(Map & map, TemplateInfo & temp, RNG *rng, std::shared_ptr<ObjectPlacer> objectPlacer);
 
-
     void generateBorders();
 
     bool areConnected(int ZoneA, int ZoneB);
@@ -40,7 +39,6 @@ public:
     void setMapObjects(MapObjects mapObjects);
     MapObjects  getMapObjects();
 
-    std::vector<std::pair<int, int>> getZoneTiles(int zoneId);
     std::vector<std::pair<int, int>> getValidTiles(int zoneId, Object object);
 
     void placeMonolith(Object object);

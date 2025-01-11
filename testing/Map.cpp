@@ -1,5 +1,5 @@
 #include "./Map.h"
-#include "./Zone.h"
+#include "../game_info/Zone.h"
 #include "./template_info/TemplateInfo.h"
 #include "./placers/BorderPlacer.h"
 #include "./placers/ZonePlacer.h"
@@ -64,7 +64,7 @@ void Map::generateMap(TemplateInfo &temp) {
 
     // //We know where all objects are placed so we can find roads
     setMapObjects(borderPlacer.getMapObjects());
-    RoadPlacer roadPlacer(*this, temp);
+    RoadPlacer roadPlacer(*this, temp, objectPlacer);
     roadPlacer.createShotestPathsToConnected(connectedPairs);
 }
 
