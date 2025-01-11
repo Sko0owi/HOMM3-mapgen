@@ -168,3 +168,13 @@ std::string GuardPlacer::getDisposition(Difficulty diff) {
             throw std::invalid_argument("Invalid difficulty level");
     }
 }
+
+Difficulty GuardPlacer::stringToDifficulty(const std::string &difficulty) {
+    if (difficulty == "Beginner") return Difficulty::Beginner;
+    if (difficulty == "Easy") return Difficulty::Easy;
+    if (difficulty == "Normal") return Difficulty::Normal;
+    if (difficulty == "Hard") return Difficulty::Hard;
+    if (difficulty == "Expert") return Difficulty::Expert;
+    if (difficulty == "Impossible") return Difficulty::Impossible;
+    return Difficulty::Invalid; 
+}

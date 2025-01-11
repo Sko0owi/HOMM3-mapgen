@@ -16,16 +16,6 @@ enum class Difficulty {
     Invalid
 };
 
-Difficulty stringToDifficulty(const std::string &difficulty) {
-    if (difficulty == "Beginner") return Difficulty::Beginner;
-    if (difficulty == "Easy") return Difficulty::Easy;
-    if (difficulty == "Normal") return Difficulty::Normal;
-    if (difficulty == "Hard") return Difficulty::Hard;
-    if (difficulty == "Expert") return Difficulty::Expert;
-    if (difficulty == "Impossible") return Difficulty::Impossible;
-    return Difficulty::Invalid; 
-}
-
 class GuardPlacer {
 public:
     GuardPlacer(std::ofstream &luaFile, Map &map, TemplateInfo &temp, RNG *rng);
@@ -38,6 +28,8 @@ public:
     std::pair<double, double> getGuardLevel(Difficulty diff);
     std::pair<double, double> getBorderGuardLevel(Difficulty diff);
     std::string getDisposition(Difficulty diff);
+
+    static Difficulty stringToDifficulty(const std::string &difficulty);
 
 private:
     std::ofstream &luaFile;
