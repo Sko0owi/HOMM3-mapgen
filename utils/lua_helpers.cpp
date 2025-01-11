@@ -333,7 +333,7 @@ void AddMapObjects(std::ofstream &luaFile, Map& map, std::shared_ptr<ObjectPlace
         int XX1 = zone1->getPosition().x;
         int YY1 = zone1->getPosition().y;
 
-        connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 2)); // Castle1 -> Connect1
+        connectedPairs.emplace_back(x, y, XX1, YY1, true, rng->nextInt(1, 3)); // Castle1 -> Connect1
     }
     roadPlacer.createShotestPathsToConnected(connectedPairs);
 }

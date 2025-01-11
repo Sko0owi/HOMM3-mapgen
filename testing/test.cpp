@@ -141,6 +141,19 @@ void generateLuaScript(const json& config) {
     //     AddObstacle(luaFile, "Monolith One Way Entrance" + std::to_string(i), 10, 2 * i, 0);
     // }
 
+    AddObstacle(luaFile, "Arena", 12, 2, 0);
+    AddObstacle(luaFile, "Faerie Ring_Dirt", 12, 4, 0);
+    AddObstacle(luaFile, "Fountain of Fortune", 12, 6, 0);
+    AddObstacle(luaFile, "Fountain of Youth", 12, 8, 0);
+    AddObstacle(luaFile, "Idol of Fortune", 12, 10, 0);
+    AddObstacle(luaFile, "Learning Stone", 12, 12, 0);
+    AddObstacle(luaFile, "Library of Enlightenment", 12, 14, 0);
+    AddObstacle(luaFile, "Marletto Tower", 12, 16, 0);
+    AddObstacle(luaFile, "Mercenary Camp", 12, 18, 0);
+    AddObstacle(luaFile, "Oasis", 12, 18, 0);
+    AddObstacle(luaFile, "Rally Flag", 12, 20, 0);
+    AddObstacle(luaFile, "School of Magic", 12, 24, 0);
+
     placeGateCreatures(luaFile, map);
 
     string homeDir = getenv("HOME");
