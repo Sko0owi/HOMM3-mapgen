@@ -262,7 +262,7 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
     
     for (int x = 0; x < map.getWidth(); x++){
         for (int y = 0; y < map.getHeight(); y++){
-            auto TilePtr = map.getTile(x, y);
+            auto TilePtr = map.getTile(y, x);
 
             if(TilePtr->getIsBorder()){
                 std::cerr << "E ";

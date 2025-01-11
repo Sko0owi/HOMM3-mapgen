@@ -451,26 +451,24 @@ void ObjectPlacer::placeTowns()
 
 bool ObjectPlacer::canPlaceObject(int3 pos, int3 size)
 {   
-    
-
     int x = pos.x;
     int y = pos.y;
 
-    if (y == mapHeight - 1 || y == mapHeight - 2)
+    if (y == mapHeight - 1 || y == mapHeight - 2 || y == 0)
         return false;
 
     if (x - size.x + 1 < 0 || y - size.y + 1 < 0)
         return false;
 
-    for (int x_ = max(0, x - size.x + 1); x_ <= x; x_++)
+    for (int x_ = max(0, x - size.x); x_ <= x; x_++)
     {
-        for (int y_ = max(0, y - size.y + 1); y_ <= y; y_++)
+        for (int y_ = max(0, y - size.y); y_ <= y; y_++)
         {
             if (objectsMap[y_][x_] >= 1)
                 return false;
 
             auto TilePtr = map.getTile(x_, y_);
-            if (TilePtr->getIsRoad())
+            if (TilePtr->getIsRoad() || TilePtr->getIsGate())
                 return false;
             if (TilePtr->getZoneId() != map.getTile(x, y)->getZoneId())
                 return false;
