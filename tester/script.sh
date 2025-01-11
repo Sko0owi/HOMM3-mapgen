@@ -1,10 +1,10 @@
 #!/bin/bash
 
-mapPath="Maps/test.h3m"
+mapPath="/home/gk/.local/share/vcmi/Maps/test.h3m"
 # Liczba instancji do uruchomienia (domyślnie 3 jeśli nie podano argumentu)
 instances=${1:-2}
 
-testing=${1:-3}
+testing=${1:-1}
 
 # Tablica na PIDy procesów
 declare -a pids
@@ -30,7 +30,7 @@ test_map() {
         for ((i=1; i<=instances; i++)); do
             instanceID=$((i))
             local log_file="log_${testID}_${instanceID}"
-            local log_location="/home/skowi/INŻYNIERKA/another-HOMM3-mapgen/tester/$log_file"
+            local log_location="/home/gk/Stuff/praca/another-HOMM3-mapgen/tester/$log_file"
 
             tail -1000 "$log_location/VCMI_Client_log.txt" > "$log_location/last_lines.txt"
         done
@@ -46,11 +46,11 @@ run_client() {
   local instanceID=$1
   local testID=$2
   local log_file="log_${testID}_${instanceID}"
-  local log_location="/home/skowi/INŻYNIERKA/another-HOMM3-mapgen/tester/$log_file"
+  local log_location="/home/gk/Stuff/praca/another-HOMM3-mapgen/tester/$log_file"
 
   mkdir -p "$log_location"
 
-  time ../build/bin/vcmiclient --testmap "$mapPath" --headless --logLocation "$log_location" &>"$log_location/$log_file.txt" &
+  time vcmiclient --testmap "$mapPath" --headless --logLocation "$log_location" &>"$log_location/$log_file.txt" &
 
   local pid=$!
   pids+=($pid)

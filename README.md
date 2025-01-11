@@ -9,6 +9,13 @@ Template-Based Map Generator for Heroes of Might &amp; Magic III
 # Pre requirements 
 * Lua5.4, qt5-tools, boost
 * sudo apt-get install lua5.4 liblua5.4-dev
+On ubuntu I installed
+* sudo apt-get install libtbb-dev
+* sudo apt-get install libsdl2-ttf-dev
+* sudo apt-get install qttools5-dev
+* sudo apt-get install libsdl2-mixer-dev
+* sudo apt-get install libsdl2-image-dev
+And it worked:DD
 
 # Current demo testing
 0. Ensure that tou have lua5.4, qt5-tools, boost,  installed
