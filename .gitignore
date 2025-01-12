@@ -1,7 +1,7 @@
 *.o
 *.so
 **/generated_script.lua
-Generator
+**/Generator
 **/debug.txt
 **/.vscode
 build/
