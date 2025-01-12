@@ -48,7 +48,7 @@ vcmieditor
 ```
 
 Struktura plików:
-- game_info/ 
+- gameInfo/ 
     - Faction.h - enum możliwych frakcji w Ho3 + funkcjonalność
     - MineType.h - enum możliwych typów kopalni w Ho3 + funkcjonalność
     - Object.h - Klasa Object podstawowe informacje o obiektach (pozycja, rozmiar)
@@ -63,7 +63,7 @@ Struktura plików:
 - types/
     - float3.h - klasa float3 (no 3 floaty), można bardziej rozbudować
     - int3.h - klasa int3 (no 3 inty), można bardziej rozbudować
-- template_info/
+- templateInfo/
     - ConnectionInfo.h - Informacje o połączeniach
     - MineInfo.h - Informacje o kopalniach
     - TemplateInfo.h - Informacje o Templatce
