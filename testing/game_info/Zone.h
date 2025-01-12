@@ -6,6 +6,7 @@
 enum class Terrain;
 class Town;
 class Object;
+class Creature;
 
 class Zone
 {
@@ -28,6 +29,9 @@ int getSize();
 void addObject(std::shared_ptr<Object> object);
 std::vector<std::shared_ptr<Object>> getObjects();
 
+void addCreature(std::shared_ptr<Creature> creature);
+std::vector<std::shared_ptr<Creature>> getCreatures();
+
 
 void printZone();
 
@@ -41,5 +45,6 @@ private:
     i32 size = 1000;
 
     std::vector<std::shared_ptr<Object>> objects;
+    std::vector<std::shared_ptr<Creature>> creatures;
 
 };

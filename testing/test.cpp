@@ -5,6 +5,7 @@
 #include "./game_info/Town.h"
 #include "./game_info/Mine.h"
 #include "./game_info/Treasure.h"
+#include "./game_info/Creature.h"
 #include "./template_info/TemplateInfo.h"
 #include "./placers/RoadPlacer.h"
 #include "./placers/GuardPlacer.h"
@@ -41,47 +42,51 @@ void generateLuaScript(const json& config) {
     luaFile << "instance:difficulty(homm3lua.DIFFICULTY_" << templateInfo.getDifficulty() << ")\n\n";
 
     std::set<int> addedPlayers;
-    std::vector<std::pair<int, int>> towns;
+
 
     RNG rng;
-
     rng.setSeed(12);
+
 
     Map map(&rng);
     map.generateMap(templateInfo);
+
 
     std::cerr << "Map generated\n";
     if (config.value("debug", false))
         map.print();
     
+
     AddTerrain(luaFile);
     AddTerrainTiles(luaFile, map);
+
+
     
     auto zones = map.getZones();
+
     for (auto& zone : zones) {
         for(auto& object : zone.second->getObjects()){
+            
+            // add town and update players
             if (auto town = std::dynamic_pointer_cast<Town>(object)) {
+
                 int playerId = town->getOwner();
                 if (addedPlayers.find(playerId) == addedPlayers.end()){
                     addedPlayers.insert(playerId);
                     AddPlayer(luaFile, playerId);
                 }
-            }
-        }
 
-        for(auto& object : zone.second->getObjects()){
-            if (auto town = std::dynamic_pointer_cast<Town>(object)) {
                 AddTown(luaFile, *town);
             }
 
+            // add mine
             if (auto mine = std::dynamic_pointer_cast<Mine>(object)) {
                 AddMine(luaFile, *mine, map);
             }
             
-
+            // add treasure (resource, artifact, building)
             if (auto treasure = std::dynamic_pointer_cast<Treasure>(object)) {
                 string treasureType = treasureTypeToString(treasure->getTreasureType());
-                // std::cerr << "treasureType: " << treasureType << "\n";
 
                 if(treasureType.find("ARTIFACT") != string::npos) {
                     AddArtifact(luaFile, *treasure);
@@ -92,24 +97,24 @@ void generateLuaScript(const json& config) {
                 }
             }
         }
-
-        AddHero(luaFile, zone.second);
     }
 
     AddBorderObstacles(luaFile, map);
 
+    AddMapObjects(luaFile, map);
+
     AddRoads(luaFile, map);
 
-    if (config.value("debug", false)){
-        for(auto e : towns){
-            std::cerr << e.first << " " << e.second << "\n";
+    for(auto &zone : zones) {
+        for(auto creature : zone.second->getCreatures()) {
+            AddCreature(luaFile, *creature);
         }
     }
 
-    AddGuards(luaFile, map, templateInfo, &rng);
-
     string homeDir = getenv("HOME");
+
     cerr << "Home dir: " << homeDir << endl;
+
     luaFile << "instance:write('" + homeDir + "/.local/share/vcmi/Maps/test.h3m')";
     luaFile << "\n";
     

@@ -11,6 +11,7 @@
 #include "./game_info/Town.h"
 #include "./game_info/Treasure.h"
 #include "./game_info/Mine.h"
+#include "./game_info/Creature.h"
 #include "../global/Random.h"
 #include "../placers/GuardPlacer.h"
 
@@ -55,21 +56,15 @@ void AddMine(std::ofstream& luaFile, Mine mine, Map &map){
 
     std::string mineType = mineTypeToString(mine.getMineType());
 
-    // std::cerr << x << " " << y << " " << z << " " << mineType << "\n";
-
     std::string owner = owner_id <= 0 ? "OWNER_NEUTRAL" : "PLAYER_" + std::to_string(owner_id);
     luaFile << "instance:mine(homm3lua." << mineType << ", {x=" << x << ", y=" << y << ", z=" << z << "}, homm3lua." << owner << ")\n";
 
-    auto TilePtr = map.getTile(x-1, y+1); //todo fix mines placement or this line:DD
-    TilePtr->setIsGuard(true);
 }
 
 // @function    AddRoads
 // @tparam      ofstream    luaFile         file where we save lua script parts. 
 // @tparam      Map         map             object of map class with finised setup.
 void AddRoads(std::ofstream& luaFile, Map& map){
-    luaFile << "-- Place 1 way monoliths\n";
-    AddMapObjects(luaFile, map);
     
     luaFile << "-- Dynamic terrain adjustments for linear paths between towns\n";
     luaFile << "instance:terrain(function (x, y, z)\n";
@@ -177,8 +172,19 @@ local homm3lua = require('homm3lua'))";
 // @tparam      string      disposition      disposition of creature, See DISPOSITION_*.
 // @tparam      boolean     never_flees      disallows creatures to flee.
 // @tparam      boolean     does_not_grow    disallows creatures to grow.
-void AddCreature(std::ofstream& luaFile, std::string creature, int x, int y, int z, int quantity, std::string disposition, bool never_flees, bool does_not_grow){
-    luaFile << "instance:creature(homm3lua.CREATURE_" << creature << ", {x=" << x << ", y=" << y << ", z=" << z << "}, " << quantity << ", homm3lua.DISPOSITION_" << disposition << ", " << never_flees << ", " << does_not_grow <<  ")\n";  
+void AddCreature(std::ofstream& luaFile, Creature creature){
+    
+    std::string creatureName = creature.getName();
+    int x = creature.getPosition().x;
+    int y = creature.getPosition().y;
+    int z = creature.getPosition().z;
+
+    int quantity = creature.getQuantity();
+    std::string disposition = creature.getDisposition();
+    bool never_flees = creature.getNeverFlees();
+    bool does_not_grow = creature.getDoesNotGrow();
+    
+    luaFile << "instance:creature(homm3lua.CREATURE_" << creatureName << ", {x=" << x << ", y=" << y << ", z=" << z << "}, " << quantity << ", homm3lua.DISPOSITION_" << disposition << ", " << never_flees << ", " << does_not_grow <<  ")\n";  
 }
 
 // @function    AddResource
@@ -247,6 +253,9 @@ void AddSign(std::ofstream& luaFile, std::string text, int x, int y, int z){
 // @tparam      ofstream        luaFile         file where we save lua script parts. 
 // @tparam      Map             map             object of map class with finised setup.
 void AddMapObjects(std::ofstream &luaFile, Map& map){
+
+    luaFile << "-- Place 1 way monoliths\n";
+
     MapObjects mapObjects = map.getMapObjects();
 
     for (auto object : mapObjects)
@@ -255,35 +264,5 @@ void AddMapObjects(std::ofstream &luaFile, Map& map){
         auto pos = object.getPosition();
 
         luaFile << "instance:obstacle('" << obstacle << "', {x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << "})\n";
-    }
-}
-
-// @function    AddGuards
-// @tparam      ofstream        luaFile         file where we save lua script parts. 
-// @tparam      Map             map             object of map class with finised setup.
-// @tparam      TemplateInfo    templateInfo    object of TemplateInfo class.
-// @tparam      RNG             rng             object of RNG class.
-void AddGuards(std::ofstream &luaFile, Map &map, TemplateInfo &templateInfo, RNG *rng){
-    std::cerr << "Place guards\n";
-
-    class GuardPlacer guardPlacer(map, templateInfo, rng);
-
-    for (int y = 0; y < map.getHeight(); y++)
-    {
-        for (int x = 0; x < map.getWidth(); x++)
-        {
-            auto TilePtr = map.getTile(x, y);
-
-            if (TilePtr && (TilePtr->getIsGate() || TilePtr->getIsGuard()))
-            {
-                std::string difficulty = guardPlacer.getZoneDifficulty(TilePtr->getZoneId());
-                Difficulty diff = guardPlacer.stringToDifficulty(difficulty);
-                auto [min_lvl, max_lvl] = TilePtr->getIsGuard() ? guardPlacer.getGuardLevel(diff) : guardPlacer.getBorderGuardLevel(diff);
-                double lvl = rng->nextDoubleRounded(min_lvl, max_lvl);
-
-                auto [min_quantity, max_quantity] = guardPlacer.getQuantityRange(diff);
-                AddCreature(luaFile, rng->randomCreature(lvl), x, y, 0, rng->nextInt(min_quantity, max_quantity), guardPlacer.getDisposition(diff), guardPlacer.neverFlies(diff), guardPlacer.doesNotGrow(diff));
-            }
-        }
     }
 }

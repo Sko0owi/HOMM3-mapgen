@@ -1,15 +1,15 @@
 #include "./Map.h"
-#include "../game_info/Zone.h"
 #include "./template_info/TemplateInfo.h"
 #include "./placers/BorderPlacer.h"
 #include "./placers/ZonePlacer.h"
 #include "./placers/ObjectPlacer.h"
 #include "./placers/RoadPlacer.h"
 #include "./placers/GuardPlacer.h"
-#include "./Faction.h"
-#include "./Tile.h"
-#include "./global/Random.h"
+#include "./game_info/Zone.h"
+#include "./game_info/Faction.h"
+#include "./game_info/Tile.h"
 #include "./game_info/Town.h"
+#include "./global/Random.h"
 
 Map::Map(RNG *rng) {
     this->rng = rng;
@@ -66,6 +66,10 @@ void Map::generateMap(TemplateInfo &temp) {
     setMapObjects(borderPlacer.getMapObjects());
     RoadPlacer roadPlacer(*this, temp, objectPlacer);
     roadPlacer.createShotestPathsToConnected(connectedPairs);
+
+    //Place guards
+    GuardPlacer guardPlacer(*this, temp, rng);
+    guardPlacer.placeGuards(objectPlacer);
 }
 
 void Map::setConnectedPairs(ConnectedPoints connectedPairs){

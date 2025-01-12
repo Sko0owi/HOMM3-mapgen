@@ -3,15 +3,40 @@
 #include "../template_info/TemplateInfo.h"
 #include "../template_info/ZoneInfo.h"
 #include "../template_info/ConnectionInfo.h"
-#include "./Map.h"
-#include "./Tile.h"
+#include "./game_info/Creature.h"
+#include "../Map.h"
+#include "./game_info/Tile.h"
+#include "./game_info/Zone.h"
 #include "../global/Random.h"
 
 GuardPlacer::GuardPlacer(Map &map, TemplateInfo &temp, RNG *rng) 
     : map(map), temp(temp), rng(rng) {}
 
 void GuardPlacer::placeGuards(std::shared_ptr<ObjectPlacer> objectPlacer){
-    
+    for (int y = 0; y < map.getHeight(); y++)
+    {
+        for (int x = 0; x < map.getWidth(); x++)
+        {
+            auto TilePtr = map.getTile(x, y);
+
+            if (TilePtr && (TilePtr->getIsGate() || TilePtr->getIsGuard()))
+            {
+                std::string difficulty = getZoneDifficulty(TilePtr->getZoneId());
+                Difficulty diff = stringToDifficulty(difficulty);
+                auto [min_lvl, max_lvl] = TilePtr->getIsGuard() ? getGuardLevel(diff) : getBorderGuardLevel(diff);
+                double lvl = rng->nextDoubleRounded(min_lvl, max_lvl);
+
+                auto [min_quantity, max_quantity] = getQuantityRange(diff);
+
+                Creature creature = Creature(rng->randomCreature(lvl), int3(x, y, 0), rng->nextInt(min_quantity, max_quantity), getDisposition(diff), neverFlies(diff), doesNotGrow(diff));
+
+                auto creaturePtr = std::make_shared<Creature>(creature);
+
+                map.getZones()[TilePtr->getZoneId()]->addCreature(creaturePtr);
+
+            }
+        }
+    }
 }
 
 std::string GuardPlacer::getZoneDifficulty(int zoneId){

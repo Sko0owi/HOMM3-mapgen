@@ -2,6 +2,8 @@
 #include "../global/Global.h"
 #include "./Terrain.h"
 #include "./Town.h"
+#include "./Object.h"
+#include "./Creature.h"
 
 Zone::Zone() {
     id = -1;
@@ -60,6 +62,13 @@ int Zone::getSize(){
     return size;
 }
 
+void Zone::addCreature(std::shared_ptr<Creature> creature){
+    creatures.push_back(creature);
+}
+
+std::vector<std::shared_ptr<Creature>> Zone::getCreatures(){
+    return creatures;
+}
 
 
 void Zone::printZone(){

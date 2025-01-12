@@ -560,6 +560,9 @@ bool ObjectPlacer::placeMine(MineInfo mineI, std::shared_ptr<Object> centerPtr, 
         }
     }
 
+    auto TilePtr = map.getTile(x-1, y+1); //todo fix mines placement or this line:DD
+    TilePtr->setIsGuard(true);
+
     auto minePointer = std::make_shared<Mine>(mine);
 
     zonePtr->addObject(minePointer);
