@@ -12,6 +12,7 @@
 #include "./Map.h"
 #include "./gameInfo/Zone.h"
 #include "./global/Random.h"
+#include "./global/PerlinNoise.h"
 
 #include "./CreaturesConstants.h"
 
@@ -133,6 +134,8 @@ void execute_lua_script(const std::string& script_name) {
 }
 
 int main() {
+
+
     std::ifstream file("config.json");
     if (!file.is_open()) {
         std::cerr << "Failed to open config.json file." << std::endl;

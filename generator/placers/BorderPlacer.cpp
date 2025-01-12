@@ -252,6 +252,7 @@ void BorderPlacer::placeMonolith(Object object){
     int sx = object.getSizeOfObject().x;
 
     objectsMap[y][x] = 3;
+    objectsMap[y+1][x] = 1;
     
     if(sx > 1){
         objectsMap[y][x+1] = 7;

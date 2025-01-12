@@ -88,7 +88,7 @@ void ObjectPlacer::placeObjects()
             auto TilePtr = map.getTile(x, y);
             if ((TilePtr->getIsBorder() || TilePtr->getIsExtension()) && !TilePtr->getIsRoad())
             {
-                objectsMap[y][x] = 1;
+                objectsMap[y][x] = 2;
             }
         }
     }
@@ -130,9 +130,9 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
     int x = pos.x;
     int y = pos.y;
 
-    for (int x_ = max(0, x - blockSize.x); x_ <= min(x + 1, mapWidth - 1); x_++)
+    for (int x_ = max(0, x - blockSize.x + 1); x_ <= min(x, mapWidth - 1); x_++)
     {
-        for (int y_ = max(0, y - blockSize.y); y_ <= min(y + 1, mapHeight - 1); y_++)
+        for (int y_ = max(0, y - blockSize.y + 1); y_ <= min(y + 1, mapHeight - 1); y_++)
         {
 
             objectsMap[y_][x_] = 5;
@@ -217,12 +217,12 @@ void ObjectPlacer::placeTreasureBuilding(std::shared_ptr<Zone> zonePtr, Treasure
     int x = pos.x;
     int y = pos.y;
 
-    for (int x_ = max(0, x - buildingSize.x); x_ <= min(x + 1, mapWidth - 1); x_++)
+    for (int x_ = max(0, x - buildingSize.x + 1); x_ <= min(x, mapWidth - 1); x_++)
     {
-        for (int y_ = max(0, y - buildingSize.y); y_ <= min(y + 1, mapHeight - 1); y_++)
+        for (int y_ = max(0, y - buildingSize.y + 1); y_ <= min(y + 1, mapHeight - 1); y_++)
         {
 
-            objectsMap[y_][x_] = 9;
+            objectsMap[y_][x_] = 6;
 
             if (x_ == x - buildingSize.x || x_ == x + 1 || y_ == y - buildingSize.y || y_ == y + 1)
             {
@@ -389,12 +389,12 @@ void ObjectPlacer::placeTowns()
             int x = town.getPosition().x;
             int y = town.getPosition().y;
 
-            for (int x_ = max(0, x - town.getSizeOfObject().x); x_ <= x + 1; x_++)
+            for (int x_ = max(0, x - town.getSizeOfObject().x + 1); x_ <= x; x_++)
             {
-                for (int y_ = max(0, y - town.getSizeOfObject().y); y_ <= y + 1; y_++)
+                for (int y_ = max(0, y - town.getSizeOfObject().y + 1); y_ <= y + 1; y_++)
                 {
 
-                    objectsMap[y_][x_] = 2;
+                    objectsMap[y_][x_] = 3;
                     if (x_ == x - town.getSizeOfObject().x || x_ == x + 1 || y_ == y - town.getSizeOfObject().y || y_ == y + 1)
                     {
                         objectsMap[y_][x_] = 1;

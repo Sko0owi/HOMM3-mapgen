@@ -42,7 +42,9 @@ SOURCES = $(SRC_DIR)/Generator.cpp \
 		  $(PLACERS_DIR)/BorderPlacer.cpp \
 		  $(PLACERS_DIR)/GuardPlacer.cpp \
 		  $(PLACERS_DIR)/RoadPlacer.cpp \
+		  $(PLACERS_DIR)/NoisePlacer.cpp \
 		  $(GLOBAL_DIR)/Random.cpp \
+		  $(GLOBAL_DIR)/PerlinNoise.cpp \
 		  $(GLOBAL_DIR)/PenroseTiling.cpp \
           $(UTILS_DIR)/lua_helpers.cpp 
 

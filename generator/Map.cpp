@@ -5,6 +5,7 @@
 #include "./placers/ObjectPlacer.h"
 #include "./placers/RoadPlacer.h"
 #include "./placers/GuardPlacer.h"
+#include "./placers/NoisePlacer.h"
 #include "./gameInfo/Zone.h"
 #include "./gameInfo/Faction.h"
 #include "./gameInfo/Tile.h"
@@ -69,7 +70,10 @@ void Map::generateMap(TemplateInfo &temp) {
     
     //Place guards
     GuardPlacer guardPlacer(*this, temp, rng);
-    guardPlacer.placeGuards(objectPlacer);
+    guardPlacer.placeGuards();
+
+    NoisePlacer noisePlacer(*this, rng, objectPlacer);
+    noisePlacer.placeNoise();
 
 }
 

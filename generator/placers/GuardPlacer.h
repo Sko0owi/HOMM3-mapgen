@@ -5,7 +5,6 @@
 class Map;
 class TemplateInfo;
 class RNG;
-class ObjectPlacer;
 
 enum class Difficulty {
     Beginner,
@@ -30,7 +29,7 @@ public:
     std::string getDisposition(Difficulty diff);
 
     static Difficulty stringToDifficulty(const std::string &difficulty);
-    void placeGuards(std::shared_ptr<ObjectPlacer> objectPlacer);
+    void placeGuards();
 
 private:
     Map &map;

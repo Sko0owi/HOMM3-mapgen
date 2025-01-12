@@ -1,5 +1,4 @@
 #include "./GuardPlacer.h"
-#include "./ObjectPlacer.h"
 #include "../templateInfo/TemplateInfo.h"
 #include "../templateInfo/ZoneInfo.h"
 #include "../templateInfo/ConnectionInfo.h"
@@ -12,7 +11,7 @@
 GuardPlacer::GuardPlacer(Map &map, TemplateInfo &temp, RNG *rng) 
     : map(map), temp(temp), rng(rng) {}
 
-void GuardPlacer::placeGuards(std::shared_ptr<ObjectPlacer> objectPlacer){
+void GuardPlacer::placeGuards(){
     for (int y = 0; y < map.getHeight(); y++)
     {
         for (int x = 0; x < map.getWidth(); x++)

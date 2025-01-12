@@ -46,6 +46,8 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
                 int newDistance = distance[cy][cx] + 1; 
 
                 if (newDistance < distance[ny][nx]) {
+
+                    auto old_distance = distance[ny][nx];
                     distance[ny][nx] = newDistance;
 
                     std::vector<std::pair<int, int>> newPath = currentPath;
@@ -60,8 +62,18 @@ std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, 
                         newPath.emplace_back(cx, cy + dy[i]);
                     }
 
-                    newPath.emplace_back(nx, ny); 
-                    q.push(newPath);
+                    if (i <= 3
+                    || (i == 4 && objectsMap[cy + dy[i]][cx] <= 3)
+                    || (i == 5 && objectsMap[cy][cx + dx[i]] <= 3) 
+                    || (i == 6 && objectsMap[cy][cx + dx[i]] <= 3)
+                    || (i == 7 && objectsMap[cy + dy[i]][cx] <= 3)
+                    ) {
+                        newPath.emplace_back(nx, ny); 
+                        q.push(newPath);
+                    } else {
+                        distance[ny][nx] = old_distance;
+                    }
+
                 }
             }
         }
