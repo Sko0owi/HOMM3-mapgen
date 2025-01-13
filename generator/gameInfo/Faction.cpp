@@ -20,27 +20,27 @@ std::string factionToString(Faction fac) {
 
 
 Faction stringToFaction(std::string fac) {
-    if (fac == "TOWN_CASTLE") {
+    if (fac == "Castle") {
         return Faction::CASTLE;
-    } else if (fac == "TOWN_RAMPART") {
+    } else if (fac == "Rampart") {
         return Faction::RAMPART;
-    } else if (fac == "TOWN_TOWER") {
+    } else if (fac == "Tower") {
         return Faction::TOWER;
-    } else if (fac == "TOWN_INFERNO") {
+    } else if (fac == "Inferno") {
         return Faction::INFERNO;
-    } else if (fac == "TOWN_NECROPOLIS") {
+    } else if (fac == "Necropolis") {
         return Faction::NECROPOLIS;
-    } else if (fac == "TOWN_DUNGEON") {
+    } else if (fac == "Dungeon") {
         return Faction::DUNGEON;
-    } else if (fac == "TOWN_STRONGHOLD") {
+    } else if (fac == "Stronghold") {
         return Faction::STRONGHOLD;
-    } else if (fac == "TOWN_FORTRESS") {
+    } else if (fac == "Fortress") {
         return Faction::FORTRESS;
-    } else if (fac == "TOWN_CONFLUX") {
+    } else if (fac == "Conflux") {
         return Faction::CONFLUX;
-    } else if (fac == "TOWN_NEUTRAL") {
+    } else if (fac == "Neutral") {
         return Faction::NEUTRAL;
-    } else if (fac == "TOWN_NONE") {
+    } else if (fac == "None") {
         return Faction::NONE;
     }
     return Faction::DEFAULT;

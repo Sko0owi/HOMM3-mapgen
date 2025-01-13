@@ -7,7 +7,7 @@
 #include "../gameInfo/Terrain.h"
 
 ZoneInfo::ZoneInfo(bool debug)
-    : debug(debug), id(0), size(0), hero(""), maxMinesCount(0) {
+    : debug(debug), id(0), size(0), maxMinesCount(0) {
 }
 
 void ZoneInfo::addConnection(const json& connectionConfig) {
@@ -55,11 +55,6 @@ void ZoneInfo::setSize(i32 size) {
     this->size = size;
 }
 
-
-void ZoneInfo::setHero(std::string hero) {
-    this->hero = hero;
-}
-
 void ZoneInfo::setTerrain(Terrain terrain) {
     this->terrain = terrain;
 }
@@ -88,10 +83,6 @@ i32 ZoneInfo::getSize() {
     return size;
 }
 
-std::string ZoneInfo::getHero() {
-    return hero;
-}
-
 std::string ZoneInfo::getDifficulty() {
     return difficulty;
 }
@@ -105,16 +96,16 @@ i32 ZoneInfo::getMaxMinesCount() {
 
 
 int decodeOwner(std::string owner) {
-    if(owner == "NONE") return 0;
+    if(owner == "None") return 0;
 
     return std::stoi(owner.substr(owner.find_first_of("0123456789")));
 
 }
 
 int decodeSize(std::string size) {
-    if(size == "SMALL") return 1000;
-    if(size == "MEDIUM") return 2000;
-    if(size == "LARGE") return 3000;
+    if(size == "S") return 1000;
+    if(size == "M") return 2000;
+    if(size == "L") return 3000;
     return 0;
 }
 
@@ -133,38 +124,34 @@ void ZoneInfo::deserializeZone(const json& config) {
     
     i32 id = TemplateInfo::getOrError<int>(config, "id");
     std::string size = TemplateInfo::getOrError<std::string>(config, "size");
-    std::string hero = TemplateInfo::getOrError<std::string>(config, "hero");
     std::string difficulty = TemplateInfo::getOrError<std::string>(config, "difficulty");
 
     
-    std::string terrain = config.value("terrain", "GRASS");
+    std::string terrain = config.value("terrain", "Grass");
 
     std::string zoneRichness = config.value("richness", "Normal");
     TreasuresInfo treasuresInfo(decodeRichness(zoneRichness));
 
-    // std::cerr << "Zone richness: " << zoneRichness << "\n";
-
-    i32 town_count = TemplateInfo::getOrError<int>(config, "number_of_towns");
+    i32 town_count = config.value("number_of_towns", 0);
     for (int i = 0; i < town_count; i++) {
 
         std::string townFaction = TemplateInfo::getOrError<std::string>(config["towns"][i], "faction");
         std::string townOwner = TemplateInfo::getOrError<std::string>(config["towns"][i], "owner");
-        int townDensity = TemplateInfo::getOrError<int>(config["towns"][i], "density");
-        int townMinCount = TemplateInfo::getOrError<int>(config["towns"][i], "min_count");
+        int townMinCount = config["towns"][i].value("min_count", 1);
+        
 
-        TownInfo townI(stringToFaction(townFaction), decodeOwner(townOwner), townDensity, townMinCount);
+        TownInfo townI(stringToFaction(townFaction), decodeOwner(townOwner), townMinCount);
 
         addTown(townI);
     }
 
     i32 maxMinesCount = config.value("max_number_of_mines", 0);
-    // std::cerr << "Max mines count: " << maxMinesCount << "\n";
-    i32 mine_count =  TemplateInfo::getOrError<int>(config, "number_of_mines");
+    i32 mine_count = config.value("number_of_mines", 0);
     for(int i = 0; i < mine_count; i++) {
     
         std::string mineType = TemplateInfo::getOrError<std::string>(config["mines"][i], "type");
-        std::string mineOwner = TemplateInfo::getOrError<std::string>(config["mines"][i], "owner");
-        int mineMinCount = TemplateInfo::getOrError<int>(config["mines"][i], "min_count");
+        std::string mineOwner = config["mines"][i].value("owner", "None");
+        int mineMinCount = config["mines"][i].value("min_count", 1);
 
         MineInfo mineI(stringToMineType(mineType), decodeOwner(mineOwner), mineMinCount);
         
@@ -174,7 +161,6 @@ void ZoneInfo::deserializeZone(const json& config) {
     setTreasuresInfo(treasuresInfo);
     setId(id);
     setSize(decodeSize(size));
-    setHero(hero);
     setTerrain(stringToTerrain(terrain));
     setMaxMinesCount(maxMinesCount);
     setDifficulty(difficulty);
@@ -183,7 +169,6 @@ void ZoneInfo::deserializeZone(const json& config) {
 void ZoneInfo::printZone() {
     std::cerr << "Zone id: " << id << "\n";
     std::cerr << "Zone size: " << size << "\n";
-    std::cerr << "Zone hero: " << hero << "\n";
     for(auto connection : connections) {
         std::cerr << "Connection: \n" << \
         "ZoneA: " << connection.getZoneA() << " " << \

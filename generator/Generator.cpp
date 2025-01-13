@@ -1,4 +1,6 @@
 #include <bits/stdc++.h>
+#include <algorithm>
+
 #include "./luaUtils/lua_helpers.hpp"
 
 #include "./gameInfo/Tile.h"
@@ -19,6 +21,15 @@
 
 using json = nlohmann::json;
 
+std::string encodeMapSize(pair<int,int> mapSize) {
+    if (mapSize == pair<int,int>{36, 36}) return "SMALL";
+    if (mapSize == pair<int,int>{72, 72}) return "MEDIUM";
+    if (mapSize == pair<int,int>{108, 108}) return "LARGE";
+    if (mapSize == pair<int,int>{144, 144}) return "EXTRA_LARGE";
+    return "M";
+}
+
+
 void generateLuaScript(const json& config) {
     std::ofstream luaFile("generated_script.lua");
     if (!luaFile.is_open()) {
@@ -36,11 +47,13 @@ void generateLuaScript(const json& config) {
 
     luaFile << "local instance = homm3lua.new(homm3lua.FORMAT_ROE, homm3lua.SIZE_";
 
-    luaFile << templateInfo.getMapSize() << ")" << "\n";
+    luaFile << encodeMapSize(templateInfo.getMapSize()) << ")" << "\n";
 
     luaFile << "instance:name('" << templateInfo.getName() << "')\n";
     luaFile << "instance:description('" << templateInfo.getDescription() << "')\n";
-    luaFile << "instance:difficulty(homm3lua.DIFFICULTY_" << templateInfo.getDifficulty() << ")\n\n";
+    std::string difficulty = templateInfo.getDifficulty();
+    std::transform(difficulty.begin(), difficulty.end(), difficulty.begin(), ::toupper);
+    luaFile << "instance:difficulty(homm3lua.DIFFICULTY_" << difficulty << ")\n\n";
 
     std::set<int> addedPlayers;
 

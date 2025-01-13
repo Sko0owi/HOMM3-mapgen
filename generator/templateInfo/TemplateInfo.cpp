@@ -9,7 +9,7 @@
 TemplateInfo::TemplateInfo() {
     name = "";
     description = "";
-    mapSize = "";
+    mapSize = {-1,-1};
     difficulty = "";
 }
 
@@ -25,7 +25,7 @@ void TemplateInfo::setDescription(std::string description) {
     this->description = description;
 }
 
-void TemplateInfo::setMapSize(std::string mapSize) {
+void TemplateInfo::setMapSize(pair<int,int> mapSize) {
     this->mapSize = mapSize;
 }
 
@@ -41,7 +41,7 @@ std::string TemplateInfo::getDescription() {
     return description;
 }
 
-std::string TemplateInfo::getMapSize() {
+pair<int,int> TemplateInfo::getMapSize() {
     return mapSize;
 }
 
@@ -50,17 +50,27 @@ std::string TemplateInfo::getDifficulty() {
 }
 
 
+pair<int,int> decodeMapSize(std::string MapSize) {
+    if (MapSize == "S") return {36, 36};
+    if (MapSize == "M") return {72, 72};
+    if (MapSize == "L") return {108, 108};
+    if (MapSize == "XL") return {144, 144};
+    return {-1,-1};
+}
+
+
+
 void TemplateInfo::deserialize(const json& config) {
 
     std::string name = getOrError<std::string>(config, "name");
     std::string difficulty = getOrError<std::string>(config, "difficulty");
     std::string description = getOrError<std::string>(config, "description");
-    std::string mapSize = config.value("size", "MEDIUM");
+    std::string mapSize = config.value("size", "M");
 
 
     setName(name);
     setDescription(description);
-    setMapSize(mapSize);
+    setMapSize(decodeMapSize(mapSize));
     setDifficulty(difficulty);
     
     const auto& zonesConfig = getOrError<json>(config, "zones");
@@ -82,7 +92,7 @@ void TemplateInfo::deserialize(const json& config) {
 void TemplateInfo::printTemplate() {
     std::cerr << "Template name: " << getName() << "\n";
     std::cerr << "Template description: " << getDescription() << "\n";
-    std::cerr << "Template map size: " << getMapSize() << "\n";
+    std::cerr << "Template map size: " << getMapSize().first << " " << getMapSize().second << "\n";
     std::cerr << "Template difficulty: " << getDifficulty() << "\n";
 
     for(auto zone : zonesI) {

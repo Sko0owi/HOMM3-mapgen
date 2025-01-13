@@ -17,25 +17,25 @@ std::string terrainToString(Terrain terrain) {
 }
 
 Terrain stringToTerrain(std::string terrain) {
-    if (terrain == "GRASS") {
+    if (terrain == "Grass") {
         return Terrain::GRASS;
-    } else if (terrain == "SAND") {
+    } else if (terrain == "Sand") {
         return Terrain::SAND;
-    } else if (terrain == "SNOW") {
+    } else if (terrain == "Snow") {
         return Terrain::SNOW;
-    } else if (terrain == "SWAMP") {
+    } else if (terrain == "Swamp") {
         return Terrain::SWAMP;
-    } else if (terrain == "ROUGH") {
+    } else if (terrain == "Rough") {
         return Terrain::ROUGH;
-    } else if (terrain == "SUBTERRANEAN") {
+    } else if (terrain == "Subterranean") {
         return Terrain::SUBTERRANEAN;
-    } else if (terrain == "LAVA") {
+    } else if (terrain == "Lava") {
         return Terrain::LAVA;
-    } else if (terrain == "WATER") {
+    } else if (terrain == "Water") {
         return Terrain::WATER;
-    } else if (terrain == "DIRT") {
+    } else if (terrain == "Dirt") {
         return Terrain::DIRT;
-    } else if (terrain == "ROCK") {
+    } else if (terrain == "Rock") {
         return Terrain::ROCK;
     }
     return Terrain::DIRT;

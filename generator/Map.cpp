@@ -26,17 +26,10 @@ Map::Map(i32 width, i32 height) {
 Map::~Map() {
 }
 
-pair<int,int> decodeMapSize(std::string MapSize) {
-    if (MapSize == "SMALL") return {36, 36};
-    if (MapSize == "MEDIUM") return {72, 72};
-    if (MapSize == "LARGE") return {108, 108};
-    return {-1,-1};
-}
+
 
 void Map::generateMap(TemplateInfo &temp) {
-    std::string MapSize = temp.getMapSize();
-
-    pair<int,int> width_height = decodeMapSize(MapSize);
+    pair<int,int> width_height = temp.getMapSize();
 
     width = width_height.first;
     height = width_height.second;

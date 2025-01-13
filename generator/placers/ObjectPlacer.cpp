@@ -599,6 +599,7 @@ void ObjectPlacer::placeMines()
         std::vector<MineInfo> minesToPlace;
         for (auto &mineI : zoneI->getMines())
         {
+            mineI.setOwner(0);
             minesToPlace.push_back(mineI);
         }
 

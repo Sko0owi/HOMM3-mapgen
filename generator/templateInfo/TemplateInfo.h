@@ -27,12 +27,12 @@ public:
 
     void setName(std::string name);
     void setDescription(std::string description);
-    void setMapSize(std::string mapSize);
+    void setMapSize(pair<int,int> mapSize);
     void setDifficulty(std::string difficulty);
 
     std::string getName();
     std::string getDescription();
-    std::string getMapSize();
+    pair<int,int> getMapSize();
     std::string getDifficulty();
 
     void deserialize(const json& config);
@@ -44,8 +44,8 @@ public:
 private:
     std::string name;
     std::string description;
-    std::string mapSize;
     std::string difficulty; 
+    pair<int,int> mapSize;
     ZonesI zonesI;
 };
 

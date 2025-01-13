@@ -28,14 +28,12 @@ public:
 
     void setId(i32 id);
     void setSize(i32 size);
-    void setHero(std::string hero);
     void setTerrain(Terrain terrain);
     void setDifficulty(std::string difficulty);
     void setMaxMinesCount(i32 maxMinesCount);
 
     i32 getId();
     i32 getSize();
-    std::string getHero();
     std::string getDifficulty();
     Terrain getTerrain();
     i32 getMaxMinesCount();
@@ -46,7 +44,6 @@ private:
     bool debug;
     i32 id;
     i32 size;
-    std::string hero;
     std::string difficulty;
 
     Terrain terrain;
