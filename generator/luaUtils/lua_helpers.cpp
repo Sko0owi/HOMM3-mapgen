@@ -129,8 +129,8 @@ void AddBorderObstacles(std::ofstream& luaFile, Map& map){
             // Lava Flow
             // Mountain4
 
-            // Pine Trees
-            // Rock
+            //Rock_Rough10?
+            // Pine Trees            
             // Mushrooms
             // Mountain
         }

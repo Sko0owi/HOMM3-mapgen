@@ -99,7 +99,7 @@ void NoisePlacer::placeNoise() {
     for(int y = 0; y < map.getHeight(); y++) {
         for(int x = 0; x < map.getWidth(); x++) {
             if(currentMap[y][x] == 3) {
-                mapObjects.push_back(Object(int3(x, y, 0), "Oak Trees"));
+                mapObjects.push_back(Object(int3(x, y, 0), rng->randomObstacle()));
             }
         }
     }

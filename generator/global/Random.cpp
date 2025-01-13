@@ -1,5 +1,7 @@
 #include "./Random.h"
 #include "./CreaturesConstants.h"
+#include "./ObstacleConstants.h"
+
 
 RNG::RNG() {
     gen = std::mt19937(rd());
@@ -113,4 +115,8 @@ std::string RNG::randomCreature(double lvl) {
     }
 }
 
+std::string RNG::randomObstacle(){
+    int length = sizeof(obstacles) / sizeof(obstacles[0]);
 
+    return obstacles[nextInt(0, length - 1)];
+}
