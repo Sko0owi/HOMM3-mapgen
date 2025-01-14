@@ -9,9 +9,9 @@
       "id": 1,
       "size": "M",
       "terrain": "Grass",
-      "number_of_towns": 1, 
       "richness" : "Low",
       "difficulty": "Beginner",
+      "number_of_towns": 1, 
       "towns" : [
         {
           "faction" : "Stronghold",
@@ -36,9 +36,9 @@
       "id": 2,
       "size": "M",
       "terrain": "Snow",
-      "number_of_towns": 1, 
       "richness" : "Low",
       "difficulty": "Easy",
+      "number_of_towns": 1, 
       "towns" : [
         {
           "faction" : "Inferno",
