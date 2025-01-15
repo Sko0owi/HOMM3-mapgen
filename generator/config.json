@@ -10,7 +10,7 @@
       "size": "M",
       "terrain": "Grass",
       "richness" : "Low",
-      "difficulty": "Beginner",
+      "difficulty": "Easy",
       "number_of_towns": 1, 
       "towns" : [
         {
@@ -18,17 +18,16 @@
           "owner" : "Player_1"
         }
       ],
-      "max_number_of_mines": 6,
+      "max_number_of_mines": 4,
       "number_of_mines": 2,
       "mines": [
         {
-          "type": "Gold Mine",
-          "owner": "Player_1",
-          "min_count": 2
+          "type": "Ore Pit",
+          "owner": "Player_1"
         },
         {
           "type": "Sawmill",
-          "owner": "Player_2"
+          "owner": "Player_1"
         }
       ]
     },
@@ -41,83 +40,25 @@
       "number_of_towns": 1, 
       "towns" : [
         {
-          "faction" : "Inferno",
+          "faction" : "Stronghold",
           "owner" : "Player_2"
         }
       ],
-      "max_number_of_mines": 10,
-      "number_of_mines": 7,
+      "max_number_of_mines": 4,
+      "number_of_mines": 2,
       "mines": [
         {
-          "type": "Gold Mine"
+          "type": "Ore Pit",
+          "owner": "Player_2"
         },
         {
-          "type": "Ore Pit"
-        },
-        {
-          "type": "Alchemists Lab"
-        },
-        {
-          "type": "Crystal Cavern"
-        },
-        {
-          "type": "Gem Pond"
-        },
-        {
-          "type": "Sulfur Dune"
-        },
-        {
-          "type": "Sawmill"
+          "type": "Sawmill",
+          "owner": "Player_2"
         }
       ]
     },
     {
       "id": 3,
-      "size": "M",
-      "terrain": "Lava",
-      "richness" : "Low",
-      "difficulty": "Normal",
-      "number_of_towns": 1, 
-      "towns" : [
-        {
-          "faction" : "Necropolis",
-          "owner" : "Player_3"
-        }
-      ],
-      "max_number_of_mines": 5,
-      "number_of_mines": 2,
-      "mines": [
-        {
-          "type": "Gold Mine"
-        },
-        {
-          "type": "Sawmill"
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "size": "S",
-      "terrain": "Swamp",
-      "richness" : "Low",
-      "difficulty": "Hard"
-    },
-    {
-      "id": 5,
-      "size": "S",
-      "terrain" : "Desert",
-      "richness" : "High",
-      "difficulty": "Expert"
-    },
-    {
-      "id": 7,
-      "size": "S",
-      "terrain" : "Subterranean",
-      "richness" : "Low",
-      "difficulty": "Impossible"
-    },
-    {
-      "id": 6,
       "size": "S",
       "terrain": "Sand",
       "richness" : "High",
@@ -127,48 +68,13 @@
   "connections": [
     {
       "zoneA": 1,
-      "zoneB": 6,
-      "type": "monolith",
-      "tier": 2
-    },
-    {
-      "zoneA": 2,
-      "zoneB": 6,
-      "tier": 1
-    },
-    {
-      "zoneA": 4,
       "zoneB": 3,
+      "type": "narrow",
       "tier": 2
-    },
-    {
-      "zoneA": 1,
-      "zoneB": 5,
-      "tier": 3
     },
     {
       "zoneA": 2,
-      "zoneB": 5,
-      "tier": 2
-    },
-    {
-      "zoneA": 3,
-      "zoneB": 5,
-      "tier": 1
-    },
-    {
-      "zoneA": 4,
-      "zoneB": 1,
-      "tier": 2
-    },
-    {
-      "zoneA": 3,
-      "zoneB": 7,
-      "tier": 3
-    },
-    {
-      "zoneA": 2,
-      "zoneB": 7,
+      "zoneB": 3,
       "tier": 2
     }
   ]
