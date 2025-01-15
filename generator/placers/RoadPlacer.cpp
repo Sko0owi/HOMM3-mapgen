@@ -91,14 +91,14 @@ void RoadPlacer::fixBorders(){
 
             auto Tile = map.getTile(x, y);
 
-            if(!(Tile->getIsExtension() || Tile->getIsBorder())){ // If is empty
+            if(!Tile->getIsBorder()){ // If is empty
                 for (int i = 0; i < 4; i++){
                     int nx = x + dx[i];
                     int ny = y + dy[i];
 
                     auto TileNeigbour = map.getTile(nx, ny);
 
-                    if(TileNeigbour && (TileNeigbour->getIsExtension() || TileNeigbour->getIsBorder())){
+                    if(TileNeigbour && TileNeigbour->getIsBorder()){
                         cnt++;
                     }
                 }
@@ -203,22 +203,22 @@ void RoadPlacer::clearSquares(){
 
 bool RoadPlacer::gateSquare(int x, int y){
     auto Tile1 = map.getTile(x + 1, y), Tile2 = map.getTile(x - 1, y);
-    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+    if(Tile1 && Tile2 && Tile1->getIsBorder() && Tile2->getIsBorder()){
         return true;
     }
 
     Tile1 = map.getTile(x, y + 1), Tile2 = map.getTile(x, y - 1);
-    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+    if(Tile1 && Tile2 && Tile1->getIsBorder() && Tile2->getIsBorder()){
         return true;
     }
 
     Tile1 = map.getTile(x + 1, y + 1), Tile2 = map.getTile(x - 1, y - 1);
-    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+    if(Tile1 && Tile2 && Tile1->getIsBorder() && Tile2->getIsBorder()){
         return true;
     }
 
     Tile1 = map.getTile(x + 1, y - 1), Tile2 = map.getTile(x - 1, y + 1);
-    if(Tile1 && Tile2 && (Tile1->getIsBorder() || Tile1->getIsExtension()) && (Tile2->getIsBorder() || Tile2->getIsExtension())){
+    if(Tile1 && Tile2 && Tile1->getIsBorder() && Tile2->getIsBorder()){
         return true;
     }
 
@@ -256,7 +256,6 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
         {
             auto TilePtr = map.getTile(point.first, point.second);
             TilePtr->setIsBorder(false);
-            TilePtr->setIsExtension(false);
             TilePtr->setIsRoad(true);
             TilePtr->setTier(tier);
         }

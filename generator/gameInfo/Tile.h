@@ -25,9 +25,6 @@ public:
     void setIsRoad(bool isRoad);
     bool getIsRoad();
 
-    void setIsExtension(bool isExtension);
-    bool getIsExtension();
-
     void setTier(int tier);
     int getTier();
 
@@ -39,7 +36,6 @@ private:
     bool isGate;
     bool isGuard;
     bool isRoad;
-    bool isExtension;
 
     std::set<int> neighbourZones;
 };

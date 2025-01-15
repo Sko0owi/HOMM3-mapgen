@@ -27,9 +27,6 @@ public:
     void determineZoneBorders();
     void connectZones();
 
-    void createExtenstion();
-    void removeExtension();
-
     void fixBorders();
 
     ConnectedPoints getConnectedPairs();
@@ -49,8 +46,8 @@ private:
     int monolithCount = 0;
     bool debug = false;
 
-    static constexpr int dx[] = {-1, 1, 0, 0};
-    static constexpr int dy[] = {0, 0, -1, 1};
+    static constexpr int dx[] = {0, -1, 1, 0, -1, -1, 1, 1};
+    static constexpr int dy[] = {-1, 0, 0, 1, -1, 1, -1, 1};
 
     Map &map;
     TemplateInfo &temp;

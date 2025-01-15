@@ -86,7 +86,7 @@ void ObjectPlacer::placeObjects()
         for (int y = 0; y < mapHeight; y++)
         {
             auto TilePtr = map.getTile(x, y);
-            if ((TilePtr->getIsBorder() || TilePtr->getIsExtension()) && !TilePtr->getIsRoad())
+            if (TilePtr->getIsBorder() && !TilePtr->getIsRoad())
             {
                 objectsMap[y][x] = 2;
             }

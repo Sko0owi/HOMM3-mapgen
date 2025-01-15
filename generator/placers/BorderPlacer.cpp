@@ -23,51 +23,8 @@ void BorderPlacer::generateBorders() {
     mapHeight = map.getHeight();
 
     determineZoneBorders();
-    createExtenstion();
     connectZones();
     setWideConnections();
-    removeExtension();
-}
-
-void BorderPlacer::createExtenstion(){
-    for (int y = 0; y < mapHeight; y++){
-        for (int x = 0; x < mapWidth; x++) {
-            auto TilePtr = map.getTile(x, y);
-
-            for (int i = 0; i < 4; i++){
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-
-                auto NeighborTilePtr = map.getTile(nx, ny);
-
-                if(!TilePtr->getIsBorder() && NeighborTilePtr && NeighborTilePtr->getIsBorder() && NeighborTilePtr->getIsGuard()){
-                    TilePtr->setIsExtension(true);
-                }
-            }
-        }
-    }
-}
-
-void BorderPlacer::removeExtension(){
-    for (int y = 0; y < mapHeight; y++){
-        for (int x = 0; x < mapWidth; x++) {
-            auto TilePtr = map.getTile(x, y);
-
-            bool found = false;
-            for (int i = 0; i < 4; i++)
-            {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-
-                auto NeighborTilePtr = map.getTile(nx, ny);
-
-                if(TilePtr->getIsExtension() && NeighborTilePtr && NeighborTilePtr->getIsBorder()){
-                    found = true;
-                }
-            }
-            TilePtr->setIsExtension(found);
-        }
-    }
 }
 
 bool BorderPlacer::areConnected(int ZoneA, int ZoneB){
@@ -170,9 +127,6 @@ void BorderPlacer::findOuter(int X, int Y, int *outerX1, int *outerY1, int *oute
 
             int newDist = dist + delta;
 
-            // if(TilePtr->getIsExtension()) //We would want to run from extension tiles
-            //     newDist += 1.0;
-
             if (newDist < distance[ny][nx])
                 distance[ny][nx] = newDist;
             else 
@@ -217,7 +171,7 @@ std::vector<std::pair<int, int>> BorderPlacer::getValidTiles(int zoneId, Object 
     {
         for (int y = 1; y < map.getHeight() - 1; y++){
             auto TilePtr = map.getTile(x, y);
-            if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsExtension() && !TilePtr->getIsRoad() && !TilePtr->getIsGate() && objectsMap[y][x] == 0){
+            if(TilePtr->getZoneId() == zoneId && !TilePtr->getIsBorder() && !TilePtr->getIsRoad() && !TilePtr->getIsGate() && objectsMap[y][x] == 0){
                 bool canPlace = true;
                 for (int x_ = max(0, x - object.getSizeOfObject().x); x_ <= min(x + 1, map.getWidth() - 1); x_++)
                 {
@@ -312,7 +266,6 @@ void BorderPlacer::connectZones() {
                     entrance.setPosition(int3(outerX1, outerY1, 0)); // Fix position
                     connectedPairs.emplace_back(X, Y, outerX1, outerY1, true, rng->nextInt(1,3)); //Castle1 -> Entrance1
                     map.getTile(outerX1, outerY1+1)->setIsGuard(true);
-                    map.getTile(outerX1, outerY1+1)->setIsExtension(false);
                     map.getTile(outerX1, outerY1+1)->setIsBorder(false);
 
                     placeMonolith(entrance);
@@ -353,7 +306,6 @@ void BorderPlacer::connectZones() {
                     entrance2.setPosition(int3(outerXX2, outerYY2, 0)); // Fix position
                     connectedPairs.emplace_back(XX, YY, outerXX2, outerYY2, true, rng->nextInt(1,3)); //Castle2 -> Entrance2
                     map.getTile(outerXX2, outerYY2+1)->setIsGuard(true);
-                    map.getTile(outerXX2, outerYY2+1)->setIsExtension(false);
                     map.getTile(outerXX2, outerYY2+1)->setIsBorder(false);
 
 
@@ -479,7 +431,7 @@ void BorderPlacer::determineZoneBorders() {
             int currentZoneId = TilePtr->getZoneId();
             bool isBorder = false;
     
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
             {
                 int nx = x + dx[i];
                 int ny = y + dy[i];

@@ -121,7 +121,7 @@ void AddBorderObstacles(std::ofstream& luaFile, Map& map){
 
             std::string terrain;
 
-            if ((tile->getIsBorder() || tile->getIsExtension()) && !tile->getIsRoad()) {
+            if (tile->getIsBorder() && !tile->getIsRoad()) {
                 AddObstacle(luaFile, "Pine Trees", x, y, 0);
             }
 
