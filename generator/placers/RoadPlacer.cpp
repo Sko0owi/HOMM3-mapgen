@@ -3,8 +3,8 @@
 #include "../templateInfo/ZoneInfo.h"
 #include "../templateInfo/ConnectionInfo.h"
 #include "./ObjectPlacer.h"
-#include "./Map.h"
-#include "./Tile.h"
+#include"../Map.h"
+#include "../gameInfo/Tile.h"
 
 RoadPlacer::RoadPlacer(Map &map, TemplateInfo &temp, std::shared_ptr<ObjectPlacer> objectPlacer) : map(map), temp(temp), objectPlacer(objectPlacer) {};
 

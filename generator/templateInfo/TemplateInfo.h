@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./global/Global.h"
+#include "../global/Global.h"
 #include <nlohmann/json.hpp> 
 
 enum class Terrain;

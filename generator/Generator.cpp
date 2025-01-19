@@ -16,7 +16,7 @@
 #include "./global/Random.h"
 #include "./global/PerlinNoise.h"
 
-#include "./CreaturesConstants.h"
+// #include "./CreaturesConstants.h"
 
 
 using json = nlohmann::json;

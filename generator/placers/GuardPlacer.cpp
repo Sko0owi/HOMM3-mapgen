@@ -2,10 +2,10 @@
 #include "../templateInfo/TemplateInfo.h"
 #include "../templateInfo/ZoneInfo.h"
 #include "../templateInfo/ConnectionInfo.h"
-#include "./gameInfo/Creature.h"
+#include "../gameInfo/Creature.h"
 #include "../Map.h"
-#include "./gameInfo/Tile.h"
-#include "./gameInfo/Zone.h"
+#include "../gameInfo/Tile.h"
+#include "../gameInfo/Zone.h"
 #include "../global/Random.h"
 
 GuardPlacer::GuardPlacer(Map &map, TemplateInfo &temp, RNG *rng) 

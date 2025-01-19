@@ -2,8 +2,8 @@
 
 
 #include<bits/stdc++.h>
-#include "../global/Global.h"
-#include "../gameInfo/Object.h"
+#include "./global/Global.h"
+#include "./gameInfo/Object.h"
 
 class Tile;
 class Zone;

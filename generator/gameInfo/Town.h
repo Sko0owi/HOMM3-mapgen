@@ -2,7 +2,7 @@
 
 #include "./Faction.h"
 #include "./Object.h"
-#include "./types/int3.h"
+#include "../types/int3.h"
 
 class TownInfo;
 

@@ -1,13 +1,13 @@
 #include "./NoisePlacer.h"
-#include "./global/PerlinNoise.h"
-#include "./global/Random.h"
+#include "../global/PerlinNoise.h"
+#include "../global/Random.h"
 #include "../Map.h"
 #include "../gameInfo/Tile.h"
 #include "../gameInfo/Zone.h"
 #include "../gameInfo/Town.h"
 #include "../gameInfo/Terrain.h"
 #include "./ObjectPlacer.h"
-#include "./types/int3.h"
+#include "../types/int3.h"
 
 
 NoisePlacer::NoisePlacer(Map &map, RNG *rng, std::shared_ptr<ObjectPlacer> objectPlacer) : map(map), rng(rng), objectPlacer(objectPlacer) {

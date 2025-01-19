@@ -1,13 +1,13 @@
 #include "./ZonePlacer.h"
-#include "./Map.h"
+#include"../Map.h"
 #include "../templateInfo/TemplateInfo.h"
 #include "../templateInfo/ZoneInfo.h"
 #include "../templateInfo/ConnectionInfo.h"
-#include "./Zone.h"
-#include "./Tile.h"
-#include "./global/Random.h"
-#include "./global/PenroseTiling.h"
-#include "./gameInfo/Town.h"
+#include "../gameInfo/Zone.h"
+#include "../gameInfo/Tile.h"
+#include "../global/Random.h"
+#include "../global/PenroseTiling.h"
+#include "../gameInfo/Town.h"
 
 
 ZonePlacer::ZonePlacer(Map & map, TemplateInfo & temp, RNG *rng) : map(map), temp(temp), rng(rng) {

@@ -1,4 +1,4 @@
-# another-HOMM3-mapgen
+# HOMM3-mapgen
 Template-Based Map Generator for Heroes of Might &amp; Magic III
 
 
@@ -8,23 +8,21 @@ Template-Based Map Generator for Heroes of Might &amp; Magic III
 
 # Pre requirements 
 * Lua5.4, qt5-tools, boost
-* sudo apt-get install lua5.4 liblua5.4-dev
-On ubuntu I installed
-* sudo apt-get install libtbb-dev
-* sudo apt-get install libsdl2-ttf-dev
-* sudo apt-get install qttools5-dev
-* sudo apt-get install libsdl2-mixer-dev
-* sudo apt-get install libsdl2-image-dev
-And it worked:DD
+
+On Ubuntu you can run
+* sudo apt-get install lua5.4 liblua5.4-dev libtbb-dev libsdl2-ttf-dev qttools5-dev libsdl2-mixer-dev libsdl2-image-dev
+
+
 
 # Current demo testing
-0. Ensure that tou have lua5.4, qt5-tools, boost,  installed
-0a. Ensure that all submodules are updated
+0. Ensure that tou have all of requirements installed
+
+1. Ensure that all submodules are updated
 ```
 git submodule update --init --recursive
 
 ```
-1. Build local VCMI
+2. Build local VCMI
 ```
 mkdir build
 cd build
@@ -33,13 +31,12 @@ cmake -S ../vcmi
 cmake --build . -j8
 ```
 
-1a. Setup vcmi via /bin/vcmilauncher (add game files)
+Setup vcmi via /bin/vcmilauncher (add game files)
 
-2. In testing/test.cpp modify TODO line to save map in desired location 
+3. make generator & run generator
 ```
-cd testing/
-make test
-./test
+make all
+./Generator
 ```
 
 And checking result
