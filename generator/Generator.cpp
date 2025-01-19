@@ -29,6 +29,8 @@ std::string encodeMapSize(pair<int,int> mapSize) {
     return "M";
 }
 
+int seed = -1;
+std::string saveLocation = "";
 
 void generateLuaScript(const json& config) {
     std::ofstream luaFile("generated_script.lua");
@@ -59,7 +61,10 @@ void generateLuaScript(const json& config) {
 
 
     RNG rng;
-    // rng.setSeed(12);
+
+    if(seed != -1) {
+        rng.setSeed(seed);
+    }
 
 
     Map map(&rng);
@@ -126,7 +131,11 @@ void generateLuaScript(const json& config) {
 
     string homeDir = getenv("HOME");
 
-    luaFile << "instance:write('" + homeDir + "/.local/share/vcmi/Maps/test.h3m')";
+    if(saveLocation == "") {
+        saveLocation = homeDir + "/.local/share/vcmi/Maps/test.h3m";
+    } 
+
+    luaFile << "instance:write('" + saveLocation + "')";
     luaFile << "\n";
     
     luaFile.close();
@@ -146,7 +155,7 @@ void execute_lua_script(const std::string& script_name) {
     lua_close(L);
 }
 
-int main() {
+int main(int argc, char *argv[]){
 
 
     std::ifstream file("config.json");
@@ -162,6 +171,16 @@ int main() {
         std::cerr << "JSON parsing error: " << e.what() << std::endl;
         return 1;
     }
+
+    for(int i = 1; i < argc; i++) {
+        if(strcmp(argv[i], "--seed") == 0) {
+            seed = atoi(argv[i+1]);
+        }
+        if(strcmp(argv[i], "--location") == 0) {
+            saveLocation = argv[i+1];
+        }
+    }
+    
 
     generateLuaScript(config);
 
