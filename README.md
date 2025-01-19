@@ -33,44 +33,55 @@ cmake --build . -j8
 
 Setup vcmi via /bin/vcmilauncher (add game files)
 
-3. make generator & run generator
+3. make & run generator
 ```
 make all
-./Generator
+./Generator --seed <seed for RNG> --location <save location for map>
 ```
 
-And checking result
+
+
+And to check results
 ```
-vcmieditor
+bin/vcmieditor
 ```
 
-Struktura plików:
-- gameInfo/ 
-    - Faction.h - enum możliwych frakcji w Ho3 + funkcjonalność
-    - MineType.h - enum możliwych typów kopalni w Ho3 + funkcjonalność
-    - Object.h - Klasa Object podstawowe informacje o obiektach (pozycja, rozmiar)
-    - Mine.h - Klasa Mine (wszelkie informacje o kopalniach), kto jest ownerem, jaki to typ, dziedziczy po Object
-    - Town.h - Klasa Town (wszelkie informacje o miastach), kto jest ownerem, jakiej frakcji to miasto, dziedziczy po Object
-    - Tile.h - Klasa Tile (abstrakcja na pixel), do jakiej zony należy, czy jest na nim border, droga itp
-    - Zone.h - Klasa Zone (abstrakcja na Zony), Środek zony, jaki ma mieć teren, jakie obiekty się w tej zonie znajdują
+File Structure
+- gameInfo/
+    - Faction.h - enum of possible factions in HoMM3 + functionality
+    - MineType.h - enum of possible mine types in HoMM3 + functionality
+    - Terrain.h - enum of possible terrains + functionality
+    - Object.h - Object class with basic object information (position, size)
+    - Creature.h - Creature class (all information about guards)
+    - Mine.h - Mine class (all information about mines), inherits from Object
+    - Town.h - Town class (all information about towns), inherits from Object
+    - Treasure.h - Treasure class (all information about treasures), inherits from Object
+    - Tile.h - Tile class (abstraction for pixel), which zone it belongs to, whether it has a border, road, etc.
+    - Zone.h - Zone class (abstraction for Zones), Zone center, what terrain it should have, what objects are in this zone
 - global/
-    - Global.h - jakieś basic using'i (możliwie do wywalenia)
-    - Random.h - klasa RNG napisana ala python, by móc np prosto losować z danego przedziału
-    - PenroseTiling.h - klasa PenroseTiling używana do zrobienia PenroseTiling
+    - Global.h - some basic using statements (possibly to be removed)
+    - Random.h - RNG class written Python-style, to easily generate random numbers from a given range
+    - PenroseTiling.h - PenroseTiling class used to create Penrose Tiling
+    - PerlinNoise.h - PerlinNoise class used to generate Perlin Noise
+- luaUtils/
+    - lua_helpers.h - Helper functions for Lua script
 - types/
-    - float3.h - klasa float3 (no 3 floaty), można bardziej rozbudować
-    - int3.h - klasa int3 (no 3 inty), można bardziej rozbudować
+    - float3.h - float3 class
+    - int3.h - int3 class
 - templateInfo/
-    - ConnectionInfo.h - Informacje o połączeniach
-    - MineInfo.h - Informacje o kopalniach
-    - TemplateInfo.h - Informacje o Templatce
-    - TownInfo.h - Informacje o miastach
-    - ZoneInfo.h - Informacje o Zonie 
+    - ConnectionInfo.h - Information about connections
+    - MineInfo.h - Information about mines
+    - TemplateInfo.h - Information about Template
+    - TownInfo.h - Information about towns
+    - ZoneInfo.h - Information about Zone
+    - TreasureInfo.h - Information about treasures
 - placers/
-    - BorderPlacer.h - Klasa BorderPlacer odpowiedzialna za kładzenie Borderu
-    - ObjectPlacer.h - Klasa ObjectPlacer odpowiedzialna za kładzenie obiektów
-    - RoadPlacer.h - Klasa RoadPlacer.h odpowiedzialna za kładzenie dróg
-    - ZonePlacer.h - Klasa ZonePlacer odpowiedzialna za kładzenie Zone
-- .
-    - Map.h - Klasa Map (abstrakcja na Mapę, wszelkie informacje tutaj przechowywane mają być odzwierciedleniem prawdziwej mapy), obecnie jest width, height, zony, tiles'y
-    - test.cpp [nazwa do zmiany] - Główny program odpowiedzialny za stworzenie mapy (tworzy skrypt Lua który następnie odpala)
+    - BorderPlacer.h - BorderPlacer class responsible for placing Borders
+    - ObjectPlacer.h - ObjectPlacer class responsible for placing objects
+    - GuardPlacer.h - GuardPlacer class responsible for placing guards
+    - NoisePlacer.h - NoisePlacer class responsible for placing noise
+    - RoadPlacer.h - RoadPlacer class responsible for placing roads
+    - ZonePlacer.h - ZonePlacer class responsible for placing Zones
+- ./
+    - Map.h - Map class (abstraction for Map, all information stored here should reflect the actual map)
+    - Generator.cpp - Main program responsible for creating the map (creates a Lua script which it then runs)
