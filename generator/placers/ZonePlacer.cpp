@@ -98,7 +98,28 @@ void ZonePlacer::placeOnGrid() {
     std::vector<std::pair<int, std::shared_ptr<Zone>>> zoneVector(zones.begin(), zones.end());
 
     size_t x = 0, y = 0; // start from 0,0
-                         // TODO set random start position
+    
+    int rnd_edge = rng->nextInt(0, 3);
+    switch (rnd_edge)
+    {
+        case 0:
+            x = 0;
+            y = rng->nextInt(0, GridN - 1);
+            break;
+        case 1:
+            x = GridN - 1;
+            y = rng->nextInt(0, GridN - 1);
+            break;
+        case 2:
+            x = rng->nextInt(0, GridN - 1);
+            y = 0;
+            break;
+        case 3:
+            x = rng->nextInt(0, GridN - 1);
+            y = GridN - 1;
+            break;
+
+    }
 
     grid[x][y] = zoneVector[0].second;
 

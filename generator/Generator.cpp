@@ -59,7 +59,7 @@ void generateLuaScript(const json& config) {
 
 
     RNG rng;
-    rng.setSeed(12);
+    // rng.setSeed(12);
 
 
     Map map(&rng);
