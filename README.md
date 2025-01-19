@@ -29,6 +29,8 @@ cd build
 cmake -S ../vcmi
 
 cmake --build . -j8
+
+cd ..
 ```
 
 Setup vcmi via /bin/vcmilauncher (add game files)
@@ -43,7 +45,7 @@ make all
 
 And to check results
 ```
-bin/vcmieditor
+/bin/vcmieditor
 ```
 
 File Structure
