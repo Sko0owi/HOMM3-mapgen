@@ -6,3 +6,4 @@
 **/.vscode
 build/
 **/log*
+**/config_debug.json

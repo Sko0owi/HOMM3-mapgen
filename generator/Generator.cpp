@@ -25,8 +25,8 @@ std::string encodeMapSize(pair<int,int> mapSize) {
     if (mapSize == pair<int,int>{36, 36}) return "SMALL";
     if (mapSize == pair<int,int>{72, 72}) return "MEDIUM";
     if (mapSize == pair<int,int>{108, 108}) return "LARGE";
-    if (mapSize == pair<int,int>{144, 144}) return "EXTRA_LARGE";
-    return "M";
+    if (mapSize == pair<int,int>{144, 144}) return "EXTRALARGE";
+    return "SMALL";
 }
 
 int seed = -1;

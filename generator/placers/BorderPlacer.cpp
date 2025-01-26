@@ -72,10 +72,8 @@ std::string BorderPlacer::getType(int ZoneA, int ZoneB){
 }
 
 bool BorderPlacer::isMapBorder(int x, int y){
-    const int dx[] = {-1, 1, 0, 0};
-    const int dy[] = {0, 0, -1, 1};
 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 8; i++){
         int nx = x + dx[i];
         int ny = y + dy[i];
 
@@ -401,7 +399,7 @@ void BorderPlacer::setWideConnections(){
 
             int currentZoneId = TilePtr->getZoneId();
     
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
             {
                 int nx = x + dx[i];
                 int ny = y + dy[i];
