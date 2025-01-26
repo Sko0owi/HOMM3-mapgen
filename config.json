@@ -11,15 +11,15 @@
       "terrain": "Grass",
       "richness" : "Low",
       "difficulty": "Easy",
-      "number_of_towns": 1, 
+      "numberOfTowns": 1, 
       "towns" : [
         {
           "faction" : "Stronghold",
           "owner" : "Player_1"
         }
       ],
-      "max_number_of_mines": 4,
-      "number_of_mines": 2,
+      "maxNumberOfMines": 4,
+      "numberOfMineTypes": 2,
       "mines": [
         {
           "type": "Ore Pit",
@@ -37,15 +37,15 @@
       "terrain": "Snow",
       "richness" : "Low",
       "difficulty": "Easy",
-      "number_of_towns": 1, 
+      "numberOfTowns": 1, 
       "towns" : [
         {
           "faction" : "Stronghold",
           "owner" : "Player_2"
         }
       ],
-      "max_number_of_mines": 4,
-      "number_of_mines": 2,
+      "maxNumberOfMines": 4,
+      "numberOfMineTypes": 2,
       "mines": [
         {
           "type": "Ore Pit",

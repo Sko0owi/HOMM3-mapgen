@@ -132,12 +132,12 @@ void ZoneInfo::deserializeZone(const json& config) {
     std::string zoneRichness = config.value("richness", "Normal");
     TreasuresInfo treasuresInfo(decodeRichness(zoneRichness));
 
-    i32 town_count = config.value("number_of_towns", 0);
+    i32 town_count = config.value("numberOfTowns", 0);
     for (int i = 0; i < town_count; i++) {
 
         std::string townFaction = TemplateInfo::getOrError<std::string>(config["towns"][i], "faction");
         std::string townOwner = TemplateInfo::getOrError<std::string>(config["towns"][i], "owner");
-        int townMinCount = config["towns"][i].value("min_count", 1);
+        int townMinCount = config["towns"][i].value("minCount", 1);
         
 
         TownInfo townI(stringToFaction(townFaction), decodeOwner(townOwner), townMinCount);
@@ -145,13 +145,13 @@ void ZoneInfo::deserializeZone(const json& config) {
         addTown(townI);
     }
 
-    i32 maxMinesCount = config.value("max_number_of_mines", 0);
-    i32 mine_count = config.value("number_of_mines", 0);
+    i32 maxMinesCount = config.value("maxNumberOfMines", 0);
+    i32 mine_count = config.value("numberOfMineTypes", 0);
     for(int i = 0; i < mine_count; i++) {
     
         std::string mineType = TemplateInfo::getOrError<std::string>(config["mines"][i], "type");
         std::string mineOwner = config["mines"][i].value("owner", "None");
-        int mineMinCount = config["mines"][i].value("min_count", 1);
+        int mineMinCount = config["mines"][i].value("minCount", 1);
 
         MineInfo mineI(stringToMineType(mineType), decodeOwner(mineOwner), mineMinCount);
         
