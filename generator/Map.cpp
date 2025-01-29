@@ -57,7 +57,7 @@ void Map::generateMap(TemplateInfo &temp) {
     objectPlacer->placeObjects();
 
     //We know where all objects are placed so we can find roads
-    setMapObjects(borderPlacer.getMapObjects());
+    //setMapObjects(borderPlacer.getMapObjects());
     RoadPlacer roadPlacer(*this, temp, objectPlacer);
     roadPlacer.createShotestPathsToConnected(connectedPairs);
     
@@ -78,6 +78,9 @@ ConnectedPoints Map::getConnectedPairs(){
     return connectedPairs;
 }
 
+void Map::addObject(Object object){
+    mapObjects.push_back(object);
+}
 void Map::setMapObjects(MapObjects mapObjects){
     this->mapObjects = mapObjects;
 }

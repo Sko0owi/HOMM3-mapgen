@@ -103,8 +103,8 @@ void RoadPlacer::fixBorders(){
                     }
                 }
             }
-
-            if(cnt >= 3)
+            auto objectsMap = objectPlacer->getObjectsMap();
+            if(cnt >= 3 && objectsMap[y][x] != 1)
                 Tile->setIsBorder(true);
         }
     }

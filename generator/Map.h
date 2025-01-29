@@ -12,6 +12,7 @@ class RNG;
 class Town;
 class ObjectPlacer;
 class GuardPlacer;
+class Object;
 
 using MapZones = std::map<i32, std::shared_ptr<Zone>>;
 using MapObjects = std::vector<Object>;
@@ -39,6 +40,7 @@ public:
     void setConnectedPairs(ConnectedPoints connectedPairs);
     ConnectedPoints  getConnectedPairs();
 
+    void addObject(Object object);
     void setMapObjects(MapObjects mapObjects);
     MapObjects  getMapObjects();
 

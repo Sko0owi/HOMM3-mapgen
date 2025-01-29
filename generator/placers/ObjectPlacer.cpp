@@ -130,16 +130,17 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
     int x = pos.x;
     int y = pos.y;
 
-    for (int x_ = max(0, x - blockSize.x + 1); x_ <= min(x, mapWidth - 1); x_++)
+    vector<int3> borderOfBlock;
+    for (int x_ = max(0, x - blockSize.x); x_ <= min(x + 1, mapWidth - 1); x_++)
     {
-        for (int y_ = max(0, y - blockSize.y + 1); y_ <= min(y + 1, mapHeight - 1); y_++)
+        for (int y_ = max(0, y - blockSize.y); y_ <= min(y + 1, mapHeight - 1); y_++)
         {
 
             objectsMap[y_][x_] = 5;
 
             if (x_ == x - blockSize.x || x_ == x + 1 || y_ == y - blockSize.y || y_ == y + 1)
             {
-                objectsMap[y_][x_] = 1;
+                borderOfBlock.push_back(int3(x_, y_, 0));
             }
             else
             {
@@ -170,6 +171,18 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
                 objects[zonePtr].push_back(treasurePointer);
             }
         }
+    }
+
+    int guardPos = rng->nextInt(0, borderOfBlock.size() - 1);
+    auto guardPosition = borderOfBlock[guardPos];
+    objectsMap[guardPosition.y][guardPosition.x] = 1;
+
+    borderOfBlock.erase(borderOfBlock.begin() + guardPos);
+
+    map.getTile(guardPosition.x, guardPosition.y)->setIsGuard(true);
+
+    for(auto &pos : borderOfBlock){
+        map.addObject(Object(pos, rng->randomObstacle()));
     }
 }
 
