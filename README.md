@@ -48,6 +48,13 @@ And to check results
 /bin/vcmieditor
 ```
 
+4. test map with vcmi bots
+```
+cd tester
+bash script.sh 
+python statistics.py
+```
+
 File Structure
 - gameInfo/
     - Faction.h - enum of possible factions in HoMM3 + functionality
