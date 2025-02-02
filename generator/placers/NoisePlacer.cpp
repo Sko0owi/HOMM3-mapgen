@@ -22,7 +22,7 @@ NoisePlacer::NoisePlacer(Map &map, RNG *rng, std::shared_ptr<ObjectPlacer> objec
 void NoisePlacer::placeNoise() {
     PerlinNoise perlinNoise(rng);
 
-    auto noiseGrid = perlinNoise.generateNoiseGrid(map.getWidth(), map.getHeight(), 0.4);
+    auto noiseGrid = perlinNoise.generateNoiseGrid(map.getWidth(), map.getHeight(), 0.3);
 
     for (int y = 0; y < map.getHeight(); y++) {
         std::vector<int> row;
@@ -163,7 +163,7 @@ void NoisePlacer::calculateDistances(int3 startPos) {
                 continue;
             }
 
-            int newDist = dist + 2;
+            int newDist = dist + 1;
             if(i > 3) {
                 newDist += 1;
             }
