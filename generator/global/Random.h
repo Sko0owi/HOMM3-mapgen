@@ -20,6 +20,7 @@ public:
     int getSeed();
     std::string randomCreature(double lvl);
     std::string randomObstacle();
+    std::string randomTerrain();
 
     template<typename T>
     void shuffle(std::vector<T>& vec);

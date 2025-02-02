@@ -120,3 +120,11 @@ std::string RNG::randomObstacle(){
 
     return obstacles[nextInt(0, length - 1)];
 }
+
+std::string RNG::randomTerrain() {
+    std::vector<std::string> terrains = {
+        "Grass", "Sand", "Snow", "Swamp", "Rough", "Subterranean", "Lava", "Dirt", "Rock"
+    };
+    
+    return terrains[nextInt(0, 7)];
+}

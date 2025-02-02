@@ -42,7 +42,9 @@ void generateLuaScript(const json& config) {
     AddHeader(luaFile);
 
     TemplateInfo templateInfo;
-    templateInfo.deserialize(config);
+    RNG rng;
+
+    templateInfo.deserialize(config, &rng);
 
     if (config.value("debug", false))
         templateInfo.printTemplate();
@@ -59,13 +61,9 @@ void generateLuaScript(const json& config) {
 
     std::set<int> addedPlayers;
 
-
-    RNG rng;
-
     if(seed != -1) {
         rng.setSeed(seed);
     }
-
 
     Map map(&rng);
     map.generateMap(templateInfo);

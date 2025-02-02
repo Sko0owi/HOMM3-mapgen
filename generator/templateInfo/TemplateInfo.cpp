@@ -60,7 +60,7 @@ pair<int,int> decodeMapSize(std::string MapSize) {
 
 
 
-void TemplateInfo::deserialize(const json& config) {
+void TemplateInfo::deserialize(const json& config, RNG *rng) {
 
     std::string name = getOrError<std::string>(config, "name");
     std::string difficulty = getOrError<std::string>(config, "difficulty");
@@ -77,7 +77,7 @@ void TemplateInfo::deserialize(const json& config) {
     for (const auto &zoneConfig : zonesConfig)
     {      
         auto zone = std::make_shared<ZoneInfo>(config.value("debug", false));
-        zone->deserializeZone(zoneConfig);
+        zone->deserializeZone(zoneConfig, rng);
         zonesI[zone->getId()] = zone;
     }
 

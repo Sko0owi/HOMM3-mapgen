@@ -16,7 +16,7 @@ std::string terrainToString(Terrain terrain) {
     return "DEFAULT";
 }
 
-Terrain stringToTerrain(std::string terrain) {
+Terrain stringToTerrain(std::string terrain, RNG *rng) {
     if (terrain == "Grass") {
         return Terrain::GRASS;
     } else if (terrain == "Sand") {
@@ -37,6 +37,8 @@ Terrain stringToTerrain(std::string terrain) {
         return Terrain::DIRT;
     } else if (terrain == "Rock") {
         return Terrain::ROCK;
+    } else if (terrain == "Random") {
+        return stringToTerrain(rng->randomTerrain(), rng);
     }
     return Terrain::DIRT;
 }

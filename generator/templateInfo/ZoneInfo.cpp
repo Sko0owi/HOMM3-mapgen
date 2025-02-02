@@ -120,7 +120,7 @@ ZoneRichness decodeRichness(std::string richness) {
     return ZoneRichness::Normal;
 }
 
-void ZoneInfo::deserializeZone(const json& config) {
+void ZoneInfo::deserializeZone(const json& config, RNG *rng) {
     
     i32 id = TemplateInfo::getOrError<int>(config, "id");
     std::string size = TemplateInfo::getOrError<std::string>(config, "size");
@@ -161,7 +161,7 @@ void ZoneInfo::deserializeZone(const json& config) {
     setTreasuresInfo(treasuresInfo);
     setId(id);
     setSize(decodeSize(size));
-    setTerrain(stringToTerrain(terrain));
+    setTerrain(stringToTerrain(terrain, rng));
     setMaxMinesCount(maxMinesCount);
     setDifficulty(difficulty);
 }
