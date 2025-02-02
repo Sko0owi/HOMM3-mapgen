@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../global/Global.h"
+#include "../global/Random.h"
 #include <nlohmann/json.hpp> 
+
 
 enum class Terrain;
 
@@ -35,7 +37,7 @@ public:
     pair<int,int> getMapSize();
     std::string getDifficulty();
 
-    void deserialize(const json& config);
+    void deserialize(const json& config, RNG *rng);
     void printTemplate();
 
     template <typename T>

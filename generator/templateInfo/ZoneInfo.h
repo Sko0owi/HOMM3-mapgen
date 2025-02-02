@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../global/Global.h"
+#include "../global/Random.h"
 #include "./TreasuresInfo.h"
 #include <nlohmann/json.hpp> 
 
@@ -38,7 +39,7 @@ public:
     Terrain getTerrain();
     i32 getMaxMinesCount();
     
-    void deserializeZone(const json& config);
+    void deserializeZone(const json& config, RNG *rng);
     void printZone();
 private:
     bool debug;

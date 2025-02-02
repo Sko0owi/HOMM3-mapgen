@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "../global/Random.h"
 
 enum class Terrain {
     DIRT = 0,
@@ -18,4 +19,4 @@ enum class Terrain {
 
 std::string terrainToString(Terrain fac);
 
-Terrain stringToTerrain(std::string fac);
+Terrain stringToTerrain(std::string fac, RNG *rng);

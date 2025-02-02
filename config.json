@@ -8,7 +8,7 @@
     {
       "id": 1,
       "size": "M",
-      "terrain": "Grass",
+      "terrain": "Random",
       "richness" : "Low",
       "difficulty": "Easy",
       "numberOfTowns": 1, 
