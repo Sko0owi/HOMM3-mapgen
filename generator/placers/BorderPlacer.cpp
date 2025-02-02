@@ -338,7 +338,10 @@ void BorderPlacer::connectZones() {
                     connectedPairs.emplace_back(outerX1, outerY1, outerX2, outerY2, false, tier); // Add points of connection
                     connectedPairs.emplace_back(outerX1, outerY1, X, Y, true, tier); // Castle1 -> Connect1
                     connectedPairs.emplace_back(XX, YY, outerX2, outerY2, true, tier); // Castle2 -> Connect2
-                
+
+                    map.getTile(outerX1,outerY1)->setIsGate(true);
+                    map.getTile(outerX2,outerY2)->setIsGate(true);
+
                     if(debug){
                         std::cerr << "X= " << X << " Y= " << Y << " OX1= " << outerX1 << " OY1= " << outerY1 << " OX2= " << outerX2 << " OY2= " << outerY2 << "\n";
                         for (int y = 0; y < mapHeight; y++)

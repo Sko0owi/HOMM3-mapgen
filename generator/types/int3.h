@@ -56,6 +56,11 @@ public:
 		return *this;
 	}
 
+	constexpr bool operator==(const int3& i) const
+	{
+		return x == i.x && y == i.y && z == i.z;
+	}
+
 	constexpr bool operator<(const int3 & i) const
 	{
 		if (z != i.z)

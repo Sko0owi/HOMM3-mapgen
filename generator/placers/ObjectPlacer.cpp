@@ -112,10 +112,16 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
         auto [pos, tile] = tiles;
         auto [x, y] = pos;
 
-        if (canPlaceObject(int3(x, y, 0), blockSize))
+        blockSize.x += 1;
+        blockSize.y += 1;
+
+        if (canPlaceObject(int3(x, y, 0), blockSize, true))
         {
             possiblePositions.push_back(int3(x, y, 0));
         }
+
+        blockSize.x -= 1;
+        blockSize.y -= 1;
     }
 
     if (possiblePositions.empty())
@@ -172,12 +178,25 @@ void ObjectPlacer::placeBlockOfTreasures(std::shared_ptr<Zone> zonePtr, Treasure
             }
         }
     }
+    vector<int3> possibleGuardPlacement;
 
-    int guardPos = rng->nextInt(0, borderOfBlock.size() - 1);
-    auto guardPosition = borderOfBlock[guardPos];
+    for(auto &pos : borderOfBlock){
+        bool canPlace = false;
+        for(int x = max(0, pos.x - 1); x <= min(pos.x + 1, mapWidth - 1); x++){
+            for(int y = max(0, pos.y - 1); y <= min(pos.y + 1, mapHeight - 1); y++){
+                if(objectsMap[y][x] <= 1){
+                    canPlace = true;
+                }
+            }
+        }
+        if(canPlace) possibleGuardPlacement.push_back(pos);
+    }
+
+    int guardPos = rng->nextInt(0, possibleGuardPlacement.size() - 1);
+    auto guardPosition = possibleGuardPlacement[guardPos];
     objectsMap[guardPosition.y][guardPosition.x] = 1;
 
-    borderOfBlock.erase(borderOfBlock.begin() + guardPos);
+    borderOfBlock.erase(std::remove(borderOfBlock.begin(), borderOfBlock.end(), guardPosition), borderOfBlock.end());
 
     map.getTile(guardPosition.x, guardPosition.y)->setIsGuard(true);
 
@@ -425,10 +444,15 @@ void ObjectPlacer::placeTowns()
     recalculateDistances();
 }
 
-bool ObjectPlacer::canPlaceObject(int3 pos, int3 size)
+bool ObjectPlacer::canPlaceObject(int3 pos, int3 size, bool extended)
 {   
     int x = pos.x;
     int y = pos.y;
+
+    if(extended) {
+        size.x += 1;
+        size.y += 1;
+    }
 
     if (y == mapHeight - 1 || y == mapHeight - 2 || y == 0)
         return false;
@@ -443,19 +467,25 @@ bool ObjectPlacer::canPlaceObject(int3 pos, int3 size)
     {
         for (int y_ = max(0, y - size.y); y_ <= y + 1; y_++)
         {
-
-            if(x_ == x+1 && y_ == y+1)
+            if(!extended) {
+                if(x_ == x+1 && y_ == y+1)
                 continue;
-            if(x_ == x - size.x && y_ == y - size.y)
-                continue;
-            if(x_ == x+1 && y_ == y - size.y)
-                continue;
-            if(x_ == x - size.x && y_ == y+1)
-                continue;
-            
+                if(x_ == x - size.x && y_ == y - size.y)
+                    continue;
+                if(x_ == x+1 && y_ == y - size.y)
+                    continue;
+                if(x_ == x - size.x && y_ == y+1)
+                    continue;
+            }
 
             if (objectsMap[y_][x_] >= 1)
                 return false;
+
+            for (auto zone : map.getZones())
+            {
+                if (zone.second->getPosition() == int3(x_, y_, 0))
+                    return false;
+            }
 
             auto TilePtr = map.getTile(x_, y_);
             if (TilePtr->getIsRoad() || TilePtr->getIsGate())

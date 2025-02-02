@@ -44,6 +44,10 @@ void generateLuaScript(const json& config) {
     TemplateInfo templateInfo;
     RNG rng;
 
+    if(seed != -1) {
+        rng.setSeed(seed);
+    }
+
     templateInfo.deserialize(config, &rng);
 
     if (config.value("debug", false))
@@ -60,10 +64,6 @@ void generateLuaScript(const json& config) {
     luaFile << "instance:difficulty(homm3lua.DIFFICULTY_" << difficulty << ")\n\n";
 
     std::set<int> addedPlayers;
-
-    if(seed != -1) {
-        rng.setSeed(seed);
-    }
 
     Map map(&rng);
     map.generateMap(templateInfo);

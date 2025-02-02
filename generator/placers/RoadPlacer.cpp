@@ -6,7 +6,19 @@
 #include"../Map.h"
 #include "../gameInfo/Tile.h"
 
-RoadPlacer::RoadPlacer(Map &map, TemplateInfo &temp, std::shared_ptr<ObjectPlacer> objectPlacer) : map(map), temp(temp), objectPlacer(objectPlacer) {};
+RoadPlacer::RoadPlacer(Map &map, TemplateInfo &temp, std::shared_ptr<ObjectPlacer> objectPlacer) : map(map), temp(temp), objectPlacer(objectPlacer) {
+
+
+    for(int y = 0; y < map.getHeight(); y++){
+        for(int x = 0; x < map.getWidth(); x++){
+            auto tilePtr = map.getTile(x, y);
+            if(tilePtr->getIsGate()) {
+                tilePtr->setIsGate(false);
+            }
+        }
+    }
+
+};
 
 std::vector<std::pair<int, int>> RoadPlacer::generateSimplePath(int x1, int y1, int x2, int y2) {
     std::vector<std::pair<int, int>> path;
@@ -277,8 +289,9 @@ void RoadPlacer::createShotestPathsToConnected(std::vector<std::tuple<int, int, 
         for (int x = 0; x < map.getWidth(); x++){
             for (int y = 0; y < map.getHeight(); y++){
                 auto TilePtr = map.getTile(y, x);
-
-                if(TilePtr->getIsBorder()){
+                if(TilePtr->getIsGate()){
+                    std::cerr << "G ";
+                } else if(TilePtr->getIsBorder()){
                     std::cerr << "E ";
                 } else if(TilePtr->getIsRoad()){
                     std::cerr << "R ";

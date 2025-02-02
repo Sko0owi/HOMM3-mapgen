@@ -39,7 +39,7 @@ public:
 
     void calculateShortestDistances(std::shared_ptr<Object>& object);
 
-    bool canPlaceObject(int3 pos, int3 size);
+    bool canPlaceObject(int3 pos, int3 size, bool extended=false);
 
     std::vector<std::vector<int>> getObjectsMap();
     void setObjectsMap(std::vector<std::vector<int>> objectsMap);
