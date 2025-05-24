@@ -1,0 +1,54 @@
+Znaleziska z zabawy wartościami:
+
+Znalezione jakieś budnyki rożnego rodzaju z grubsza podpisane poniżej.
+ Przez object${i} rozumiemy, jeśli zwrócimy hash $i w homm3tools/h3m/h3mlib/gen/object_names_hash.c to stworzymy następujące obiekty 
+
+-- Jakieś losowe
+-- instance:obstacle("object207", {x=2, y=2, z=0})
+-- instance:obstacle("object487", {x=2, y=4, z=0})
+-- instance:obstacle("object488", {x=2, y=6, z=0})
+-- instance:obstacle("object817", {x=2, y=8, z=0})
+-- instance:obstacle("object949", {x=2, y=10, z=0})
+-- instance:obstacle("object965", {x=2, y=12, z=0})
+
+-- portale 2 way
+-- instance:obstacle("object1041", {x=2, y=14, z=0})
+-- instance:obstacle("object1042", {x=10, y=14, z=0})
+-- instance:obstacle("object1042", {x=2, y=16, z=0})
+-- instance:obstacle("object1043", {x=2, y=18, z=0})
+-- instance:obstacle("object1044", {x=2, y=20, z=0})
+-- instance:obstacle("object1045", {x=2, y=22, z=0})
+-- instance:obstacle("object1074", {x=2, y=24, z=0})
+
+-- instance:obstacle("object1229", {x=2, y=26, z=0}) -- losowy budynek?
+
+-- Spawner jednostek z danej nacji na jakimś lvl (np strażnica) od razu gracz jest właścicielem
+-- instance:obstacle("object1230", {x=4, y=28, z=0}) -- zamek
+-- instance:obstacle("object1231", {x=2, y=30, z=0}) -- bastion
+-- instance:obstacle("object1232", {x=2, y=32, z=0}) -- twierdza
+-- instance:obstacle("object1233", {x=2, y=34, z=0}) -- inferno
+-- instance:obstacle("object1234", {x=4, y=2, z=0})  -- nekropolis
+-- instance:obstacle("object1235", {x=4, y=18, z=0}) -- loch
+-- instance:obstacle("object1236", {x=4, y=10, z=0}) -- forteca (?)
+-- instance:obstacle("object1237", {x=4, y=12, z=0}) -- cytadela (gnole?)
+-- instance:obstacle("object1238", {x=4, y=14, z=0}) -- wrota żywiołów (nimfy?)
+
+-- Losowe spawnery jednostek danego poziomu
+-- instance:obstacle("object1239", {x=4, y=16, z=0}) -- losowy budynek lvl 2
+-- instance:obstacle("object1240", {x=4, y=18, z=0}) -- losowy budynek lvl 3
+-- instance:obstacle("object1241", {x=4, y=10, z=0}) -- losowy budynek lvl 4
+-- instance:obstacle("object1242", {x=4, y=12, z=0}) -- losowy budynek lvl 5
+-- instance:obstacle("object1243", {x=4, y=14, z=0}) -- losowy budynek lvl 6
+-- instance:obstacle("object1244", {x=4, y=16, z=0}) -- losowy budynek lvl 7
+-- instance:obstacle("object1245", {x=4, y=18, z=0}) -- losowy budynek lvl 1
+
+-- Miasta bez właścicieli
+-- instance:obstacle("object1321", {x=4, y=10, z=0}) -- losowe miasto
+-- instance:obstacle("object1322", {x=8, y=12, z=0}) -- Zamek (no owner)
+-- instance:obstacle("object1323", {x=4, y=14, z=0}) -- Forteca (no owner)
+-- instance:obstacle("object1324", {x=4, y=16, z=0}) -- Inferno (no owner)
+-- instance:obstacle("object1325", {x=4, y=18, z=0}) -- Nekropolis (no owner)
+-- instance:obstacle("object1326", {x=4, y=10, z=0}) -- Cytadela (no owner)
+-- instance:obstacle("object1327", {x=4, y=12, z=0}) -- Twierdza (no owner)
+-- instance:obstacle("object1328", {x=4, y=14, z=0}) -- Bastion (no owner)
+-- instance:obstacle("object1329", {x=4, y=16, z=0}) -- Lochy (no owner)
